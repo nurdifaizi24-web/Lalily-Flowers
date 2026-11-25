@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Lalily Flowers — Admin & POS</title>
+  <title>Lalily Flowers — Admin, POS &amp; Sewa Florist</title>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Lalily Admin" />
@@ -27,6 +27,8 @@
       --amber-bg: #FFF6E5;
       --red: #D6455D;
       --red-bg: #FDECEF;
+      --blue: #2B6CB0;
+      --blue-bg: #EBF4FF;
       --radius: 16px;
       --shadow: 0 6px 20px rgba(225, 106, 147, 0.08);
       --font-scale: 1;
@@ -49,7 +51,6 @@
       min-height: 100vh;
     }
 
-    /* Gaya Kartu / Border */
     body.card-bold .card,
     body.card-bold .stat-card,
     body.card-bold .stock-card {
@@ -75,7 +76,6 @@
       border-radius: 12px;
     }
 
-    /* Sembunyikan Badge Deadline */
     body.hide-deadline-badge .deadline-badge-item {
       display: none !important;
     }
@@ -93,9 +93,7 @@
       padding-bottom: calc(20px + env(safe-area-inset-bottom));
     }
 
-    .login-screen.hidden {
-      display: none;
-    }
+    .login-screen.hidden { display: none; }
 
     .login-card {
       background: rgba(255, 255, 255, 0.97);
@@ -134,9 +132,7 @@
       color: var(--text-muted);
     }
 
-    .pass-wrap {
-      position: relative;
-    }
+    .pass-wrap { position: relative; }
 
     .pass-toggle {
       position: absolute;
@@ -188,9 +184,7 @@
       text-align: center;
     }
 
-    .loading-screen.show {
-      display: flex;
-    }
+    .loading-screen.show { display: flex; }
 
     .bloom-spinner {
       width: 88px;
@@ -360,9 +354,7 @@
       cursor: pointer;
     }
 
-    .reminder-banner.show {
-      display: flex;
-    }
+    .reminder-banner.show { display: flex; }
 
     .reminder-banner strong {
       display: block;
@@ -434,9 +426,7 @@
       color: var(--text);
     }
 
-    .stat-card.highlight .stat-value {
-      color: var(--pink-dark);
-    }
+    .stat-card.highlight .stat-value { color: var(--pink-dark); }
 
     .stat-sub {
       font-size: calc(11px * var(--font-scale));
@@ -444,9 +434,7 @@
       margin-top: 3px;
     }
 
-    .search-box {
-      margin-bottom: 12px;
-    }
+    .search-box { margin-bottom: 12px; }
 
     .sec-head {
       display: flex;
@@ -507,6 +495,8 @@
     .badge-selesai { background: var(--green-bg); color: var(--green); }
     .badge-urgent { background: var(--red-bg); color: var(--red); margin-left: 4px; }
     .badge-week { background: #FFF2D9; color: #B46308; margin-left: 4px; }
+    .badge-sewa { background: var(--blue-bg); color: var(--blue); margin-right: 4px; }
+    .badge-beli { background: var(--surface-soft); color: var(--pink-dark); border: 1px solid var(--border); margin-right: 4px; }
     .badge-cat { background: var(--surface-soft); color: var(--pink-dark); border: 1px solid var(--border); font-size: 10px; padding: 2px 7px; }
 
     .order-meta {
@@ -571,6 +561,12 @@
       border-color: #BDE5D3;
     }
 
+    .btn-sm.blue {
+      background: var(--blue-bg);
+      color: var(--blue);
+      border-color: #BEE3F8;
+    }
+
     .btn-sm.danger {
       color: var(--red);
       border-color: #F7C6CE;
@@ -594,7 +590,7 @@
 
     .stock-img {
       width: 100%;
-      height: 120px;
+      height: 116px;
       object-fit: cover;
       background: var(--surface-soft);
       display: flex;
@@ -622,7 +618,7 @@
     .stock-price {
       font-size: calc(11.5px * var(--font-scale));
       color: var(--text-muted);
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .stock-qty-row {
@@ -666,9 +662,7 @@
       margin-right: auto;
     }
 
-    .form-group {
-      margin-bottom: 12px;
-    }
+    .form-group { margin-bottom: 12px; }
 
     label {
       display: block;
@@ -766,9 +760,7 @@
       padding: 4px 1px;
     }
 
-    .nav-item.active {
-      color: var(--pink-dark);
-    }
+    .nav-item.active { color: var(--pink-dark); }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -843,11 +835,6 @@
       font-size: 12.5px;
     }
 
-    .design-link-wrap {
-      margin-top: 12px;
-      text-align: right;
-    }
-
     .btn-design-small {
       background: none;
       border: none;
@@ -860,11 +847,8 @@
       cursor: pointer;
     }
 
-    .btn-design-small:hover {
-      color: var(--pink-dark);
-    }
+    .btn-design-small:hover { color: var(--pink-dark); }
 
-    /* Stok Picker / HPP Selected Items */
     .picked-item-row {
       display: flex;
       align-items: center;
@@ -890,7 +874,6 @@
       background: var(--surface-soft);
     }
 
-    /* Rincian Keuangan per Pesanan */
     .fin-detail-row {
       display: flex;
       justify-content: space-between;
@@ -900,8 +883,109 @@
       font-size: 12.5px;
       gap: 8px;
     }
-    .fin-detail-row:last-child {
-      border-bottom: none;
+    .fin-detail-row:last-child { border-bottom: none; }
+
+    /* Category Launcher Grid in Menu Tambah */
+    .cat-launcher-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .cat-tile {
+      background: var(--surface-soft);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.12s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .cat-tile:active {
+      transform: scale(0.98);
+      border-color: var(--pink-primary);
+    }
+
+    .cat-tile-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      color: var(--pink-dark);
+    }
+
+    .cat-tile-title {
+      font-size: calc(13px * var(--font-scale));
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+    }
+
+    .cat-tile-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* Segmented Toggle Sewa / Beli */
+    .seg-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--surface-soft);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 8px;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .seg-btn.active {
+      background: var(--surface);
+      color: var(--pink-dark);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .seg-btn.active.sewa-mode {
+      background: var(--blue-bg);
+      color: var(--blue);
+    }
+
+    /* Quick-chip ucapan */
+    .ucapan-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .ucapan-chip {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--pink-dark);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 99px;
+      cursor: pointer;
     }
 
     /* Layout Modifiers */
@@ -909,23 +993,15 @@
     body.align-center .stat-card,
     body.align-center .order-top,
     body.align-center .order-meta,
-    body.align-center .order-finance {
-      text-align: center;
-    }
+    body.align-center .order-finance { text-align: center; }
 
     body.align-right .card,
     body.align-right .stat-card,
     body.align-right .order-top,
     body.align-right .order-meta,
-    body.align-right .order-finance {
-      text-align: right;
-    }
+    body.align-right .order-finance { text-align: right; }
 
-    body.nav-top .header {
-      position: relative;
-      top: auto;
-    }
-
+    body.nav-top .header { position: relative; top: auto; }
     body.nav-top .bottom-nav {
       position: sticky;
       top: 0;
@@ -934,10 +1010,7 @@
       border-bottom: 1px solid var(--border);
       padding: 7px 2px;
     }
-
-    body.nav-top {
-      padding-bottom: calc(28px + env(safe-area-inset-bottom));
-    }
+    body.nav-top { padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
 
     body.header-bottom .header {
       position: fixed;
@@ -950,23 +1023,12 @@
       padding-bottom: calc(10px + env(safe-area-inset-bottom));
       z-index: 25;
     }
+    body.header-bottom .bottom-nav { bottom: calc(64px + env(safe-area-inset-bottom)); }
+    body.header-bottom { padding-bottom: calc(146px + env(safe-area-inset-bottom)); }
 
-    body.header-bottom .bottom-nav {
-      bottom: calc(64px + env(safe-area-inset-bottom));
-    }
-
-    body.header-bottom {
-      padding-bottom: calc(146px + env(safe-area-inset-bottom));
-    }
-
-    /* Print / PDF Styles */
     @media print {
-      body * {
-        visibility: hidden;
-      }
-      #print-nota-area, #print-nota-area * {
-        visibility: visible;
-      }
+      body * { visibility: hidden; }
+      #print-nota-area, #print-nota-area * { visibility: visible; }
       #print-nota-area {
         position: fixed;
         left: 0;
@@ -991,7 +1053,7 @@
       </div>
 
       <h2 id="login-brand-title">Lalily Flowers</h2>
-      <p class="sub" id="login-brand-sub">Masuk untuk mengakses panel Admin &amp; Kasir</p>
+      <p class="sub" id="login-brand-sub">Masuk untuk mengakses panel Admin, Kasir &amp; Sewa</p>
 
       <div id="login-error" class="login-error">ID Admin atau Password salah!</div>
 
@@ -1025,7 +1087,7 @@
       <img id="loading-logo-img" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%23FFF2F6'/%3E%3Ccircle cx='82' cy='46' r='22' fill='%23F5A3C0' stroke='%23C94A78' stroke-width='2'/%3E%3Ccircle cx='82' cy='46' r='7' fill='%23FFFDFD'/%3E%3Ctext x='14' y='66' font-family='Georgia,serif' font-style='italic' font-weight='bold' font-size='26' fill='%23C94A78'%3ELalily%3C/text%3E%3Ctext x='32' y='88' font-family='Georgia,serif' font-style='italic' font-size='18' fill='%23D95384'%3EFlowers%3C/text%3E%3C/svg%3E" alt="Logo Lalily Flowers" style="width:100%; height:100%; object-fit:cover; display:block;" />
     </div>
     <h3 class="loading-title" id="loading-brand-title">Menyiapkan Lalily Flowers...</h3>
-    <p class="loading-sub">Memuat daftar pesanan, stok barang &amp; pengingat</p>
+    <p class="loading-sub">Memuat pesanan, stok barang, sewa box &amp; pengingat</p>
     <div class="progress-track">
       <div id="loading-bar" class="progress-fill"></div>
     </div>
@@ -1046,7 +1108,7 @@
 
     <div class="header-actions">
       <span id="cloud-sync-pill" style="font-size:10.5px; font-weight:700; padding:4px 8px; border-radius:99px; background:var(--surface-soft); color:var(--text-muted); border:1px solid var(--border); white-space:nowrap;">Lokal</span>
-      <button type="button" class="btn-bell" onclick="openReminderModal()" title="Pengingat Jadwal Kirim">
+      <button type="button" class="btn-bell" onclick="openReminderModal()" title="Pengingat Jadwal Kirim & Kembali Sewa">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
         </svg>
@@ -1067,25 +1129,26 @@
     <section id="tab-orders" class="tab-panel active">
       <div id="reminder-banner" class="reminder-banner" onclick="openReminderModal()">
         <div>
-          <strong id="reminder-title">Ada Pesanan Mendekati Jadwal Kirim!</strong>
-          <span id="reminder-desc">Ketuk untuk melihat daftar pengingat H-7 &amp; mengirim ke kalender/HP.</span>
+          <strong id="reminder-title">Ada Pesanan Mendekati Jadwal Kirim / Kembali Sewa!</strong>
+          <span id="reminder-desc">Ketuk untuk melihat daftar pengingat H-7 &amp; jatuh tempo kembali H+3.</span>
         </div>
         <span style="font-weight:800; font-size:16px; color:#8C4E08;">&rsaquo;</span>
       </div>
 
       <div class="filter-row">
-        <button type="button" class="chip active" onclick="setPeriod('all', this)">Semua Waktu</button>
-        <button type="button" class="chip" onclick="setPeriod('month', this)">Bulan Ini</button>
+        <button type="button" class="chip active" onclick="setPeriod('all', this)">Semua</button>
+        <button type="button" class="chip" onclick="setPeriod('sewa_aktif', this)">Sedang Disewa</button>
         <button type="button" class="chip" onclick="setPeriod('today', this)">Hari Ini</button>
         <button type="button" class="chip" onclick="setPeriod('upcoming7', this)">H-7 Kirim</button>
+        <button type="button" class="chip" onclick="setPeriod('month', this)">Bulan Ini</button>
       </div>
 
       <div class="search-box">
-        <input type="search" id="search-order" placeholder="Cari nama pemesan atau jenis buket..." oninput="renderOrders()" />
+        <input type="search" id="search-order" placeholder="Cari nama pemesan, kategori, atau detail rangkaian..." oninput="renderOrders()" />
       </div>
 
       <div class="sec-head">
-        <h2>Daftar Pesanan</h2>
+        <h2>Daftar Pesanan &amp; Sewa</h2>
         <select id="status-filter" onchange="renderOrders()" style="width:auto; padding:6px 10px; font-size:12px;">
           <option value="all">Semua Status</option>
           <option value="Antrean">Antrean</option>
@@ -1097,12 +1160,45 @@
       <div id="orders-list"></div>
     </section>
 
-    <!-- TAB 2: INPUT PESANAN BARU -->
+    <!-- TAB 2: INPUT PESANAN BARU (DENGAN PEMILIHAN KATEGORI DI AWAL) -->
     <section id="tab-add" class="tab-panel">
-      <div class="card">
-        <h2 style="margin:0 0 14px; font-size:16px; color:var(--pink-dark);" id="form-title">Catat Pesanan Baru</h2>
+      <!-- STEP 1: PILIH KATEGORI PRODUK TERLEBIH DAHULU -->
+      <div id="add-category-step" class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <div>
+            <h2 style="margin:0 0 4px; font-size:16px; color:var(--pink-dark);">Pilih Kategori Produk</h2>
+            <p style="margin:0; font-size:12px; color:var(--text-muted);">Pilih kategori pesanan terlebih dahulu sebelum mengisi rincian rangkaian &amp; stok.</p>
+          </div>
+          <button type="button" class="btn-sm pink" onclick="openManageCategoriesModal()">+ Kategori</button>
+        </div>
+
+        <div id="category-launcher-grid" class="cat-launcher-grid"></div>
+      </div>
+
+      <!-- STEP 2: FORM DETAIL PESANAN -->
+      <div id="add-form-step" class="card" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:8px;">
+          <div>
+            <span class="badge badge-cat" id="selected-cat-badge">Kategori</span>
+            <h2 style="margin:4px 0 0; font-size:16px; color:var(--pink-dark);" id="form-title">Catat Pesanan Baru</h2>
+          </div>
+          <button type="button" class="btn-sm" id="btn-back-category" onclick="showCategoryLauncher()">&lsaquo; Ganti Kategori</button>
+        </div>
+
         <form id="order-form" onsubmit="saveOrder(event)">
           <input type="hidden" id="edit-id" />
+          <input type="hidden" id="f-category" />
+          <input type="hidden" id="f-order-type" value="Beli" />
+
+          <!-- PILIHAN SEWA ATAU BELI -->
+          <div class="form-group">
+            <label>Jenis Transaksi (Beli Putus atau Sewa)</label>
+            <div class="seg-toggle">
+              <button type="button" id="btn-type-beli" class="seg-btn active" onclick="setOrderType('Beli')">Beli Putus</button>
+              <button type="button" id="btn-type-sewa" class="seg-btn" onclick="setOrderType('Sewa')">Sewa (Kembali H+3)</button>
+            </div>
+          </div>
+
           <div class="grid-2">
             <div class="form-group">
               <label>Nama Pemesan *</label>
@@ -1116,62 +1212,14 @@
 
           <div class="grid-2">
             <div class="form-group">
-              <label>Kategori Produk</label>
-              <select id="f-category">
-                <option value="Buket Bunga Segar">Buket Bunga Segar</option>
-                <option value="Buket Uang / Snack">Buket Uang / Snack</option>
-                <option value="Kotak Seserahan">Kotak Seserahan</option>
-                <option value="Keranjang / Parcel">Keranjang / Parcel</option>
-                <option value="Bunga Papan / Standing">Bunga Papan / Standing</option>
-              </select>
+              <label>Tenggat Ambil / Acara *</label>
+              <input type="date" id="f-deadline" required onchange="updateRentalReturnPreview()" />
             </div>
-            <div class="form-group">
-              <label>Tenggat Ambil / Kirim *</label>
-              <input type="date" id="f-deadline" required />
+            <div class="form-group" id="f-return-date-wrap" style="display:none;">
+              <label>Batas Kembali Sewa (Maks H+3)</label>
+              <input type="date" id="f-return-date" />
             </div>
-          </div>
-
-          <div class="form-group">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-              <label style="margin:0;">Detail Rangkaian &amp; Ucapan *</label>
-              <button type="button" class="btn-sm pink" style="padding:4px 10px; font-size:11.5px;" onclick="openStockPicker('order')">+ Pilih Stok</button>
-            </div>
-            <input type="text" id="f-item" placeholder="Contoh: Buket Lily Pink + Rose 15 tangkai" required />
-          </div>
-
-          <div id="order-picked-stocks-wrap" style="display:none; margin-bottom:12px;">
-            <label style="font-size:11.5px; color:var(--pink-dark);">Item Terpilih dari Stok Barang:</label>
-            <div id="order-picked-stocks-list"></div>
-          </div>
-
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Modal Bunga / Isian (Rp)</label>
-              <input type="number" id="f-cost-flower" value="0" min="0" oninput="calcFormHpp()" />
-            </div>
-            <div class="form-group">
-              <label>Modal Wrap / Kotak / Boneka (Rp)</label>
-              <input type="number" id="f-cost-wrap" value="0" min="0" oninput="calcFormHpp()" />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Biaya Lain / Kurir (Rp)</label>
-              <input type="number" id="f-cost-other" value="0" min="0" oninput="calcFormHpp()" />
-            </div>
-            <div class="form-group">
-              <label>Harga Jual ke Pembeli (Rp) *</label>
-              <input type="number" id="f-price" value="0" min="0" required oninput="calcFormHpp()" />
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="form-group">
-              <label>Sudah Dibayar / DP (Rp)</label>
-              <input type="number" id="f-paid" value="0" min="0" />
-            </div>
-            <div class="form-group">
+            <div class="form-group" id="f-status-top-wrap">
               <label>Status Pengerjaan</label>
               <select id="f-status">
                 <option value="Antrean">Antrean</option>
@@ -1181,8 +1229,60 @@
             </div>
           </div>
 
+          <div id="sewa-info-banner" style="display:none; background:var(--blue-bg); border:1px solid #BEE3F8; color:var(--blue); border-radius:12px; padding:9px 11px; font-size:11.5px; margin-bottom:12px;">
+            <strong>Mode Sewa Aktif:</strong> Stok barang sewaan yang dipilih akan terkunci selama masa sewa hingga paling lama <strong>H+3</strong> setelah tanggal acara, dan otomatis kembali tersedia setelah diklik <em>Kembalikan Sewa</em>.
+          </div>
+
+          <!-- DETAIL RANGKAIAN & UCAPAN + PILIH STOK BARANG -->
+          <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+              <label style="margin:0;">Detail Rangkaian &amp; Ucapan *</label>
+              <button type="button" class="btn-sm pink" style="padding:5px 11px; font-size:11.5px;" onclick="openStockPicker('order')">+ Pilih dari Stok</button>
+            </div>
+            <input type="text" id="f-item" placeholder="Contoh: Buket Lily Pink + Rose 15 tangkai" required />
+            <div class="ucapan-chips">
+              <button type="button" class="ucapan-chip" onclick="appendUcapanPreset('Happy Graduation!')">+ Graduation</button>
+              <button type="button" class="ucapan-chip" onclick="appendUcapanPreset('Happy Birthday!')">+ Birthday</button>
+              <button type="button" class="ucapan-chip" onclick="appendUcapanPreset('Happy Wedding &amp; Sakinah!')">+ Wedding</button>
+              <button type="button" class="ucapan-chip" onclick="appendUcapanPreset('Selamat &amp; Sukses!')">+ Grand Opening</button>
+            </div>
+          </div>
+
+          <!-- DAFTAR BARANG TERPILIH DARI STOK -->
+          <div id="order-picked-stocks-wrap" style="display:none; margin-bottom:12px; background:var(--surface-soft); border:1px solid var(--border); border-radius:12px; padding:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <label style="margin:0; font-size:11.5px; color:var(--pink-dark);">Item Terpilih dari Stok Barang:</label>
+              <span id="order-picked-modal-badge" style="font-size:11px; font-weight:700; color:var(--text-muted);">Modal Stok: Rp0</span>
+            </div>
+            <div id="order-picked-stocks-list"></div>
+          </div>
+
+          <!-- RINGKAS: HANYA BIAYA LAIN/KURIR & HARGA JUAL OTOMATIS DARI SETTINGAN MARGIN HPP -->
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Biaya Lain / Jasa / Kurir (Rp)</label>
+              <input type="number" id="f-cost-other" value="0" min="0" oninput="recalcOrderAutoPrice()" />
+            </div>
+            <div class="form-group">
+              <label>Harga Jual ke Pembeli (Rp) *</label>
+              <input type="number" id="f-price" value="0" min="0" required oninput="onManualOrderPriceInput()" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Sudah Dibayar / DP (Rp)</label>
+              <input type="number" id="f-paid" value="0" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Margin HPP Aktif (<span id="order-active-margin-label">40</span>%)</label>
+              <button type="button" class="btn-sm pink" style="width:100%; padding:10px;" onclick="applyAutoMarginToOrderPrice(true)">Hitung Ulang Otomatis</button>
+            </div>
+          </div>
+
           <div class="hpp-box">
-            <div class="hpp-row"><span>Total Modal (HPP):</span><strong id="prev-hpp">Rp0</strong></div>
+            <div class="hpp-row"><span>Modal Stok + Biaya Lain (HPP):</span><strong id="prev-hpp">Rp0</strong></div>
+            <div class="hpp-row"><span>Target Margin Tersimpan:</span><strong id="prev-margin-info">40%</strong></div>
             <div class="hpp-row total"><span>Estimasi Laba Bersih:</span><span id="prev-profit">Rp0 (0%)</span></div>
           </div>
 
@@ -1192,11 +1292,13 @@
       </div>
     </section>
 
-    <!-- TAB 3: STOK BARANG -->
+    <!-- TAB 3: STOK BARANG (TERMASUK STOK SEWA & KETERSEDIAAN REAL-TIME) -->
     <section id="tab-stock" class="tab-panel">
       <div class="card">
-        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Tambah Stok Barang &amp; Foto</h2>
-        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Catat stok bunga, kertas wrap, boneka, maupun aksesoris beserta modal per satuan.</p>
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Tambah Stok Barang, Bunga &amp; Sewa</h2>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">
+          Catat stok bunga, kertas, boneka, maupun barang sewa seperti <strong>Box Seserahan</strong>. Stok sewa otomatis terhitung sisa unitnya saat sedang disewa hingga H+3.
+        </p>
 
         <form onsubmit="addFlowerStock(event)">
           <div class="photo-upload-box" onclick="document.getElementById('s-photo-input').click()">
@@ -1213,18 +1315,18 @@
                 <option value="Bunga">Bunga</option>
                 <option value="Kertas">Kertas</option>
                 <option value="Boneka">Boneka</option>
-                <option value="Aksesoris / Box">Aksesoris / Box</option>
+                <option value="Aksesoris / Box">Aksesoris / Box (Bisa Sewa)</option>
               </select>
             </div>
             <div class="form-group">
               <label>Nama Barang *</label>
-              <input type="text" id="s-name" placeholder="Contoh: Lily Pink / Cellophane" required />
+              <input type="text" id="s-name" placeholder="Contoh: Box Seserahan Akrilik" required />
             </div>
           </div>
 
           <div class="grid-2">
             <div class="form-group">
-              <label>Jumlah Stok *</label>
+              <label>Total Jumlah Stok *</label>
               <input type="number" id="s-qty" value="10" min="0" required />
             </div>
             <div class="form-group">
@@ -1238,9 +1340,18 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label>Harga Modal per Satuan (Rp) *</label>
-            <input type="number" id="s-cost" value="15000" min="0" required />
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Modal / Harga Dasar per Satuan (Rp) *</label>
+              <input type="number" id="s-cost" value="15000" min="0" required />
+            </div>
+            <div class="form-group">
+              <label>Tipe Stok</label>
+              <select id="s-rentable">
+                <option value="false">Habis Pakai / Dijual</option>
+                <option value="true">Barang Sewa (Kembali H+3)</option>
+              </select>
+            </div>
           </div>
 
           <button type="submit" class="btn-primary">Simpan ke Stok Barang</button>
@@ -1252,26 +1363,44 @@
         <button type="button" class="chip" onclick="setStockFilter('Bunga', this)">Bunga</button>
         <button type="button" class="chip" onclick="setStockFilter('Kertas', this)">Kertas</button>
         <button type="button" class="chip" onclick="setStockFilter('Boneka', this)">Boneka</button>
-        <button type="button" class="chip" onclick="setStockFilter('Aksesoris / Box', this)">Lainnya</button>
+        <button type="button" class="chip" onclick="setStockFilter('Aksesoris / Box', this)">Box &amp; Sewa</button>
       </div>
 
       <div class="sec-head">
-        <h2>Katalog Stok Barang</h2>
+        <h2>Katalog Stok &amp; Ketersediaan</h2>
         <span style="font-size:12px; color:var(--text-muted);" id="stock-total-label">0 item</span>
       </div>
 
       <div id="stock-list" class="stock-grid"></div>
     </section>
 
-    <!-- TAB 4: MENU HPP -->
+    <!-- TAB 4: MENU HPP (SIMPAN SETTINGAN PERSENAN MARGIN OTOMATIS) -->
     <section id="tab-hpp" class="tab-panel">
       <div class="card">
-        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Kalkulator HPP &amp; Harga Jual</h2>
-        <p style="margin:0 0 12px; font-size:12.5px; color:var(--text-muted);">Pilih item langsung dari <strong>Stok Barang</strong> yang sudah ada harganya, atur jumlahnya, lalu hitung harga jual.</p>
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Settingan Margin &amp; Kalkulator HPP</h2>
+        <p style="margin:0 0 12px; font-size:12.5px; color:var(--text-muted);">
+          Atur &amp; simpan <strong>Persenan Target Margin (%)</strong> di sini. Setiap kali menambah pesanan baru dan memilih bunga/barang dari stok, <strong>Harga Jual otomatis terhitung</strong> memakai settingan ini.
+        </p>
+
+        <div id="hpp-saved-msg" class="success-banner">Settingan persenan margin berhasil disimpan &amp; otomatis dipakai di menu Tambah!</div>
+
+        <div style="background:var(--surface-soft); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:14px;">
+          <div class="grid-2" style="align-items:end;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Persenan Target Margin (%) *</label>
+              <input type="number" id="c-margin" value="40" min="0" oninput="runQuickCalc()" />
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label>Biaya Jasa Default (Rp)</label>
+              <input type="number" id="c-default-labor" value="0" min="0" oninput="runQuickCalc()" />
+            </div>
+          </div>
+          <button type="button" class="btn-primary" style="margin-top:10px; padding:10px;" onclick="saveHppSettings()">Simpan Settingan Margin Otomatis</button>
+        </div>
 
         <div class="form-group">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <label style="margin:0;">Komposisi Bahan dari Stok Barang</label>
+            <label style="margin:0;">Simulasi Rangkaian dari Stok Barang</label>
             <button type="button" class="btn-sm pink" onclick="openStockPicker('hpp')">+ Pilih dari Stok</button>
           </div>
           <div id="hpp-stock-items-list"></div>
@@ -1282,27 +1411,22 @@
 
         <div class="grid-2">
           <div class="form-group">
-            <label>Biaya Bahan Tambahan Manual (Rp)</label>
+            <label>Biaya Bahan Tambahan (Rp)</label>
             <input type="number" id="c-extra-mat" value="0" min="0" oninput="runQuickCalc()" />
           </div>
           <div class="form-group">
-            <label>Jasa Rangkai &amp; Operasional (Rp)</label>
+            <label>Jasa Rangkai Simulasi (Rp)</label>
             <input type="number" id="c-labor" value="35000" min="0" oninput="runQuickCalc()" />
           </div>
         </div>
 
-        <div class="form-group">
-          <label>Target Margin Laba (%)</label>
-          <input type="number" id="c-margin" value="40" min="0" oninput="runQuickCalc()" />
-        </div>
-
         <div class="hpp-box">
           <div class="hpp-row"><span>Total Modal Dasar (HPP):</span><strong id="c-res-hpp">Rp35.000</strong></div>
-          <div class="hpp-row"><span>Keuntungan Bersih:</span><strong id="c-res-profit">Rp14.000</strong></div>
+          <div class="hpp-row"><span>Keuntungan Bersih (<span id="c-res-margin-lbl">40</span>%):</span><strong id="c-res-profit">Rp14.000</strong></div>
           <div class="hpp-row total"><span>Rekomendasi Harga Jual:</span><span id="c-res-price">Rp49.000</span></div>
         </div>
 
-        <button type="button" class="btn-primary" style="padding:12px;" onclick="applyHppToOrder()">Gunakan Angka Ini ke Tambah Pesanan &rarr;</button>
+        <button type="button" class="btn-primary" style="padding:12px;" onclick="applyHppToOrder()">Gunakan Simulasi Ini ke Tambah Pesanan &rarr;</button>
       </div>
     </section>
 
@@ -1348,11 +1472,14 @@
     <!-- TAB 6: MENU AKUN -->
     <section id="tab-account" class="tab-panel">
       <div class="card">
-        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Akun &amp; Keamanan</h2>
-        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">ID Admin dan Password disembunyikan untuk menjaga privasi. Ketuk tombol di bawah untuk mengubah kredensial login atau password desain.</p>
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Akun, Produk &amp; Keamanan</h2>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Kelola ID &amp; Password Admin (tersinkronisasi otomatis antar-HP), kategori produk toko bunga, maupun desain tampilan.</p>
         <div id="cred-saved-msg" class="success-banner">Perubahan akun &amp; keamanan berhasil disimpan!</div>
 
-        <button type="button" class="btn-primary" onclick="openCredModal()">Kelola ID &amp; Password</button>
+        <div class="grid-2">
+          <button type="button" class="btn-primary" style="padding:12px;" onclick="openCredModal()">ID &amp; Password</button>
+          <button type="button" class="btn-sm pink" style="padding:12px; font-weight:700;" onclick="openManageCategoriesModal()">Kelola Kategori Produk</button>
+        </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
           <button type="button" class="btn-design-small" onclick="openCloudAccessModal()">hak akses cloud</button>
@@ -1367,7 +1494,7 @@
           <span class="badge badge-selesai">Mode Owner</span>
         </div>
         <p style="margin:0 0 10px; font-size:12px; color:var(--text-muted);">
-          Tempelkan <strong>firebaseConfig</strong> dari proyek Firebase Realtime Database agar perubahan stok dan pesanan di HP 1 otomatis muncul di HP 2.
+          Tempelkan <strong>firebaseConfig</strong> dari proyek Firebase Realtime Database agar perubahan stok, sewa, pesanan, dan kredensial login di HP 1 otomatis muncul di HP 2.
         </p>
         <div id="firebase-saved-msg" class="success-banner">Konfigurasi Firebase disimpan &amp; sinkronisasi real-time aktif!</div>
         <div class="form-group" style="margin-bottom:8px;">
@@ -1391,15 +1518,15 @@
       </div>
 
       <div class="card">
-        <h3 style="margin:0 0 6px; font-size:15px; color:var(--pink-dark);">Notifikasi Pengingat HP (H-7)</h3>
-        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Izinkan notifikasi browser/HP agar muncul pemberitahuan otomatis untuk pesanan yang jatuh tempo dalam 7 hari ke depan.</p>
+        <h3 style="margin:0 0 6px; font-size:15px; color:var(--pink-dark);">Notifikasi Pengingat HP (H-7 &amp; Sewa H+3)</h3>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Izinkan notifikasi browser/HP agar muncul pemberitahuan otomatis untuk jadwal kirim &amp; jatuh tempo pengembalian sewa.</p>
         <button type="button" class="btn-sm pink" style="width:100%; padding:11px;" onclick="requestHpNotification()">Aktifkan Notifikasi di HP</button>
         <div id="notif-status-text" style="font-size:11.5px; color:var(--text-muted); margin-top:8px; text-align:center;"></div>
       </div>
 
       <div class="card">
         <h3 style="margin:0 0 6px; font-size:15px;">Cadangan &amp; Laporan Keuangan</h3>
-        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Unduh rekap pesanan &amp; stok secara berkala agar data tetap aman.</p>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Unduh rekap pesanan, sewa &amp; stok secara berkala agar data tetap aman.</p>
         <div class="grid-2">
           <button type="button" class="btn-sm pink" style="padding:11px;" onclick="exportCSV()">Download Excel (.csv)</button>
           <button type="button" class="btn-sm" style="padding:11px;" onclick="exportJSON()">Backup Data (.json)</button>
@@ -1447,12 +1574,40 @@
     </button>
   </nav>
 
+  <!-- MODAL KELOLA KATEGORI PRODUK -->
+  <div id="manage-categories-modal" class="modal-backdrop" onclick="if(event.target===this) closeManageCategoriesModal()">
+    <div class="modal">
+      <h3>Kelola Kategori Produk</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">
+        Tambahkan kategori produk baru (contoh: <em>Buket Balon, Hampers Lebaran, Dekorasi Lamaran, Sewa Standing Flower</em>). Kategori langsung muncul di langkah awal menu <strong>Tambah</strong>.
+      </p>
+      <form onsubmit="addCustomProductCategory(event)" style="margin-bottom:14px;">
+        <div class="grid-2" style="margin-bottom:8px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Nama Kategori Baru *</label>
+            <input type="text" id="new-cat-name" placeholder="Contoh: Dekorasi Lamaran" required />
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Default Transaksi</label>
+            <select id="new-cat-type">
+              <option value="Beli">Beli Putus</option>
+              <option value="Sewa">Sewa (Kembali H+3)</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" style="padding:10px;">+ Tambah Kategori Produk</button>
+      </form>
+      <div id="manage-categories-list"></div>
+      <button type="button" class="btn-sm" style="width:100%; margin-top:10px; padding:10px;" onclick="closeManageCategoriesModal()">Tutup</button>
+    </div>
+  </div>
+
   <!-- MODAL KELOLA ID & PASSWORD -->
   <div id="cred-modal" class="modal-backdrop" onclick="if(event.target===this) closeCredModal()">
     <div class="modal">
       <h3>Kelola ID &amp; Password</h3>
       <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">
-        Perbarui kredensial masuk Admin maupun Password khusus Rubah Design Aplikasi.
+        Perbarui kredensial masuk Admin (tersinkronisasi otomatis ke HP ke-2) maupun Password khusus Rubah Design Aplikasi.
       </p>
       <form onsubmit="updateCredentialsFromModal(event)">
         <div class="form-group">
@@ -1475,24 +1630,24 @@
     </div>
   </div>
 
-  <!-- MODAL PILIH STOK BARANG (UNTUK HPP & TAMBAH PESANAN) -->
+  <!-- MODAL PILIH STOK BARANG (UNTUK HPP & TAMBAH PESANAN DENGAN VALIDASI SEWA H+3) -->
   <div id="stock-picker-modal" class="modal-backdrop" onclick="if(event.target===this) closeStockPicker()">
     <div class="modal">
       <h3>Pilih dari Stok Barang</h3>
       <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px;">
-        Pilih barang dan tentukan jumlah yang dipakai. Harga modal otomatis terhitung.
+        Pilih barang dan jumlahnya. Jika barang sedang tersewa (belum kembali hingga H+3), sistem otomatis membatasi jumlah maksimal yang tersedia.
       </p>
       <div id="stock-picker-list"></div>
       <button type="button" class="btn-primary" style="margin-top:8px;" onclick="closeStockPicker()">Selesai Memilih</button>
     </div>
   </div>
 
-  <!-- MODAL PENGINGAT H-7 -->
+  <!-- MODAL PENGINGAT H-7 & JATUH TEMPO KEMBALI SEWA H+3 -->
   <div id="reminder-modal" class="modal-backdrop" onclick="if(event.target===this) closeReminderModal()">
     <div class="modal">
-      <h3>Pengingat Pesanan (H-7)</h3>
+      <h3>Pengingat Pesanan &amp; Jadwal Kembali Sewa</h3>
       <p style="font-size:12.5px; color:var(--text-muted); margin:0 0 12px;">
-        Pesanan berikut memiliki jadwal kirim dalam <strong>7 hari ke depan</strong> (atau hari ini). Kamu juga bisa menyimpannya ke <strong>Kalender iPhone</strong> agar berbunyi otomatis di HP.
+        Daftar pesanan yang jadwal kirimnya dalam <strong>7 hari ke depan</strong> serta barang sewaan yang harus kembali maksimal <strong>H+3</strong>.
       </p>
       <div id="reminder-list-modal"></div>
       <button type="button" class="btn-primary" style="margin-top:8px;" onclick="closeReminderModal()">Tutup</button>
@@ -1507,7 +1662,7 @@
           <img id="nota-logo-img" src="" alt="Logo Lalily Flowers" style="width:46px; height:46px; border-radius:12px; border:1px solid var(--border); object-fit:cover;" />
           <div>
             <div style="font-size:16px; font-weight:800; color:var(--pink-dark);" id="nota-store-name">Lalily Flowers</div>
-            <div style="font-size:11.5px; color:var(--text-muted);">Nota Resmi Pesanan &amp; Pembayaran</div>
+            <div style="font-size:11.5px; color:var(--text-muted);">Nota Resmi Pesanan, Sewa &amp; Pembayaran</div>
           </div>
         </div>
 
@@ -1597,15 +1752,23 @@
     </div>
   </div>
 
-  <!-- MODAL KUSTOMISASI DESAIN LENGKAP -->
+  <!-- MODAL KUSTOMISASI DESAIN LENGKAP (+ KELOLA KATEGORI PRODUK) -->
   <div id="design-studio-modal" class="modal-backdrop" onclick="if(event.target===this) closeDesignStudioModal()">
     <div class="modal">
-      <h3>Tata Desain Aplikasi</h3>
+      <h3>Tata Desain &amp; Produk Toko</h3>
       <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">
         Semua perubahan langsung diterapkan ke tampilan aplikasi dan tersimpan otomatis.
       </p>
 
       <div id="design-saved-msg" class="success-banner">Pengaturan desain berhasil disimpan!</div>
+
+      <div style="background:var(--surface-soft); border:1px solid var(--border); border-radius:12px; padding:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+        <div>
+          <strong style="font-size:12.5px; color:var(--pink-dark); display:block;">Kategori Produk Toko</strong>
+          <span style="font-size:11px; color:var(--text-muted);">Tambah/hapus pilihan produk di menu Tambah</span>
+        </div>
+        <button type="button" class="btn-sm pink" onclick="closeDesignStudioModal(); openManageCategoriesModal();">Kelola Produk</button>
+      </div>
 
       <div class="form-group">
         <label>Foto Logo Khusus (Login, Nota &amp; Aplikasi)</label>
@@ -1724,6 +1887,8 @@
     var AUTH_CREDS_KEY = 'lalily_admin_creds_v1';
     var DESIGN_SETTINGS_KEY = 'lalily_design_settings_v1';
     var FIREBASE_CONFIG_KEY = 'lalily_firebase_config_v1';
+    var HPP_SETTINGS_KEY = 'lalily_hpp_settings_v1';
+    var PRODUCT_CATEGORIES_KEY = 'lalily_product_categories_v1';
 
     var fbDb = null;
     var fbAuth = null;
@@ -1743,6 +1908,276 @@
       measurementId: "G-YWPEG97LGJ"
     };
 
+    /* ================= HPP SETTINGS PERSISTENCE ================= */
+    function getHppSettings() {
+      var raw = null;
+      try { raw = localStorage.getItem(HPP_SETTINGS_KEY); } catch (e) {}
+      if (!raw) return { marginPercent: 40, defaultLabor: 0 };
+      try {
+        var parsed = JSON.parse(raw);
+        return {
+          marginPercent: Number(parsed.marginPercent) >= 0 ? Number(parsed.marginPercent) : 40,
+          defaultLabor: Number(parsed.defaultLabor) >= 0 ? Number(parsed.defaultLabor) : 0
+        };
+      } catch (e) {
+        return { marginPercent: 40, defaultLabor: 0 };
+      }
+    }
+
+    function saveHppSettingsObj(obj) {
+      try { localStorage.setItem(HPP_SETTINGS_KEY, JSON.stringify(obj)); } catch (e) {}
+      if (!suppressCloudPush && fbDb) {
+        fbDb.ref('lalily/settings/hpp').set(obj).catch(function() {});
+      }
+    }
+
+    function saveHppSettings() {
+      var m = Math.max(0, Number(document.getElementById('c-margin').value) || 0);
+      var l = Math.max(0, Number(document.getElementById('c-default-labor').value) || 0);
+      saveHppSettingsObj({ marginPercent: m, defaultLabor: l });
+      runQuickCalc();
+      syncHppLabelToOrderForm();
+      var msg = document.getElementById('hpp-saved-msg');
+      if (msg) {
+        msg.style.display = 'block';
+        setTimeout(function() { msg.style.display = 'none'; }, 3000);
+      }
+    }
+
+    function syncHppLabelToOrderForm() {
+      var cfg = getHppSettings();
+      var lbl1 = document.getElementById('order-active-margin-label');
+      var lbl2 = document.getElementById('prev-margin-info');
+      if (lbl1) lbl1.textContent = cfg.marginPercent;
+      if (lbl2) lbl2.textContent = cfg.marginPercent + '%';
+    }
+
+    /* ================= KATEGORI PRODUK (CUSTOMIZABLE) ================= */
+    var defaultProductCategories = [
+      { id: 'CAT-1', name: 'Buket Bunga Segar', defaultType: 'Beli', icon: '🌸', desc: 'Mawar, Lily, Baby Breath' },
+      { id: 'CAT-2', name: 'Buket Uang / Snack', defaultType: 'Beli', icon: '💐', desc: 'Money bouquet, wisuda, kado' },
+      { id: 'CAT-3', name: 'Kotak Seserahan', defaultType: 'Sewa', icon: '🎁', desc: 'Sewa box akrilik & hias (H+3)' },
+      { id: 'CAT-4', name: 'Keranjang / Parcel', defaultType: 'Beli', icon: '🧺', desc: 'Parcel buah, lebaran, natal' },
+      { id: 'CAT-5', name: 'Bunga Papan / Standing', defaultType: 'Sewa', icon: '🎀', desc: 'Grand opening, wedding, duka' },
+      { id: 'CAT-6', name: 'Bloom Box / Vas Meja', defaultType: 'Beli', icon: '🌷', desc: 'Rangkaian kotak bulat & vas' }
+    ];
+
+    function getProductCategories() {
+      var raw = null;
+      try { raw = localStorage.getItem(PRODUCT_CATEGORIES_KEY); } catch (e) {}
+      if (!raw) {
+        try { localStorage.setItem(PRODUCT_CATEGORIES_KEY, JSON.stringify(defaultProductCategories)); } catch (e) {}
+        return defaultProductCategories.slice();
+      }
+      try {
+        var list = JSON.parse(raw);
+        return Array.isArray(list) && list.length ? list : defaultProductCategories.slice();
+      } catch (e) {
+        return defaultProductCategories.slice();
+      }
+    }
+
+    function saveProductCategories(list) {
+      try { localStorage.setItem(PRODUCT_CATEGORIES_KEY, JSON.stringify(list)); } catch (e) {}
+      if (!suppressCloudPush && fbDb) {
+        fbDb.ref('lalily/settings/categories').set(list).catch(function() {});
+      }
+    }
+
+    function renderCategoryLauncher() {
+      var grid = document.getElementById('category-launcher-grid');
+      if (!grid) return;
+      var cats = getProductCategories();
+      grid.innerHTML = cats.map(function(c) {
+        var isSewa = c.defaultType === 'Sewa';
+        return (
+          '<button type="button" class="cat-tile" onclick="selectCategoryForNewOrder(&#39;' + String(c.name).replace(/'/g, "\\'") + '&#39;, &#39;' + (c.defaultType || 'Beli') + '&#39;)">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+              '<div class="cat-tile-icon">' + (c.icon || '🌺') + '</div>' +
+              '<span class="badge ' + (isSewa ? 'badge-sewa' : 'badge-beli') + '" style="font-size:10px;">' + (isSewa ? 'Bisa Sewa' : 'Beli') + '</span>' +
+            '</div>' +
+            '<div class="cat-tile-title">' + c.name + '</div>' +
+            '<div class="cat-tile-sub">' + (c.desc || 'Ketuk untuk buat pesanan') + '</div>' +
+          '</button>'
+        );
+      }).join('');
+    }
+
+    function selectCategoryForNewOrder(catName, defaultType) {
+      resetFormFieldsOnly();
+      document.getElementById('f-category').value = catName;
+      document.getElementById('selected-cat-badge').textContent = catName;
+      document.getElementById('form-title').textContent = 'Pesanan ' + catName;
+      setOrderType(defaultType === 'Sewa' ? 'Sewa' : 'Beli');
+
+      var hppCfg = getHppSettings();
+      document.getElementById('f-cost-other').value = hppCfg.defaultLabor || 0;
+      syncHppLabelToOrderForm();
+      recalcOrderAutoPrice();
+
+      document.getElementById('add-category-step').style.display = 'none';
+      document.getElementById('add-form-step').style.display = 'block';
+    }
+
+    function showCategoryLauncher() {
+      renderCategoryLauncher();
+      document.getElementById('add-form-step').style.display = 'none';
+      document.getElementById('add-category-step').style.display = 'block';
+    }
+
+    function openManageCategoriesModal() {
+      renderManageCategoriesList();
+      document.getElementById('manage-categories-modal').classList.add('show');
+    }
+
+    function closeManageCategoriesModal() {
+      document.getElementById('manage-categories-modal').classList.remove('show');
+    }
+
+    function renderManageCategoriesList() {
+      var wrap = document.getElementById('manage-categories-list');
+      if (!wrap) return;
+      var cats = getProductCategories();
+      wrap.innerHTML = cats.map(function(c) {
+        return (
+          '<div class="picked-item-row">' +
+            '<div>' +
+              '<strong>' + (c.icon || '🌺') + ' ' + c.name + '</strong> ' +
+              '<span class="badge ' + (c.defaultType === 'Sewa' ? 'badge-sewa' : 'badge-beli') + '" style="font-size:10px;">' + (c.defaultType || 'Beli') + '</span>' +
+            '</div>' +
+            '<button type="button" class="btn-sm danger" style="padding:3px 8px;" onclick="deleteCustomProductCategory(&#39;' + c.id + '&#39;)">Hapus</button>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function addCustomProductCategory(e) {
+      e.preventDefault();
+      var name = (document.getElementById('new-cat-name').value || '').trim();
+      var defType = document.getElementById('new-cat-type').value || 'Beli';
+      if (!name) return;
+      var cats = getProductCategories();
+      cats.push({
+        id: 'CAT-' + Date.now(),
+        name: name,
+        defaultType: defType,
+        icon: defType === 'Sewa' ? '🎁' : '🌺',
+        desc: defType === 'Sewa' ? 'Produk sewa (kembali H+3)' : 'Produk rangkaian toko'
+      });
+      saveProductCategories(cats);
+      document.getElementById('new-cat-name').value = '';
+      renderManageCategoriesList();
+      renderCategoryLauncher();
+    }
+
+    function deleteCustomProductCategory(catId) {
+      var cats = getProductCategories();
+      if (cats.length <= 1) {
+        alert('Minimal harus tersisa 1 kategori produk.');
+        return;
+      }
+      cats = cats.filter(function(c) { return c.id !== catId; });
+      saveProductCategories(cats);
+      renderManageCategoriesList();
+      renderCategoryLauncher();
+    }
+
+    /* ================= LOGIKA SEWA & KETERSEDIAAN STOK H+3 ================= */
+    function setOrderType(typeVal) {
+      var isSewa = typeVal === 'Sewa';
+      document.getElementById('f-order-type').value = isSewa ? 'Sewa' : 'Beli';
+      var btnBeli = document.getElementById('btn-type-beli');
+      var btnSewa = document.getElementById('btn-type-sewa');
+      var retWrap = document.getElementById('f-return-date-wrap');
+      var statusWrap = document.getElementById('f-status-top-wrap');
+      var banner = document.getElementById('sewa-info-banner');
+
+      if (btnBeli) btnBeli.classList.toggle('active', !isSewa);
+      if (btnSewa) {
+        btnSewa.classList.toggle('active', isSewa);
+        btnSewa.classList.toggle('sewa-mode', isSewa);
+      }
+      if (retWrap) retWrap.style.display = isSewa ? 'block' : 'none';
+      if (statusWrap) statusWrap.style.display = isSewa ? 'none' : 'block';
+      if (banner) banner.style.display = isSewa ? 'block' : 'none';
+
+      if (isSewa) {
+        updateRentalReturnPreview();
+      }
+    }
+
+    function addDaysToIso(baseIso, days) {
+      if (!baseIso) return addDaysIso(days);
+      var d = new Date(baseIso + 'T00:00:00');
+      if (isNaN(d.getTime())) return addDaysIso(days);
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split('T')[0];
+    }
+
+    function updateRentalReturnPreview() {
+      var deadlineVal = document.getElementById('f-deadline').value || todayIso();
+      var retInp = document.getElementById('f-return-date');
+      if (retInp) {
+        retInp.value = addDaysToIso(deadlineVal, 3);
+      }
+    }
+
+    // Hitung jumlah unit suatu stok yang sedang tersewa & belum dikembalikan (dalam masa sewa s/d H+3)
+    function getCurrentlyRentedQty(stockId, excludeOrderId) {
+      var orders = getOrders();
+      var totalRented = 0;
+      orders.forEach(function(o) {
+        if (excludeOrderId && o.id === excludeOrderId) return;
+        if (o.orderType !== 'Sewa') return;
+        if (o.rentalReturned === true) return;
+        if (!Array.isArray(o.pickedStocks)) return;
+        o.pickedStocks.forEach(function(ps) {
+          if (ps.stockId === stockId) {
+            totalRented += (Number(ps.qty) || 0);
+          }
+        });
+      });
+      return totalRented;
+    }
+
+    // Dapatkan tanggal terdekat pengembalian (H+3) untuk suatu barang yang sedang tersewa
+    function getEarliestRentalReturnInfo(stockId) {
+      var orders = getOrders();
+      var activeRentals = [];
+      orders.forEach(function(o) {
+        if (o.orderType !== 'Sewa' || o.rentalReturned === true) return;
+        if (!Array.isArray(o.pickedStocks)) return;
+        var found = o.pickedStocks.find(function(ps) { return ps.stockId === stockId; });
+        if (found) {
+          var retDate = o.returnDeadline || addDaysToIso(o.deadline, 3);
+          activeRentals.push({ customer: o.customer, qty: found.qty, returnDate: retDate });
+        }
+      });
+      activeRentals.sort(function(a, b) { return String(a.returnDate).localeCompare(String(b.returnDate)); });
+      return activeRentals;
+    }
+
+    function getAvailableStockQty(stockObj, excludeOrderId) {
+      var total = Number(stockObj.qty) || 0;
+      var rented = getCurrentlyRentedQty(stockObj.id, excludeOrderId);
+      return Math.max(0, total - rented);
+    }
+
+    function markRentalReturned(orderId) {
+      var orders = getOrders();
+      var o = orders.find(function(x) { return x.id === orderId; });
+      if (!o) return;
+      if (!confirm('Konfirmasi bahwa barang sewaan pesanan ' + o.customer + ' sudah dikembalikan ke toko? Stok akan otomatis tersedia kembali.')) return;
+      o.rentalReturned = true;
+      o.rentalReturnedAt = todayIso();
+      if (o.status !== 'Selesai') o.status = 'Selesai';
+      saveOrdersList(orders);
+      checkAndTriggerReminders(false);
+      renderOrders();
+      renderStocks();
+    }
+
+    /* ================= FIREBASE REAL-TIME SYNC ================= */
     function getFirebaseConfig() {
       var raw = null;
       try { raw = localStorage.getItem(FIREBASE_CONFIG_KEY); } catch (e) {}
@@ -1761,7 +2196,6 @@
     function parseFirebaseConfigText(rawText) {
       var txt = (rawText || '').trim();
       if (!txt) return null;
-      // Support pasting full JS snippet like "const firebaseConfig = { ... };" or "{ apiKey: '...' }"
       var startBrace = txt.indexOf('{');
       var endBrace = txt.lastIndexOf('}');
       if (startBrace === -1 || endBrace === -1) return null;
@@ -1769,7 +2203,6 @@
       try {
         return JSON.parse(objStr);
       } catch (e1) {
-        // Convert unquoted keys and single quotes safely
         var normalized = objStr
           .replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":')
           .replace(/'/g, '"')
@@ -1838,12 +2271,8 @@
       }
 
       var isOwner = Boolean(user && !user.isAnonymous);
-      if (ownerCard) {
-        ownerCard.style.display = isOwner ? 'block' : 'none';
-      }
-      if (signoutWrap) {
-        signoutWrap.style.display = isOwner ? 'block' : 'none';
-      }
+      if (ownerCard) ownerCard.style.display = isOwner ? 'block' : 'none';
+      if (signoutWrap) signoutWrap.style.display = isOwner ? 'block' : 'none';
 
       if (!box) return;
       if (isOwner) {
@@ -1869,6 +2298,7 @@
         try { fbDb.ref('lalily/orders').off(); } catch (e) {}
         try { fbDb.ref('lalily/stocks').off(); } catch (e) {}
         try { fbDb.ref('lalily/creds').off(); } catch (e) {}
+        try { fbDb.ref('lalily/settings').off(); } catch (e) {}
       }
       fbListenerAttached = false;
     }
@@ -1877,14 +2307,11 @@
       if (!fbDb || fbListenerAttached) return;
       fbListenerAttached = true;
 
-      // Seed cloud if empty and local has data
       fbDb.ref('lalily/orders').once('value', function(snap) {
         updateSyncPill('live', 'Status: Terhubung ke Firebase (' + cfg.databaseURL + '). Sinkronisasi real-time aktif.');
         if (!snap.exists()) {
           var localOrders = getOrders();
-          if (localOrders.length) {
-            fbDb.ref('lalily/orders').set(localOrders);
-          }
+          if (localOrders.length) fbDb.ref('lalily/orders').set(localOrders);
         }
       }, function(err) {
         detachFirebaseListeners();
@@ -1894,9 +2321,7 @@
       fbDb.ref('lalily/stocks').once('value', function(snap) {
         if (!snap.exists()) {
           var localStocks = getStocks();
-          if (localStocks.length) {
-            fbDb.ref('lalily/stocks').set(localStocks);
-          }
+          if (localStocks.length) fbDb.ref('lalily/stocks').set(localStocks);
         }
       }, function() {});
 
@@ -1910,6 +2335,7 @@
         suppressCloudPush = false;
         checkAndTriggerReminders(false);
         renderOrders();
+        renderStocks();
         renderFinance();
       }, function(err) {
         detachFirebaseListeners();
@@ -1924,9 +2350,7 @@
         try { localStorage.setItem(STOCK_KEY, JSON.stringify(list)); } catch (e) {}
         suppressCloudPush = false;
         renderStocks();
-        if (stockPickerTarget) {
-          renderStockPickerList();
-        }
+        if (stockPickerTarget) renderStockPickerList();
         renderHppSelectedStocks();
         runQuickCalc();
       }, function(err) {
@@ -1951,10 +2375,28 @@
           try { localStorage.setItem(AUTH_CREDS_KEY, JSON.stringify(cloudCreds)); } catch (e) {}
           suppressCloudPush = false;
           var hint = document.getElementById('login-hint');
-          if (hint && cloudCreds.customized) {
-            hint.style.display = 'none';
-          }
+          if (hint && cloudCreds.customized) hint.style.display = 'none';
         }
+      }, function() {});
+
+      fbDb.ref('lalily/settings').on('value', function(snap) {
+        if (!snap.exists()) return;
+        var st = snap.val();
+        suppressCloudPush = true;
+        if (st && st.hpp) {
+          try { localStorage.setItem(HPP_SETTINGS_KEY, JSON.stringify(st.hpp)); } catch (e) {}
+          var hppCfg = getHppSettings();
+          var mEl = document.getElementById('c-margin');
+          var lEl = document.getElementById('c-default-labor');
+          if (mEl) mEl.value = hppCfg.marginPercent;
+          if (lEl) lEl.value = hppCfg.defaultLabor;
+          syncHppLabelToOrderForm();
+        }
+        if (st && Array.isArray(st.categories) && st.categories.length) {
+          try { localStorage.setItem(PRODUCT_CATEGORIES_KEY, JSON.stringify(st.categories)); } catch (e) {}
+          renderCategoryLauncher();
+        }
+        suppressCloudPush = false;
       }, function() {});
     }
 
@@ -2014,12 +2456,10 @@
     function signInFirebaseAuthFromUI() {
       var cfg = getFirebaseConfig();
       if (!cfg) {
-        alert('Konfigurasi Firebase belum terpasang pada file ini. Silakan tanamkan firebaseConfig terlebih dahulu.');
+        alert('Konfigurasi Firebase belum terpasang pada file ini.');
         return;
       }
-      if (!fbAuth) {
-        initFirebaseRealtime();
-      }
+      if (!fbAuth) initFirebaseRealtime();
       if (!fbAuth) {
         alert('Modul Firebase Authentication belum siap. Periksa koneksi internet lalu muat ulang halaman.');
         return;
@@ -2058,18 +2498,12 @@
     function saveFirebaseConfigFromUI() {
       var rawText = document.getElementById('fb-config-input').value;
       var parsed = null;
-      try {
-        parsed = parseFirebaseConfigText(rawText);
-      } catch (e) {
-        parsed = null;
-      }
+      try { parsed = parseFirebaseConfigText(rawText); } catch (e) { parsed = null; }
       if (!parsed || !parsed.databaseURL) {
         alert('Format firebaseConfig belum benar. Pastikan mengandung databaseURL (https://....firebasedatabase.app).');
         return;
       }
-      try {
-        localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(parsed));
-      } catch (e) {}
+      try { localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(parsed)); } catch (e) {}
       fbListenerAttached = false;
       initFirebaseRealtime();
       var msg = document.getElementById('firebase-saved-msg');
@@ -2095,9 +2529,10 @@
     var uploadedStockPhoto = '';
     var loadingTimerId = null;
 
-    var hppSelectedStocks = []; // { stockId, name, category, unit, cost, qty }
-    var orderPickedStocks = []; // { stockId, name, category, unit, cost, qty }
-    var stockPickerTarget = 'hpp'; // 'hpp' or 'order'
+    var hppSelectedStocks = [];
+    var orderPickedStocks = [];
+    var orderManualPriceOverridden = false;
+    var stockPickerTarget = 'hpp';
     var activeNotaOrderId = null;
 
     function getCredentials() {
@@ -2272,6 +2707,7 @@
         customer: 'Kak Clarissa',
         phone: '081234567890',
         category: 'Buket Bunga Segar',
+        orderType: 'Beli',
         item: 'Buket Lily Pink & Baby Breath + Kartu Ucapan',
         note: 'Kartu Ucapan: Happy Graduation!',
         deadline: addDaysIso(2),
@@ -2281,6 +2717,7 @@
         price: 250000,
         paid: 250000,
         status: 'Dirangkai',
+        pickedStocks: [],
         createdAt: todayIso()
       },
       {
@@ -2288,15 +2725,21 @@
         customer: 'Mas Dimas',
         phone: '085712345678',
         category: 'Kotak Seserahan',
-        item: 'Hias 3 Box Seserahan Akrilik Tema Blush Pink',
-        note: '',
-        deadline: addDaysIso(6),
-        costFlower: 120000,
-        costWrap: 85000,
+        orderType: 'Sewa',
+        item: 'Sewa 7 Box Seserahan Akrilik Tema Blush Pink',
+        note: 'Batas pengembalian H+3 setelah acara',
+        deadline: addDaysIso(1),
+        returnDeadline: addDaysIso(4),
+        rentalReturned: false,
+        costFlower: 0,
+        costWrap: 140000,
         costOther: 20000,
         price: 450000,
         paid: 200000,
-        status: 'Antrean',
+        status: 'Dirangkai',
+        pickedStocks: [
+          { stockId: 'STK-5', name: 'Box Seserahan Akrilik + Pita Satin', category: 'Aksesoris / Box', unit: 'Box / Pcs', cost: 20000, qty: 7 }
+        ],
         createdAt: todayIso()
       }
     ];
@@ -2334,6 +2777,11 @@
 
     function getUpcomingReminders() {
       return getOrders().filter(function(o) {
+        if (o.orderType === 'Sewa' && o.rentalReturned !== true) {
+          var retDate = o.returnDeadline || addDaysToIso(o.deadline, 3);
+          var diffRet = getDaysUntil(retDate);
+          if (diffRet <= 3) return true;
+        }
         if (o.status === 'Selesai') return false;
         var diff = getDaysUntil(o.deadline);
         return diff >= 0 && diff <= 7;
@@ -2349,16 +2797,18 @@
         badge.style.display = 'flex';
         badge.textContent = String(dueList.length);
         banner.classList.add('show');
-        document.getElementById('reminder-title').textContent = dueList.length + ' Pesanan Harus Dikirim <= 7 Hari Lagi!';
+        document.getElementById('reminder-title').textContent = dueList.length + ' Pengingat Kirim (H-7) & Kembali Sewa (H+3)!';
         var first = dueList[0];
-        var d = getDaysUntil(first.deadline);
-        var dayText = d === 0 ? 'HARI INI' : (d + ' hari lagi');
-        document.getElementById('reminder-desc').textContent = 'Terdekat: ' + first.customer + ' (' + dayText + ') - Ketuk untuk detail';
+        var isSewaPending = first.orderType === 'Sewa' && first.rentalReturned !== true;
+        var targetDate = isSewaPending ? (first.returnDeadline || addDaysToIso(first.deadline, 3)) : first.deadline;
+        var d = getDaysUntil(targetDate);
+        var dayText = d < 0 ? ('Terlambat ' + Math.abs(d) + ' hari') : (d === 0 ? 'HARI INI' : (d + ' hari lagi'));
+        document.getElementById('reminder-desc').textContent = (isSewaPending ? 'Kembali Sewa: ' : 'Kirim: ') + first.customer + ' (' + dayText + ') - Ketuk untuk detail';
 
         if (sendBrowserNotif && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
           try {
             new Notification('Pengingat Lalily Flowers', {
-              body: 'Ada ' + dueList.length + ' pesanan jatuh tempo dalam 1 minggu ke depan! Terdekat: ' + first.customer + ' (' + dayText + ').'
+              body: 'Ada ' + dueList.length + ' pengingat jadwal kirim / kembali sewa! Terdekat: ' + first.customer + ' (' + dayText + ').'
             });
           } catch (e) {}
         }
@@ -2376,7 +2826,7 @@
       }
       Notification.requestPermission().then(function(perm) {
         if (perm === 'granted') {
-          statusEl.textContent = 'Notifikasi HP aktif! Pengingat H-7 akan muncul otomatis.';
+          statusEl.textContent = 'Notifikasi HP aktif! Pengingat H-7 & kembali sewa H+3 akan muncul otomatis.';
           checkAndTriggerReminders(true);
         } else {
           statusEl.textContent = 'Izin notifikasi belum aktif di pengaturan Safari/HP.';
@@ -2388,11 +2838,15 @@
       var dueList = getUpcomingReminders();
       var wrap = document.getElementById('reminder-list-modal');
       if (!dueList.length) {
-        wrap.innerHTML = '<div class="empty-state" style="padding:20px;">Tidak ada pesanan yang jatuh tempo dalam 7 hari ke depan.</div>';
+        wrap.innerHTML = '<div class="empty-state" style="padding:20px;">Tidak ada pesanan jatuh tempo atau sewa yang menunggu pengembalian.</div>';
       } else {
         wrap.innerHTML = dueList.map(function(o) {
-          var d = getDaysUntil(o.deadline);
-          var label = d === 0 ? 'HARI INI' : (d === 1 ? 'BESOK (H-1)' : (d + ' hari lagi (H-' + d + ')'));
+          var isSewaPending = o.orderType === 'Sewa' && o.rentalReturned !== true;
+          var retDate = o.returnDeadline || addDaysToIso(o.deadline, 3);
+          var d = getDaysUntil(isSewaPending ? retDate : o.deadline);
+          var label = isSewaPending
+            ? (d < 0 ? 'TERLAMBAT KEMBALI ' + Math.abs(d) + ' HARI' : (d === 0 ? 'KEMBALI SEWA HARI INI' : 'Kembali Sewa H-' + d))
+            : (d === 0 ? 'KIRIM HARI INI' : (d === 1 ? 'BESOK (H-1)' : 'Kirim H-' + d));
           return (
             '<div class="notif-item">' +
               '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
@@ -2400,8 +2854,13 @@
                 '<span class="badge ' + (d <= 1 ? 'badge-urgent' : 'badge-week') + '">' + label + '</span>' +
               '</div>' +
               '<div style="color:var(--pink-dark); font-weight:600;">' + o.item + '</div>' +
-              '<div style="color:var(--text-muted); font-size:11.5px; margin:4px 0 8px;">Jadwal Kirim: ' + o.deadline + ' &bull; Status: ' + o.status + '</div>' +
-              '<button type="button" class="btn-sm pink" style="width:100%;" onclick="downloadCalendarEvent(&#39;' + o.id + '&#39;)">Pasang Alarm Kalender iPhone (H-7 &amp; Hari-H)</button>' +
+              '<div style="color:var(--text-muted); font-size:11.5px; margin:4px 0 8px;">' +
+                'Acara: ' + o.deadline + (isSewaPending ? (' &bull; Batas Kembali (H+3): <strong>' + retDate + '</strong>') : '') +
+              '</div>' +
+              '<div style="display:flex; gap:6px;">' +
+                '<button type="button" class="btn-sm pink" style="flex:1;" onclick="downloadCalendarEvent(&#39;' + o.id + '&#39;)">Alarm Kalender</button>' +
+                (isSewaPending ? ('<button type="button" class="btn-sm blue" style="flex:1;" onclick="markRentalReturned(&#39;' + o.id + '&#39;); closeReminderModal();">Kembalikan Sewa</button>') : '') +
+              '</div>' +
             '</div>'
           );
         }).join('');
@@ -2416,7 +2875,11 @@
     function downloadCalendarEvent(id) {
       var o = getOrders().find(function(x) { return x.id === id; });
       if (!o || !o.deadline) return;
-      var dt = o.deadline.replace(/-/g, '');
+      var targetDt = (o.orderType === 'Sewa' && o.rentalReturned !== true)
+        ? (o.returnDeadline || addDaysToIso(o.deadline, 3))
+        : o.deadline;
+      var dt = targetDt.replace(/-/g, '');
+      var titlePrefix = (o.orderType === 'Sewa' && o.rentalReturned !== true) ? 'Kembali Sewa Lalily: ' : 'Kirim Pesanan Lalily: ';
       var lines = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
@@ -2425,17 +2888,17 @@
         'UID:' + o.id + '@lalilyflowers',
         'DTSTAMP:' + dt + 'T080000',
         'DTSTART;VALUE=DATE:' + dt,
-        'SUMMARY:Kirim Pesanan Lalily: ' + o.customer + ' (' + o.item + ')',
-        'DESCRIPTION:Kategori: ' + o.category + ' | Total: ' + formatRp(o.price),
+        'SUMMARY:' + titlePrefix + o.customer + ' (' + o.item + ')',
+        'DESCRIPTION:Kategori: ' + o.category + ' | Tipe: ' + (o.orderType || 'Beli') + ' | Total: ' + formatRp(o.price),
         'BEGIN:VALARM',
-        'TRIGGER:-P7D',
+        'TRIGGER:-P1D',
         'ACTION:DISPLAY',
-        'DESCRIPTION:Pengingat H-7 Pesanan Lalily Flowers',
+        'DESCRIPTION:Pengingat H-1 Jadwal Lalily Flowers',
         'END:VALARM',
         'BEGIN:VALARM',
         'TRIGGER:-PT2H',
         'ACTION:DISPLAY',
-        'DESCRIPTION:Hari ini jadwal kirim pesanan Lalily Flowers',
+        'DESCRIPTION:Hari ini jadwal Lalily Flowers',
         'END:VALARM',
         'END:VEVENT',
         'END:VCALENDAR'
@@ -2451,13 +2914,13 @@
       return 'Rp' + (Number(num) || 0).toLocaleString('id-ID');
     }
 
-    /* ================= STOK BARANG ================= */
+    /* ================= STOK BARANG (TERMASUK BOX SEWA & KETERSEDIAAN H+3) ================= */
     var defaultStocks = [
-      { id: 'STK-1', category: 'Bunga', name: 'Lily Pink Casablanka', qty: 14, unit: 'Tangkai', cost: 22000, photo: '' },
-      { id: 'STK-2', category: 'Bunga', name: 'Mawar Semi Holland Pink', qty: 25, unit: 'Tangkai', cost: 8000, photo: '' },
-      { id: 'STK-3', category: 'Kertas', name: 'Kertas Cellophane Blush', qty: 18, unit: 'Lembar / Roll', cost: 4500, photo: '' },
-      { id: 'STK-4', category: 'Boneka', name: 'Boneka Teddy Bear Wisuda Mini', qty: 8, unit: 'Box / Pcs', cost: 18000, photo: '' },
-      { id: 'STK-5', category: 'Aksesoris / Box', name: 'Box Akrilik Seserahan + Pita Satin', qty: 5, unit: 'Box / Pcs', cost: 45000, photo: '' }
+      { id: 'STK-1', category: 'Bunga', name: 'Lily Pink Casablanka', qty: 14, unit: 'Tangkai', cost: 22000, rentable: false, photo: '' },
+      { id: 'STK-2', category: 'Bunga', name: 'Mawar Semi Holland Pink', qty: 25, unit: 'Tangkai', cost: 8000, rentable: false, photo: '' },
+      { id: 'STK-3', category: 'Kertas', name: 'Kertas Cellophane Blush', qty: 18, unit: 'Lembar / Roll', cost: 4500, rentable: false, photo: '' },
+      { id: 'STK-4', category: 'Boneka', name: 'Boneka Teddy Bear Wisuda Mini', qty: 8, unit: 'Box / Pcs', cost: 18000, rentable: false, photo: '' },
+      { id: 'STK-5', category: 'Aksesoris / Box', name: 'Box Seserahan Akrilik + Pita Satin', qty: 10, unit: 'Box / Pcs', cost: 20000, rentable: true, photo: '' }
     ];
 
     function getStocks() {
@@ -2471,6 +2934,9 @@
         var list = JSON.parse(raw);
         return list.map(function(s) {
           if (!s.category) s.category = 'Bunga';
+          if (typeof s.rentable === 'undefined') {
+            s.rentable = (s.category === 'Aksesoris / Box' || String(s.name).toLowerCase().indexOf('box') !== -1);
+          }
           return s;
         });
       } catch (e) {
@@ -2521,6 +2987,7 @@
         qty: Number(document.getElementById('s-qty').value) || 0,
         unit: document.getElementById('s-unit').value,
         cost: Number(document.getElementById('s-cost').value) || 0,
+        rentable: document.getElementById('s-rentable').value === 'true',
         photo: uploadedStockPhoto
       };
       stocks.unshift(item);
@@ -2542,12 +3009,18 @@
       var stocks = getStocks();
       var item = stocks.find(function(x) { return x.id === id; });
       if (!item) return;
-      item.qty = Math.max(0, (Number(item.qty) || 0) + delta);
+      var rentedNow = getCurrentlyRentedQty(id, null);
+      item.qty = Math.max(rentedNow, (Number(item.qty) || 0) + delta);
       saveStocks(stocks);
       renderStocks();
     }
 
     function deleteStock(id) {
+      var rentedNow = getCurrentlyRentedQty(id, null);
+      if (rentedNow > 0) {
+        alert('Barang ini masih tersewa sebanyak ' + rentedNow + ' unit. Selesaikan pengembalian sewa terlebih dahulu sebelum menghapus stok.');
+        return;
+      }
       if (!confirm('Hapus item barang ini dari stok?')) return;
       saveStocks(getStocks().filter(function(x) { return x.id !== id; }));
       renderStocks();
@@ -2566,24 +3039,47 @@
         return;
       }
       grid.innerHTML = filtered.map(function(s) {
-        var low = s.qty <= 3;
+        var totalQty = Number(s.qty) || 0;
+        var rentedQty = getCurrentlyRentedQty(s.id, null);
+        var availQty = Math.max(0, totalQty - rentedQty);
+        var low = availQty <= 3;
         var catLabel = s.category || 'Bunga';
+        var unitShort = s.unit.split(' ')[0];
         var imgHtml = s.photo
           ? ('<img src="' + s.photo + '" class="stock-img" alt="' + s.name + '" />')
           : '<div class="stock-img"><span style="font-size:12px; font-weight:700;">' + catLabel + '</span></div>';
+
+        var rentalInfoHtml = '';
+        if (rentedQty > 0) {
+          var rentals = getEarliestRentalReturnInfo(s.id);
+          var nextRet = rentals.length ? rentals[0].returnDate : '-';
+          rentalInfoHtml =
+            '<div style="background:var(--blue-bg); color:var(--blue); border-radius:8px; padding:5px 7px; font-size:10.5px; margin-bottom:7px; line-height:1.35;">' +
+              'Tersewa: <strong>' + rentedQty + ' ' + unitShort + '</strong> (dari ' + totalQty + ')<br/>' +
+              'Sisa siap pakai: <strong>' + availQty + ' ' + unitShort + '</strong><br/>' +
+              'Kembali maks H+3: <strong>' + nextRet + '</strong>' +
+            '</div>';
+        } else if (s.rentable) {
+          rentalInfoHtml = '<div style="font-size:10.5px; color:var(--blue); margin-bottom:6px;">Siap Sewa: ' + availQty + ' ' + unitShort + ' tersedia</div>';
+        }
+
         return (
           '<div class="stock-card">' +
             imgHtml +
             '<div class="stock-body">' +
               '<div>' +
-                '<span class="badge badge-cat">' + catLabel + '</span>' +
+                '<div style="display:flex; flex-wrap:wrap; gap:4px; align-items:center;">' +
+                  '<span class="badge badge-cat">' + catLabel + '</span>' +
+                  (s.rentable ? '<span class="badge badge-sewa" style="font-size:9.5px; padding:2px 6px;">Sewa</span>' : '') +
+                '</div>' +
                 '<div class="stock-title">' + s.name + '</div>' +
                 '<div class="stock-price">Modal: ' + formatRp(s.cost) + ' / ' + s.unit + '</div>' +
+                rentalInfoHtml +
               '</div>' +
               '<div>' +
                 '<div class="stock-qty-row">' +
                   '<button type="button" class="qty-btn" onclick="adjustStock(&#39;' + s.id + '&#39;, -1)">-</button>' +
-                  '<span style="font-size:12px; font-weight:800; color:' + (low ? 'var(--red)' : 'var(--text)') + ';">' + s.qty + ' ' + s.unit.split(' ')[0] + '</span>' +
+                  '<span style="font-size:11.5px; font-weight:800; color:' + (low ? 'var(--red)' : 'var(--text)') + ';">' + availQty + '/' + totalQty + ' ' + unitShort + '</span>' +
                   '<button type="button" class="qty-btn" onclick="adjustStock(&#39;' + s.id + '&#39;, 1)">+</button>' +
                 '</div>' +
                 '<button type="button" class="btn-sm danger" style="width:100%; padding:5px;" onclick="deleteStock(&#39;' + s.id + '&#39;)">Hapus</button>' +
@@ -2594,7 +3090,7 @@
       }).join('');
     }
 
-    /* ================= STOCK PICKER UNTUK HPP & TAMBAH PESANAN ================= */
+    /* ================= STOCK PICKER UNTUK HPP & TAMBAH PESANAN (VALIDASI STOK TERSEWA) ================= */
     function openStockPicker(targetMode) {
       stockPickerTarget = targetMode;
       renderStockPickerList();
@@ -2613,15 +3109,30 @@
         return;
       }
       var targetArr = stockPickerTarget === 'hpp' ? hppSelectedStocks : orderPickedStocks;
+      var editId = stockPickerTarget === 'order' ? (document.getElementById('edit-id').value || null) : null;
+
       container.innerHTML = stocks.map(function(s) {
         var found = targetArr.find(function(x) { return x.stockId === s.id; });
         var curQty = found ? found.qty : 0;
+        var totalQty = Number(s.qty) || 0;
+        var rentedQty = getCurrentlyRentedQty(s.id, editId);
+        var availQty = Math.max(0, totalQty - rentedQty);
+        var unitShort = s.unit.split(' ')[0];
+
+        var rentedNote = '';
+        if (rentedQty > 0) {
+          var rentals = getEarliestRentalReturnInfo(s.id);
+          var retDate = rentals.length ? rentals[0].returnDate : '-';
+          rentedNote = '<div style="font-size:10.5px; color:var(--red); font-weight:600; margin-top:2px;">Sedang disewa ' + rentedQty + ' ' + unitShort + ' (kembali maks ' + retDate + '). Maks pilih: ' + availQty + ' ' + unitShort + '</div>';
+        }
+
         return (
           '<div class="stock-picker-item">' +
             '<div style="flex:1;">' +
               '<span class="badge badge-cat" style="margin-bottom:3px;">' + (s.category || 'Bunga') + '</span>' +
               '<div style="font-weight:700; font-size:13px;">' + s.name + '</div>' +
-              '<div style="font-size:11.5px; color:var(--text-muted);">Modal: ' + formatRp(s.cost) + ' / ' + s.unit + ' (Sisa: ' + s.qty + ')</div>' +
+              '<div style="font-size:11.5px; color:var(--text-muted);">Modal: ' + formatRp(s.cost) + ' / ' + s.unit + ' &bull; Tersedia: <strong>' + availQty + '</strong>/' + totalQty + '</div>' +
+              rentedNote +
             '</div>' +
             '<div style="display:flex; align-items:center; gap:6px;">' +
               '<button type="button" class="qty-btn" onclick="changePickedStockQty(&#39;' + s.id + '&#39;, -1)">-</button>' +
@@ -2639,7 +3150,26 @@
       if (!s) return;
 
       var targetArr = stockPickerTarget === 'hpp' ? hppSelectedStocks : orderPickedStocks;
+      var editId = stockPickerTarget === 'order' ? (document.getElementById('edit-id').value || null) : null;
       var idx = targetArr.findIndex(function(x) { return x.stockId === stockId; });
+      var currentSelected = idx > -1 ? targetArr[idx].qty : 0;
+
+      if (delta > 0 && stockPickerTarget === 'order') {
+        var totalQty = Number(s.qty) || 0;
+        var rentedQty = getCurrentlyRentedQty(s.id, editId);
+        var availQty = Math.max(0, totalQty - rentedQty);
+        if (currentSelected + delta > availQty) {
+          var rentals = getEarliestRentalReturnInfo(s.id);
+          var retStr = rentals.length ? (' (kembali paling lama H+3 pada ' + rentals[0].returnDate + ')') : '';
+          alert(
+            'Stok "' + s.name + '" tidak mencukupi!\n' +
+            'Total stok: ' + totalQty + ' ' + s.unit + '\n' +
+            'Sedang tersewa: ' + rentedQty + ' ' + s.unit + retStr + '\n' +
+            'Sisa tersedia saat ini hanya: ' + availQty + ' ' + s.unit + '.'
+          );
+          return;
+        }
+      }
 
       if (idx === -1 && delta > 0) {
         targetArr.push({
@@ -2662,6 +3192,7 @@
         renderHppSelectedStocks();
         runQuickCalc();
       } else {
+        orderManualPriceOverridden = false;
         syncOrderPickedStocksToForm();
       }
     }
@@ -2699,26 +3230,41 @@
       runQuickCalc();
     }
 
-    function syncOrderPickedStocksToForm() {
-      var wrap = document.getElementById('order-picked-stocks-wrap');
-      var listEl = document.getElementById('order-picked-stocks-list');
-      if (!orderPickedStocks.length) {
-        wrap.style.display = 'none';
-        listEl.innerHTML = '';
-        return;
-      }
-      wrap.style.display = 'block';
+    function getOrderPickedModalTotals() {
       var flowerCost = 0;
       var wrapAndAccCost = 0;
-      var summaryParts = [];
-
-      listEl.innerHTML = orderPickedStocks.map(function(item) {
-        var lineTotal = item.cost * item.qty;
+      orderPickedStocks.forEach(function(item) {
+        var lineTotal = (Number(item.cost) || 0) * (Number(item.qty) || 0);
         if ((item.category || 'Bunga') === 'Bunga') {
           flowerCost += lineTotal;
         } else {
           wrapAndAccCost += lineTotal;
         }
+      });
+      return {
+        flowerCost: flowerCost,
+        wrapCost: wrapAndAccCost,
+        totalStockModal: flowerCost + wrapAndAccCost
+      };
+    }
+
+    function syncOrderPickedStocksToForm() {
+      var wrap = document.getElementById('order-picked-stocks-wrap');
+      var listEl = document.getElementById('order-picked-stocks-list');
+      var badgeEl = document.getElementById('order-picked-modal-badge');
+      if (!orderPickedStocks.length) {
+        wrap.style.display = 'none';
+        listEl.innerHTML = '';
+        if (badgeEl) badgeEl.textContent = 'Modal Stok: Rp0';
+        recalcOrderAutoPrice();
+        return;
+      }
+      wrap.style.display = 'block';
+      var totals = getOrderPickedModalTotals();
+      var summaryParts = [];
+
+      listEl.innerHTML = orderPickedStocks.map(function(item) {
+        var lineTotal = item.cost * item.qty;
         summaryParts.push(item.name + ' (' + item.qty + ' ' + item.unit.split(' ')[0] + ')');
         return (
           '<div class="picked-item-row">' +
@@ -2728,21 +3274,66 @@
         );
       }).join('');
 
-      document.getElementById('f-cost-flower').value = flowerCost;
-      document.getElementById('f-cost-wrap').value = wrapAndAccCost;
+      if (badgeEl) badgeEl.textContent = 'Modal Stok: ' + formatRp(totals.totalStockModal);
       var itemInp = document.getElementById('f-item');
-      if (!itemInp.value.trim()) {
-        itemInp.value = summaryParts.join(', ');
-      }
-      calcFormHpp();
+      itemInp.value = summaryParts.join(', ');
+      recalcOrderAutoPrice();
     }
 
     function removeOrderPickedStock(stockId) {
       orderPickedStocks = orderPickedStocks.filter(function(x) { return x.stockId !== stockId; });
+      orderManualPriceOverridden = false;
       syncOrderPickedStocksToForm();
     }
 
-    /* ================= HPP CALCULATOR ================= */
+    function appendUcapanPreset(phrase) {
+      var inp = document.getElementById('f-item');
+      if (!inp) return;
+      var cur = inp.value.trim();
+      if (!cur) {
+        inp.value = 'Ucapan: ' + phrase;
+      } else if (cur.indexOf(phrase) === -1) {
+        inp.value = cur + ' + Kartu Ucapan: ' + phrase;
+      }
+    }
+
+    /* ================= PERHITUNGAN HARGA JUAL OTOMATIS DARI MARGIN HPP ================= */
+    function recalcOrderAutoPrice() {
+      var totals = getOrderPickedModalTotals();
+      var costOther = Number(document.getElementById('f-cost-other').value) || 0;
+      var totalHpp = totals.totalStockModal + costOther;
+      var hppCfg = getHppSettings();
+      var marginPct = Number(hppCfg.marginPercent) || 0;
+
+      if (!orderManualPriceOverridden) {
+        var autoPrice = totalHpp + Math.round(totalHpp * (marginPct / 100));
+        document.getElementById('f-price').value = autoPrice;
+      }
+      calcFormHpp();
+    }
+
+    function applyAutoMarginToOrderPrice(forceResetManual) {
+      if (forceResetManual) orderManualPriceOverridden = false;
+      recalcOrderAutoPrice();
+    }
+
+    function onManualOrderPriceInput() {
+      orderManualPriceOverridden = true;
+      calcFormHpp();
+    }
+
+    function calcFormHpp() {
+      var totals = getOrderPickedModalTotals();
+      var costOther = Number(document.getElementById('f-cost-other').value) || 0;
+      var p = Number(document.getElementById('f-price').value) || 0;
+      var hpp = totals.totalStockModal + costOther;
+      var profit = p - hpp;
+      var pct = p > 0 ? Math.round((profit / p) * 100) : 0;
+      document.getElementById('prev-hpp').textContent = formatRp(hpp);
+      document.getElementById('prev-profit').textContent = formatRp(profit) + ' (' + pct + '%)';
+    }
+
+    /* ================= HPP CALCULATOR TAB ================= */
     function runQuickCalc() {
       var stockSubtotal = 0;
       hppSelectedStocks.forEach(function(it) {
@@ -2756,42 +3347,26 @@
       var profit = Math.round(hpp * (margin / 100));
       var price = hpp + profit;
 
+      var lbl = document.getElementById('c-res-margin-lbl');
+      if (lbl) lbl.textContent = margin;
       document.getElementById('c-res-hpp').textContent = formatRp(hpp);
       document.getElementById('c-res-profit').textContent = formatRp(profit);
       document.getElementById('c-res-price').textContent = formatRp(price);
     }
 
     function applyHppToOrder() {
-      var flowerTotal = 0;
-      var wrapTotal = 0;
-      var descParts = [];
-
-      hppSelectedStocks.forEach(function(it) {
-        var sub = (Number(it.cost) || 0) * (Number(it.qty) || 0);
-        if ((it.category || 'Bunga') === 'Bunga') flowerTotal += sub;
-        else wrapTotal += sub;
-        descParts.push(it.name + ' ' + it.qty + ' ' + it.unit.split(' ')[0]);
-      });
-
       var extraMat = Number(document.getElementById('c-extra-mat').value) || 0;
       var labor = Number(document.getElementById('c-labor').value) || 0;
-      var margin = Number(document.getElementById('c-margin').value) || 0;
 
-      var hpp = flowerTotal + wrapTotal + extraMat + labor;
-      var price = hpp + Math.round(hpp * (margin / 100));
+      var cats = getProductCategories();
+      var defaultCat = cats.length ? cats[0].name : 'Buket Bunga Segar';
+      var defaultType = cats.length ? (cats[0].defaultType || 'Beli') : 'Beli';
 
-      resetForm();
+      selectCategoryForNewOrder(defaultCat, defaultType);
       orderPickedStocks = JSON.parse(JSON.stringify(hppSelectedStocks));
+      orderManualPriceOverridden = false;
+      document.getElementById('f-cost-other').value = extraMat + labor;
       syncOrderPickedStocksToForm();
-
-      document.getElementById('f-cost-flower').value = flowerTotal + extraMat;
-      document.getElementById('f-cost-wrap').value = wrapTotal;
-      document.getElementById('f-cost-other').value = labor;
-      document.getElementById('f-price').value = price;
-      if (descParts.length) {
-        document.getElementById('f-item').value = descParts.join(', ');
-      }
-      calcFormHpp();
       switchTab('add', document.getElementById('nav-add'));
     }
 
@@ -2898,6 +3473,11 @@
       if (targetPanel) targetPanel.classList.add('active');
       if (el) el.classList.add('active');
       if (name === 'orders') renderOrders();
+      if (name === 'add') {
+        if (!document.getElementById('edit-id').value) {
+          showCategoryLauncher();
+        }
+      }
       if (name === 'stock') renderStocks();
       if (name === 'hpp') { renderHppSelectedStocks(); runQuickCalc(); }
       if (name === 'finance') renderFinance();
@@ -2962,7 +3542,7 @@
         return (
           '<div class="fin-detail-row">' +
             '<div style="flex:1;">' +
-              '<div style="font-weight:700; color:var(--text);">' + o.customer + ' <span style="font-weight:400; color:var(--text-muted); font-size:11.5px;">(' + o.deadline + ')</span></div>' +
+              '<div style="font-weight:700; color:var(--text);">' + o.customer + ' <span class="badge ' + (o.orderType === 'Sewa' ? 'badge-sewa' : 'badge-beli') + '" style="font-size:9.5px; padding:2px 6px;">' + (o.orderType || 'Beli') + '</span> <span style="font-weight:400; color:var(--text-muted); font-size:11.5px;">(' + o.deadline + ')</span></div>' +
               '<div style="font-size:11.5px; color:var(--text-muted);">' + o.item + '</div>' +
               '<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Jual: ' + formatRp(harga) + ' &bull; Modal: ' + formatRp(modal) + '</div>' +
             '</div>' +
@@ -2975,7 +3555,7 @@
       }).join('');
     }
 
-    /* ================= DAFTAR PESANAN (TANPA MODAL & LABA BERSIH) ================= */
+    /* ================= DAFTAR PESANAN ================= */
     function renderOrders() {
       var orders = getOrders();
       var statusFilter = document.getElementById('status-filter').value;
@@ -2984,6 +3564,9 @@
       var monthPrefix = todayStr.slice(0, 7);
 
       var periodFiltered = orders.filter(function(o) {
+        if (currentPeriod === 'sewa_aktif') {
+          return o.orderType === 'Sewa' && o.rentalReturned !== true;
+        }
         if (currentPeriod === 'today') return o.deadline === todayStr || o.createdAt === todayStr;
         if (currentPeriod === 'month') return (o.deadline || '').indexOf(monthPrefix) === 0;
         if (currentPeriod === 'upcoming7') {
@@ -2995,13 +3578,16 @@
 
       var displayList = periodFiltered.filter(function(o) {
         var matchStatus = statusFilter === 'all' || o.status === statusFilter;
-        var matchQuery = !q || (o.customer || '').toLowerCase().indexOf(q) !== -1 || (o.item || '').toLowerCase().indexOf(q) !== -1;
+        var matchQuery = !q ||
+          (o.customer || '').toLowerCase().indexOf(q) !== -1 ||
+          (o.item || '').toLowerCase().indexOf(q) !== -1 ||
+          (o.category || '').toLowerCase().indexOf(q) !== -1;
         return matchStatus && matchQuery;
       });
 
       var container = document.getElementById('orders-list');
       if (!displayList.length) {
-        container.innerHTML = '<div class="empty-state">Tidak ada pesanan yang cocok.<br/>Ketuk tab <strong>Tambah</strong> di bawah untuk mencatat pesanan baru.</div>';
+        container.innerHTML = '<div class="empty-state">Tidak ada pesanan yang cocok.<br/>Ketuk tab <strong>Tambah</strong> di bawah untuk memilih kategori &amp; mencatat pesanan baru.</div>';
         return;
       }
 
@@ -3011,18 +3597,35 @@
         var sisa = Math.max(0, harga - paid);
         var badgeCls = o.status === 'Selesai' ? 'badge-selesai' : (o.status === 'Dirangkai' ? 'badge-proses' : 'badge-pending');
         var diffDays = getDaysUntil(o.deadline);
+        var isSewa = o.orderType === 'Sewa';
+        var retDate = o.returnDeadline || addDaysToIso(o.deadline, 3);
 
         var dueBadge = '';
-        if (o.status !== 'Selesai') {
+        if (isSewa && o.rentalReturned !== true) {
+          var dRet = getDaysUntil(retDate);
+          dueBadge = '<span class="badge ' + (dRet <= 0 ? 'badge-urgent' : 'badge-sewa') + ' deadline-badge-item">' +
+            (dRet < 0 ? 'Telat Kembali ' + Math.abs(dRet) + 'h' : 'Kembali ' + retDate) +
+          '</span>';
+        } else if (o.status !== 'Selesai') {
           if (diffDays === 0) dueBadge = '<span class="badge badge-urgent deadline-badge-item">HARI INI</span>';
           else if (diffDays > 0 && diffDays <= 7) dueBadge = '<span class="badge badge-week deadline-badge-item">H-' + diffDays + '</span>';
+        }
+
+        var sewaStatusHtml = '';
+        if (isSewa) {
+          sewaStatusHtml = o.rentalReturned
+            ? '<span>Sewa: <strong style="color:var(--green);">Sudah Kembali (' + (o.rentalReturnedAt || '-') + ')</strong></span>'
+            : '<span>Batas Kembali H+3: <strong style="color:var(--blue);">' + retDate + '</strong></span>';
         }
 
         return (
           '<div class="card">' +
             '<div class="order-top">' +
               '<div>' +
-                '<div class="order-name">' + o.customer + ' <span style="font-weight:400; font-size:12px; color:var(--text-muted);">(' + o.category + ')</span></div>' +
+                '<div class="order-name">' +
+                  '<span class="badge ' + (isSewa ? 'badge-sewa' : 'badge-beli') + '">' + (isSewa ? 'SEWA' : 'BELI') + '</span>' +
+                  o.customer + ' <span style="font-weight:400; font-size:12px; color:var(--text-muted);">(' + o.category + ')</span>' +
+                '</div>' +
                 '<div class="order-item">' + o.item + '</div>' +
               '</div>' +
               '<div>' +
@@ -3031,7 +3634,8 @@
               '</div>' +
             '</div>' +
             '<div class="order-meta">' +
-              '<span>Kirim: <strong>' + (o.deadline || '-') + '</strong></span>' +
+              '<span>Acara/Kirim: <strong>' + (o.deadline || '-') + '</strong></span>' +
+              sewaStatusHtml +
               '<span>' + (sisa === 0 ? '<strong style="color:var(--green);">Lunas</strong>' : 'Status: <strong style="color:var(--amber);">Belum Lunas</strong>') + '</span>' +
             '</div>' +
             '<div class="order-finance">' +
@@ -3042,6 +3646,7 @@
             '<div class="order-actions">' +
               '<button type="button" class="btn-sm pink" onclick="openNota(&#39;' + o.id + '&#39;)">Nota WA &amp; PDF</button>' +
               '<button type="button" class="btn-sm" onclick="cycleStatus(&#39;' + o.id + '&#39;)">Ubah Status</button>' +
+              (isSewa && !o.rentalReturned ? ('<button type="button" class="btn-sm blue" onclick="markRentalReturned(&#39;' + o.id + '&#39;)">Kembalikan Sewa</button>') : '') +
               (sisa > 0 ? ('<button type="button" class="btn-sm green" onclick="markPaid(&#39;' + o.id + '&#39;)">Lunasi</button>') : '') +
               '<button type="button" class="btn-sm" onclick="editOrder(&#39;' + o.id + '&#39;)">Edit</button>' +
               '<button type="button" class="btn-sm danger" onclick="deleteOrder(&#39;' + o.id + '&#39;)">Hapus</button>' +
@@ -3051,41 +3656,66 @@
       }).join('');
     }
 
-    function calcFormHpp() {
-      var f = Number(document.getElementById('f-cost-flower').value) || 0;
-      var w = Number(document.getElementById('f-cost-wrap').value) || 0;
-      var o = Number(document.getElementById('f-cost-other').value) || 0;
-      var p = Number(document.getElementById('f-price').value) || 0;
-      var hpp = f + w + o;
-      var profit = p - hpp;
-      var pct = p > 0 ? Math.round((profit / p) * 100) : 0;
-      document.getElementById('prev-hpp').textContent = formatRp(hpp);
-      document.getElementById('prev-profit').textContent = formatRp(profit) + ' (' + pct + '%)';
-    }
-
+    /* ================= SIMPAN / EDIT PESANAN ================= */
     function saveOrder(e) {
       e.preventDefault();
       var orders = getOrders();
       var editId = document.getElementById('edit-id').value;
-
       var existing = editId ? orders.find(function(x) { return x.id === editId; }) : null;
+      var orderType = document.getElementById('f-order-type').value || 'Beli';
+      var deadlineVal = document.getElementById('f-deadline').value;
+      var returnDeadlineVal = orderType === 'Sewa'
+        ? (document.getElementById('f-return-date').value || addDaysToIso(deadlineVal, 3))
+        : '';
 
+      // Validasi stok sewa saat menyimpan
+      var stocks = getStocks();
+      for (var i = 0; i < orderPickedStocks.length; i++) {
+        var picked = orderPickedStocks[i];
+        var st = stocks.find(function(s) { return s.id === picked.stockId; });
+        if (st) {
+          var avail = getAvailableStockQty(st, editId || null);
+          if (picked.qty > avail) {
+            alert('Stok "' + st.name + '" saat ini hanya tersedia ' + avail + ' ' + st.unit + ' karena sisanya masih tersewa hingga H+3.');
+            return;
+          }
+        }
+      }
+
+      var totals = getOrderPickedModalTotals();
       var payload = {
         id: editId || ('LF-' + Math.floor(100 + Math.random() * 900)),
         customer: document.getElementById('f-customer').value.trim(),
         phone: document.getElementById('f-phone').value.trim(),
-        category: document.getElementById('f-category').value,
-        deadline: document.getElementById('f-deadline').value,
+        category: document.getElementById('f-category').value || 'Buket Bunga Segar',
+        orderType: orderType,
+        deadline: deadlineVal,
+        returnDeadline: returnDeadlineVal,
+        rentalReturned: existing ? Boolean(existing.rentalReturned) : false,
+        rentalReturnedAt: existing ? (existing.rentalReturnedAt || '') : '',
         item: document.getElementById('f-item').value.trim(),
         note: existing ? (existing.note || '') : '',
-        costFlower: Number(document.getElementById('f-cost-flower').value) || 0,
-        costWrap: Number(document.getElementById('f-cost-wrap').value) || 0,
+        costFlower: totals.flowerCost,
+        costWrap: totals.wrapCost,
         costOther: Number(document.getElementById('f-cost-other').value) || 0,
         price: Number(document.getElementById('f-price').value) || 0,
         paid: Number(document.getElementById('f-paid').value) || 0,
         status: document.getElementById('f-status').value,
+        pickedStocks: JSON.parse(JSON.stringify(orderPickedStocks)),
         createdAt: existing ? existing.createdAt : todayIso()
       };
+
+      // Kurangi stok permanen untuk barang Beli Putus (non-sewa) pada pesanan baru
+      if (!editId && orderType === 'Beli' && orderPickedStocks.length) {
+        var updatedStocks = getStocks();
+        orderPickedStocks.forEach(function(p) {
+          var stObj = updatedStocks.find(function(x) { return x.id === p.stockId; });
+          if (stObj && !stObj.rentable) {
+            stObj.qty = Math.max(0, (Number(stObj.qty) || 0) - (Number(p.qty) || 0));
+          }
+        });
+        saveStocks(updatedStocks);
+      }
 
       if (editId) {
         var idx = orders.findIndex(function(x) { return x.id === editId; });
@@ -3103,36 +3733,50 @@
     function editOrder(id) {
       var o = getOrders().find(function(x) { return x.id === id; });
       if (!o) return;
-      orderPickedStocks = [];
-      syncOrderPickedStocksToForm();
+
+      document.getElementById('add-category-step').style.display = 'none';
+      document.getElementById('add-form-step').style.display = 'block';
 
       document.getElementById('edit-id').value = o.id;
+      document.getElementById('f-category').value = o.category;
+      document.getElementById('selected-cat-badge').textContent = o.category;
       document.getElementById('form-title').textContent = 'Edit Pesanan (' + o.id + ')';
+      setOrderType(o.orderType || 'Beli');
+
       document.getElementById('f-customer').value = o.customer;
       document.getElementById('f-phone').value = o.phone || '';
-      document.getElementById('f-category').value = o.category;
       document.getElementById('f-deadline').value = o.deadline;
+      if (o.orderType === 'Sewa') {
+        document.getElementById('f-return-date').value = o.returnDeadline || addDaysToIso(o.deadline, 3);
+      }
       document.getElementById('f-item').value = o.item;
-      document.getElementById('f-cost-flower').value = o.costFlower;
-      document.getElementById('f-cost-wrap').value = o.costWrap;
-      document.getElementById('f-cost-other').value = o.costOther;
+      document.getElementById('f-cost-other').value = o.costOther || 0;
       document.getElementById('f-price').value = o.price;
       document.getElementById('f-paid').value = o.paid;
       document.getElementById('f-status').value = o.status;
       document.getElementById('btn-cancel-edit').style.display = 'block';
+
+      orderManualPriceOverridden = true;
+      orderPickedStocks = Array.isArray(o.pickedStocks) ? JSON.parse(JSON.stringify(o.pickedStocks)) : [];
+      syncOrderPickedStocksToForm();
       calcFormHpp();
       switchTab('add', document.getElementById('nav-add'));
     }
 
-    function resetForm() {
+    function resetFormFieldsOnly() {
       document.getElementById('order-form').reset();
       document.getElementById('edit-id').value = '';
-      document.getElementById('form-title').textContent = 'Catat Pesanan Baru';
       document.getElementById('f-deadline').value = todayIso();
       document.getElementById('btn-cancel-edit').style.display = 'none';
       orderPickedStocks = [];
+      orderManualPriceOverridden = false;
       syncOrderPickedStocksToForm();
       calcFormHpp();
+    }
+
+    function resetForm() {
+      resetFormFieldsOnly();
+      showCategoryLauncher();
     }
 
     function cycleStatus(id) {
@@ -3161,6 +3805,7 @@
       saveOrdersList(orders);
       checkAndTriggerReminders(false);
       renderOrders();
+      renderStocks();
     }
 
     /* ================= NOTA WA & PDF + LOGO ================= */
@@ -3168,18 +3813,23 @@
       var cfg = getDesignSettings();
       var storeTitle = (cfg.headerTitle || 'LALILY FLOWERS').toUpperCase();
       var sisa = Math.max(0, priceVal - paidVal);
+      var isSewa = o.orderType === 'Sewa';
+      var retDate = o.returnDeadline || addDaysToIso(o.deadline, 3);
       var lines = [
-        '*NOTA PESANAN - ' + storeTitle + '*',
+        '*NOTA ' + (isSewa ? 'SEWA' : 'PESANAN') + ' - ' + storeTitle + '*',
         'No. Order: ' + o.id,
         'Pemesan: ' + o.customer,
-        'Kategori: ' + o.category,
+        'Kategori: ' + o.category + ' (' + (isSewa ? 'Sewa' : 'Beli Putus') + ')',
         'Detail: ' + o.item
       ];
       if (noteVal && noteVal.trim()) {
         lines.push('Catatan/Ucapan: ' + noteVal.trim());
       }
+      lines.push('Tanggal Acara / Kirim: ' + o.deadline);
+      if (isSewa) {
+        lines.push('Batas Pengembalian (Maks H+3): ' + retDate);
+      }
       lines.push(
-        'Tanggal Ambil/Kirim: ' + o.deadline,
         '--------------------------------',
         'Total Harga: ' + formatRp(priceVal),
         'Sudah DP / Bayar: ' + formatRp(paidVal),
@@ -3248,9 +3898,7 @@
       alert('Perubahan DP, Harga Jual & Sisa Pembayaran berhasil disimpan!');
     }
 
-    function printNotaPDF() {
-      window.print();
-    }
+    function printNotaPDF() { window.print(); }
 
     function closeNotaModal() {
       activeNotaOrderId = null;
@@ -3266,11 +3914,11 @@
 
     function exportCSV() {
       var orders = getOrders();
-      var headers = ['ID', 'Pemesan', 'WhatsApp', 'Kategori', 'Detail', 'Deadline', 'Modal_Total', 'Harga_Jual', 'Laba_Bersih', 'Dibayar', 'Status'];
+      var headers = ['ID', 'Pemesan', 'WhatsApp', 'Kategori', 'Jenis', 'Detail', 'Tanggal_Acara', 'Batas_Kembali_Sewa', 'Modal_Total', 'Harga_Jual', 'Laba_Bersih', 'Dibayar', 'Status'];
       var rows = orders.map(function(o) {
         var modal = (Number(o.costFlower) || 0) + (Number(o.costWrap) || 0) + (Number(o.costOther) || 0);
         var laba = (Number(o.price) || 0) - modal;
-        return [o.id, o.customer, o.phone, o.category, o.item, o.deadline, modal, o.price, laba, o.paid, o.status]
+        return [o.id, o.customer, o.phone, o.category, o.orderType || 'Beli', o.item, o.deadline, o.returnDeadline || '-', modal, o.price, laba, o.paid, o.status]
           .map(function(v) { return '"' + String(v || '').replace(/"/g, '""') + '"'; }).join(',');
       });
       var csv = [headers.join(',')].concat(rows).join('\n');
@@ -3282,7 +3930,7 @@
     }
 
     function exportJSON() {
-      var data = { orders: getOrders(), stocks: getStocks() };
+      var data = { orders: getOrders(), stocks: getStocks(), categories: getProductCategories(), hppSettings: getHppSettings() };
       var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
@@ -3422,9 +4070,7 @@
         }
       };
       var chosen = themes[themeName] || themes.rose;
-      Object.keys(chosen).forEach(function(k) {
-        root.style.setProperty(k, chosen[k]);
-      });
+      Object.keys(chosen).forEach(function(k) { root.style.setProperty(k, chosen[k]); });
     }
 
     function applyFontFamily(fontKey) {
@@ -3441,7 +4087,6 @@
       applyThemeColors(cfg.theme);
       applyFontFamily(cfg.font);
 
-      // Judul & Subjudul Header
       var hTitle = cfg.headerTitle || 'Lalily Flowers';
       var hSub = cfg.headerSubtitle || 'Admin & Kasir Florist';
       var elTitle = document.getElementById('header-title-text');
@@ -3453,11 +4098,9 @@
       if (loginTitle) loginTitle.textContent = hTitle;
       if (loadTitle) loadTitle.textContent = 'Menyiapkan ' + hTitle + '...';
 
-      // Ukuran Teks
       var scaleMap = { normal: '1', large: '1.1', compact: '0.92' };
       document.documentElement.style.setProperty('--font-scale', scaleMap[cfg.fontSize] || '1');
 
-      // Gaya Kartu, Layout & Badge Deadline
       document.body.classList.remove(
         'align-center', 'align-right', 'nav-top', 'header-bottom',
         'card-bold', 'card-flat', 'card-compact', 'hide-deadline-badge'
@@ -3569,6 +4212,13 @@
     try { generateHDAppIcon(); } catch (e) {}
     try { initLoginState(); } catch (e) {}
     try { initFirebaseRealtime(); } catch (e) {}
+    try {
+      var initHppCfg = getHppSettings();
+      document.getElementById('c-margin').value = initHppCfg.marginPercent;
+      document.getElementById('c-default-labor').value = initHppCfg.defaultLabor;
+      syncHppLabelToOrderForm();
+    } catch (e) {}
+    try { renderCategoryLauncher(); } catch (e) {}
     try { document.getElementById('f-deadline').value = todayIso(); } catch (e) {}
     try { checkAndTriggerReminders(false); } catch (e) {}
     try { renderOrders(); } catch (e) {}
