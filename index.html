@@ -1305,7 +1305,7 @@
             </div>
             <div class="form-group" id="f-return-date-wrap" style="display:none;">
               <label>Batas Kembali (H+3)</label>
-              <input type="date" id="f-return-date" />
+              <input type="date" id="f-return-date" onchange="if(document.getElementById('box-promo-panel').style.display!=='none'){populateBoxStockDropdown(null);}" />
             </div>
             <div class="form-group" id="f-status-top-wrap">
               <label>Status Pengerjaan</label>
@@ -2339,6 +2339,7 @@
     function populateBoxStockDropdown(preselectId) {
       var sel = document.getElementById('f-box-stock-select');
       if (!sel) return;
+      var prevVal = preselectId || sel.value;
       var stocks = getStocks();
       var boxStocks = stocks.filter(function(s) {
         var catLow = String(s.category || '').toLowerCase();
@@ -2347,15 +2348,16 @@
       });
       var listToUse = boxStocks.length ? boxStocks : stocks;
       var editId = document.getElementById('edit-id').value || null;
+      var targetDate = getActiveFormTargetDate();
 
       sel.innerHTML = listToUse.map(function(s) {
-        var avail = getAvailableStockQty(s, editId);
-        var total = Number(s.qty) || 0;
-        return '<option value="' + s.id + '">' + s.name + ' (Tersedia: ' + avail + '/' + total + ')</option>';
+        var avail = getAvailableStockQty(s, editId, targetDate);
+        var total = getTotalStockCapacity(s);
+        return '<option value="' + s.id + '">' + s.name + ' (Tersedia tgl ini: ' + avail + '/' + total + ')</option>';
       }).join('');
 
-      if (preselectId && listToUse.some(function(x) { return x.id === preselectId; })) {
-        sel.value = preselectId;
+      if (prevVal && listToUse.some(function(x) { return x.id === prevVal; })) {
+        sel.value = prevVal;
       } else if (listToUse.length) {
         sel.value = listToUse[0].id;
       }
@@ -2369,9 +2371,11 @@
       var stockId = sel.value;
       var s = getStocks().find(function(x) { return x.id === stockId; });
       var editId = document.getElementById('edit-id').value || null;
+      var targetDate = getActiveFormTargetDate();
       if (s) {
-        var avail = getAvailableStockQty(s, editId);
-        hint.textContent = 'Stok siap pakai: ' + avail + ' ' + s.unit + ' (Modal/box: ' + formatRp(s.cost) + ')';
+        var avail = getAvailableStockQty(s, editId, targetDate);
+        var total = getTotalStockCapacity(s);
+        hint.textContent = 'Stok siap pakai (' + targetDate + '): ' + avail + '/' + total + ' ' + s.unit + ' (Modal/box: ' + formatRp(s.cost) + ')';
         if (selectedBoxPromoId) {
           applyBoxPromoPackage(selectedBoxPromoId, true);
         }
@@ -2405,11 +2409,16 @@
       var stocks = getStocks();
       var s = stocks.find(function(x) { return x.id === stockId; });
       var editId = document.getElementById('edit-id').value || null;
+      var targetDate = getActiveFormTargetDate();
 
       if (s) {
-        var avail = getAvailableStockQty(s, editId);
+        var avail = getAvailableStockQty(s, editId, targetDate);
         if (pkg.qty > avail && !silentSwitch) {
-          alert('Stok "' + s.name + '" hanya tersisa ' + avail + ' ' + s.unit + ', tidak cukup untuk paket ' + pkg.qty + ' Box.');
+          var conflicts = getOverlappingRentalInfo(s.id, targetDate, editId);
+          var detailStr = conflicts.length
+            ? ('\nJadwal sewa bentrok: ' + conflicts.map(function(c) { return c.customer + ' (' + c.qty + ' box, acara ' + c.startDate + ' s/d kembali H+3 ' + c.returnDate + ')'; }).join('; '))
+            : '';
+          alert('Stok "' + s.name + '" pada tanggal ' + targetDate + ' hanya tersisa ' + avail + ' ' + s.unit + ', tidak cukup untuk paket ' + pkg.qty + ' Box.' + detailStr);
           return;
         }
         orderPickedStocks = [{
@@ -2657,10 +2666,52 @@
 
     function addDaysToIso(baseIso, days) {
       if (!baseIso) return addDaysIso(days);
-      var d = new Date(baseIso + 'T00:00:00');
+      var parts = String(baseIso).split('-');
+      if (parts.length !== 3) return addDaysIso(days);
+      var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
       if (isNaN(d.getTime())) return addDaysIso(days);
       d.setDate(d.getDate() + days);
-      return d.toISOString().split('T')[0];
+      return formatLocalDateIso(d);
+    }
+
+    function getActiveFormTargetDate() {
+      var el = document.getElementById('f-deadline');
+      return (el && el.value) ? el.value : todayIso();
+    }
+
+    function getActiveFormReturnDate(targetDate) {
+      var orderTypeEl = document.getElementById('f-order-type');
+      var isSewa = orderTypeEl && orderTypeEl.value === 'Sewa';
+      if (!isSewa) return targetDate;
+      var retEl = document.getElementById('f-return-date');
+      if (retEl && retEl.value && retEl.value >= targetDate) {
+        return retEl.value;
+      }
+      return addDaysToIso(targetDate, 3);
+    }
+
+    function isRentalRangeOverlap(startA, endA, startB, endB) {
+      return String(startA) <= String(endB) && String(endA) >= String(startB);
+    }
+
+    // Total kapasitas fisik stok barang (memulihkan stok lama yang sempat terpotong langsung oleh versi sebelumnya)
+    function getTotalStockCapacity(stockObj) {
+      var physicalQty = Number(stockObj.qty) || 0;
+      var legacyDeducted = 0;
+      var orders = getOrders();
+      orders.forEach(function(o) {
+        if (o.orderType !== 'Sewa') return;
+        if (o.rentalReturned === true) return;
+        if (o.stockDeductedOnRent !== true) return;
+        if (!Array.isArray(o.pickedStocks)) return;
+        o.pickedStocks.forEach(function(ps) {
+          if (ps.stockId === stockObj.id) {
+            legacyDeducted += (Number(ps.qty) || 0);
+          }
+        });
+      });
+      var cap = physicalQty + legacyDeducted;
+      return Math.max(cap, Number(stockObj.initialQty) || cap);
     }
 
     function updateRentalReturnPreview() {
@@ -2669,18 +2720,29 @@
       if (retInp) {
         retInp.value = addDaysToIso(deadlineVal, 3);
       }
+      var promoPanel = document.getElementById('box-promo-panel');
+      if (promoPanel && promoPanel.style.display !== 'none') {
+        populateBoxStockDropdown(null);
+      }
+      if (stockPickerTarget === 'order' && document.getElementById('stock-picker-modal').classList.contains('show')) {
+        renderStockPickerList();
+      }
     }
 
-    // Hitung jumlah unit suatu stok yang sedang tersewa & belum dikembalikan (untuk pesanan sewa yang stok fisiknya belum dipotong)
-    function getCurrentlyRentedQty(stockId, excludeOrderId) {
+    // Hitung jumlah unit stok yang terpakai pada rentang tanggal sewa tertentu (berdasarkan Acara s/d H+3)
+    function getRentedQtyOnRange(stockId, targetStartDate, targetEndDate, excludeOrderId) {
       var orders = getOrders();
+      var startCheck = targetStartDate || todayIso();
+      var endCheck = targetEndDate || startCheck;
       var totalRented = 0;
       orders.forEach(function(o) {
         if (excludeOrderId && o.id === excludeOrderId) return;
         if (o.orderType !== 'Sewa') return;
         if (o.rentalReturned === true) return;
-        if (o.stockDeductedOnRent === true) return;
         if (!Array.isArray(o.pickedStocks)) return;
+        var orderStart = o.deadline || todayIso();
+        var orderEnd = o.returnDeadline || addDaysToIso(orderStart, 3);
+        if (!isRentalRangeOverlap(orderStart, orderEnd, startCheck, endCheck)) return;
         o.pickedStocks.forEach(function(ps) {
           if (ps.stockId === stockId) {
             totalRented += (Number(ps.qty) || 0);
@@ -2688,6 +2750,12 @@
         });
       });
       return totalRented;
+    }
+
+    function getCurrentlyRentedQty(stockId, excludeOrderId, targetDate) {
+      var startDt = targetDate || todayIso();
+      var endDt = targetDate ? getActiveFormReturnDate(startDt) : startDt;
+      return getRentedQtyOnRange(stockId, startDt, endDt, excludeOrderId);
     }
 
     function getActiveRentedDisplayQty(stockId) {
@@ -2706,6 +2774,33 @@
       return totalRented;
     }
 
+    // Dapatkan daftar sewa aktif yang bentrok dengan rentang tanggal pesanan baru
+    function getOverlappingRentalInfo(stockId, targetDate, excludeOrderId) {
+      var orders = getOrders();
+      var startCheck = targetDate || todayIso();
+      var endCheck = getActiveFormReturnDate(startCheck);
+      var conflicts = [];
+      orders.forEach(function(o) {
+        if (excludeOrderId && o.id === excludeOrderId) return;
+        if (o.orderType !== 'Sewa' || o.rentalReturned === true) return;
+        if (!Array.isArray(o.pickedStocks)) return;
+        var found = o.pickedStocks.find(function(ps) { return ps.stockId === stockId; });
+        if (!found) return;
+        var orderStart = o.deadline || todayIso();
+        var orderEnd = o.returnDeadline || addDaysToIso(orderStart, 3);
+        if (isRentalRangeOverlap(orderStart, orderEnd, startCheck, endCheck)) {
+          conflicts.push({
+            customer: o.customer,
+            qty: found.qty,
+            startDate: orderStart,
+            returnDate: orderEnd
+          });
+        }
+      });
+      conflicts.sort(function(a, b) { return String(a.returnDate).localeCompare(String(b.returnDate)); });
+      return conflicts;
+    }
+
     // Dapatkan tanggal terdekat pengembalian (H+3) untuk suatu barang yang sedang tersewa
     function getEarliestRentalReturnInfo(stockId) {
       var orders = getOrders();
@@ -2716,26 +2811,19 @@
         var found = o.pickedStocks.find(function(ps) { return ps.stockId === stockId; });
         if (found) {
           var retDate = o.returnDeadline || addDaysToIso(o.deadline, 3);
-          activeRentals.push({ customer: o.customer, qty: found.qty, returnDate: retDate });
+          activeRentals.push({ customer: o.customer, qty: found.qty, startDate: o.deadline, returnDate: retDate });
         }
       });
       activeRentals.sort(function(a, b) { return String(a.returnDate).localeCompare(String(b.returnDate)); });
       return activeRentals;
     }
 
-    function getAvailableStockQty(stockObj, excludeOrderId) {
-      var total = Number(stockObj.qty) || 0;
-      var rented = getCurrentlyRentedQty(stockObj.id, excludeOrderId);
-      var excludedRestored = 0;
-      if (excludeOrderId) {
-        var exOrder = getOrders().find(function(x) { return x.id === excludeOrderId; });
-        if (exOrder && exOrder.orderType === 'Sewa' && exOrder.stockDeductedOnRent === true && !exOrder.rentalReturned && Array.isArray(exOrder.pickedStocks)) {
-          exOrder.pickedStocks.forEach(function(ps) {
-            if (ps.stockId === stockObj.id) excludedRestored += (Number(ps.qty) || 0);
-          });
-        }
-      }
-      return Math.max(0, total + excludedRestored - rented);
+    function getAvailableStockQty(stockObj, excludeOrderId, targetDate) {
+      var totalCap = getTotalStockCapacity(stockObj);
+      var startDt = targetDate || getActiveFormTargetDate();
+      var endDt = getActiveFormReturnDate(startDt);
+      var rentedInRange = getRentedQtyOnRange(stockObj.id, startDt, endDt, excludeOrderId);
+      return Math.max(0, totalCap - rentedInRange);
     }
 
     function markRentalReturned(orderId) {
@@ -2773,6 +2861,7 @@
 
       o.rentalReturned = true;
       o.rentalReturnedAt = todayIso();
+      o.stockDeductedOnRent = false;
       if (o.status !== 'Selesai') o.status = 'Selesai';
       saveOrdersList(orders);
       checkAndTriggerReminders(false);
@@ -3300,12 +3389,22 @@
       document.getElementById('login-screen').classList.remove('hidden');
     }
 
+    function formatLocalDateIso(d) {
+      var yy = d.getFullYear();
+      var mm = String(d.getMonth() + 1).padStart(2, '0');
+      var dd = String(d.getDate()).padStart(2, '0');
+      return yy + '-' + mm + '-' + dd;
+    }
+
     function todayIso() {
-      return new Date().toISOString().split('T')[0];
+      return formatLocalDateIso(new Date());
     }
 
     function addDaysIso(days) {
-      return new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
+      var d = new Date();
+      d.setHours(0, 0, 0, 0);
+      d.setDate(d.getDate() + days);
+      return formatLocalDateIso(d);
     }
 
     var defaultOrders = [
@@ -3674,8 +3773,7 @@
       var item = stocks.find(function(x) { return x.id === id; });
       if (!item) return;
 
-      var rentedNow = getCurrentlyRentedQty(id, null);
-      var newQty = Math.max(rentedNow, Number(document.getElementById('es-qty').value) || 0);
+      var newQty = Math.max(0, Number(document.getElementById('es-qty').value) || 0);
       var newInitQty = Math.max(newQty, Number(document.getElementById('es-initial-qty').value) || newQty);
 
       item.category = document.getElementById('es-category').value;
@@ -3705,20 +3803,18 @@
       var stocks = getStocks();
       var item = stocks.find(function(x) { return x.id === id; });
       if (!item) return;
-      var rentedNow = getCurrentlyRentedQty(id, null);
-      var nextQty = Math.max(rentedNow, (Number(item.qty) || 0) + delta);
+      var baseCap = getTotalStockCapacity(item);
+      var nextQty = Math.max(0, baseCap + delta);
       item.qty = nextQty;
-      if (nextQty > (Number(item.initialQty) || 0)) {
-        item.initialQty = nextQty;
-      }
+      item.initialQty = nextQty;
       saveStocks(stocks);
       renderStocks();
     }
 
     function deleteStock(id) {
-      var rentedNow = getCurrentlyRentedQty(id, null);
+      var rentedNow = getActiveRentedDisplayQty(id);
       if (rentedNow > 0) {
-        alert('Barang ini masih tersewa sebanyak ' + rentedNow + ' unit. Selesaikan pengembalian sewa terlebih dahulu sebelum menghapus stok.');
+        alert('Barang ini masih memiliki jadwal sewa aktif sebanyak ' + rentedNow + ' unit. Selesaikan pengembalian sewa terlebih dahulu sebelum menghapus stok.');
         return;
       }
       if (!confirm('Hapus item barang ini dari stok?')) return;
@@ -3739,11 +3835,10 @@
         return;
       }
       grid.innerHTML = filtered.map(function(s) {
-        var currentPhysicalQty = Number(s.qty) || 0;
-        var baseCapacity = Math.max(currentPhysicalQty, Number(s.initialQty) || currentPhysicalQty);
-        var unDeductedRentedQty = getCurrentlyRentedQty(s.id, null);
-        var rentedQty = getActiveRentedDisplayQty(s.id);
-        var availQty = Math.max(0, currentPhysicalQty - unDeductedRentedQty);
+        var baseCapacity = getTotalStockCapacity(s);
+        var rentedTodayQty = getRentedQtyOnRange(s.id, todayIso(), todayIso(), null);
+        var activeBookingsQty = getActiveRentedDisplayQty(s.id);
+        var availQty = Math.max(0, baseCapacity - rentedTodayQty);
         var usedCount = Math.max(0, baseCapacity - availQty);
         var low = availQty <= 3;
         var catLabel = s.category || 'Bunga';
@@ -3753,13 +3848,13 @@
           : '<div class="stock-img"><span style="font-size:12px; font-weight:700;">' + catLabel + '</span></div>';
 
         var usageInfoHtml = '';
-        if (rentedQty > 0) {
+        if (activeBookingsQty > 0) {
           var rentals = getEarliestRentalReturnInfo(s.id);
           var nextRet = rentals.length ? rentals[0].returnDate : '-';
           usageInfoHtml =
             '<div style="background:var(--blue-bg); color:var(--blue); border-radius:8px; padding:5px 7px; font-size:10.5px; margin-bottom:7px; line-height:1.35;">' +
-              'Tersewa: <strong>' + rentedQty + ' ' + unitShort + '</strong> (dari ' + baseCapacity + ')<br/>' +
-              'Sisa siap pakai: <strong>' + availQty + '/' + baseCapacity + ' ' + unitShort + '</strong><br/>' +
+              'Jadwal sewa aktif: <strong>' + activeBookingsQty + ' ' + unitShort + '</strong> (kapasitas ' + baseCapacity + ')<br/>' +
+              'Siap pakai hari ini: <strong>' + availQty + '/' + baseCapacity + ' ' + unitShort + '</strong><br/>' +
               'Kembali maks H+3: <strong>' + nextRet + '</strong>' +
             '</div>';
         } else if (usedCount > 0) {
@@ -3821,20 +3916,21 @@
       }
       var targetArr = stockPickerTarget === 'hpp' ? hppSelectedStocks : orderPickedStocks;
       var editId = stockPickerTarget === 'order' ? (document.getElementById('edit-id').value || null) : null;
+      var targetDate = stockPickerTarget === 'order' ? getActiveFormTargetDate() : todayIso();
 
       container.innerHTML = stocks.map(function(s) {
         var found = targetArr.find(function(x) { return x.stockId === s.id; });
         var curQty = found ? found.qty : 0;
-        var totalQty = Number(s.qty) || 0;
-        var rentedQty = getCurrentlyRentedQty(s.id, editId);
-        var availQty = Math.max(0, totalQty - rentedQty);
+        var totalQty = getTotalStockCapacity(s);
+        var availQty = getAvailableStockQty(s, editId, targetDate);
+        var rentedQty = Math.max(0, totalQty - availQty);
         var unitShort = s.unit.split(' ')[0];
 
         var rentedNote = '';
         if (rentedQty > 0) {
-          var rentals = getEarliestRentalReturnInfo(s.id);
-          var retDate = rentals.length ? rentals[0].returnDate : '-';
-          rentedNote = '<div style="font-size:10.5px; color:var(--red); font-weight:600; margin-top:2px;">Sedang disewa ' + rentedQty + ' ' + unitShort + ' (kembali maks ' + retDate + '). Maks pilih: ' + availQty + ' ' + unitShort + '</div>';
+          var conflicts = getOverlappingRentalInfo(s.id, targetDate, editId);
+          var retDate = conflicts.length ? conflicts[0].returnDate : '-';
+          rentedNote = '<div style="font-size:10.5px; color:var(--red); font-weight:600; margin-top:2px;">Terpakai sewa di rentang ' + targetDate + ': ' + rentedQty + ' ' + unitShort + ' (kembali maks H+3: ' + retDate + '). Maks pilih: ' + availQty + ' ' + unitShort + '</div>';
         }
 
         return (
@@ -3842,7 +3938,7 @@
             '<div style="flex:1;">' +
               '<span class="badge badge-cat" style="margin-bottom:3px;">' + (s.category || 'Bunga') + '</span>' +
               '<div style="font-weight:700; font-size:13px;">' + s.name + '</div>' +
-              '<div style="font-size:11.5px; color:var(--text-muted);">Modal: ' + formatRp(s.cost) + ' / ' + s.unit + ' &bull; Tersedia: <strong>' + availQty + '</strong>/' + totalQty + '</div>' +
+              '<div style="font-size:11.5px; color:var(--text-muted);">Modal: ' + formatRp(s.cost) + ' / ' + s.unit + ' &bull; Tersedia (' + targetDate + '): <strong>' + availQty + '</strong>/' + totalQty + '</div>' +
               rentedNote +
             '</div>' +
             '<div style="display:flex; align-items:center; gap:6px;">' +
@@ -3862,21 +3958,22 @@
 
       var targetArr = stockPickerTarget === 'hpp' ? hppSelectedStocks : orderPickedStocks;
       var editId = stockPickerTarget === 'order' ? (document.getElementById('edit-id').value || null) : null;
+      var targetDate = stockPickerTarget === 'order' ? getActiveFormTargetDate() : todayIso();
       var idx = targetArr.findIndex(function(x) { return x.stockId === stockId; });
       var currentSelected = idx > -1 ? targetArr[idx].qty : 0;
 
       if (delta > 0 && stockPickerTarget === 'order') {
-        var totalQty = Number(s.qty) || 0;
-        var rentedQty = getCurrentlyRentedQty(s.id, editId);
-        var availQty = Math.max(0, totalQty - rentedQty);
+        var totalQty = getTotalStockCapacity(s);
+        var availQty = getAvailableStockQty(s, editId, targetDate);
+        var rentedQty = Math.max(0, totalQty - availQty);
         if (currentSelected + delta > availQty) {
-          var rentals = getEarliestRentalReturnInfo(s.id);
-          var retStr = rentals.length ? (' (kembali paling lama H+3 pada ' + rentals[0].returnDate + ')') : '';
+          var conflicts = getOverlappingRentalInfo(s.id, targetDate, editId);
+          var retStr = conflicts.length ? (' (kembali paling lama H+3 pada ' + conflicts[0].returnDate + ')') : '';
           alert(
-            'Stok "' + s.name + '" tidak mencukupi!\n' +
-            'Total stok: ' + totalQty + ' ' + s.unit + '\n' +
-            'Sedang tersewa: ' + rentedQty + ' ' + s.unit + retStr + '\n' +
-            'Sisa tersedia saat ini hanya: ' + availQty + ' ' + s.unit + '.'
+            'Stok "' + s.name + '" tidak mencukupi pada tanggal ' + targetDate + '!\n' +
+            'Total kapasitas stok: ' + totalQty + ' ' + s.unit + '\n' +
+            'Terpakai jadwal sewa yang bentrok: ' + rentedQty + ' ' + s.unit + retStr + '\n' +
+            'Sisa tersedia pada tanggal tersebut: ' + availQty + ' ' + s.unit + '.'
           );
           return;
         }
@@ -4379,22 +4476,25 @@
         ? (document.getElementById('f-return-date').value || addDaysToIso(deadlineVal, 3))
         : '';
 
-      // Validasi stok sewa saat menyimpan
+      // Validasi stok berdasarkan rentang tanggal acara s/d H+3
       var stocks = getStocks();
       for (var i = 0; i < orderPickedStocks.length; i++) {
         var picked = orderPickedStocks[i];
         var st = stocks.find(function(s) { return s.id === picked.stockId; });
         if (st) {
-          var avail = getAvailableStockQty(st, editId || null);
+          var avail = getAvailableStockQty(st, editId || null, deadlineVal);
           if (picked.qty > avail) {
-            alert('Stok "' + st.name + '" saat ini hanya tersedia ' + avail + ' ' + st.unit + ' karena sisanya masih tersewa hingga H+3.');
+            var conflicts = getOverlappingRentalInfo(st.id, deadlineVal, editId || null);
+            var conflictNote = conflicts.length
+              ? ('\nJadwal bentrok: ' + conflicts.map(function(c) { return c.customer + ' (' + c.qty + ' unit, acara ' + c.startDate + ' s/d kembali H+3 ' + c.returnDate + ')'; }).join('; '))
+              : '';
+            alert('Stok "' + st.name + '" pada tanggal ' + deadlineVal + ' hanya tersedia ' + avail + ' ' + st.unit + '.' + conflictNote);
             return;
           }
         }
       }
 
       var isRentalReturnedNow = existing ? Boolean(existing.rentalReturned) : false;
-      var willDeductStockOnRent = (orderType === 'Sewa' && !isRentalReturnedNow);
 
       var totals = getOrderPickedModalTotals();
       var payload = {
@@ -4407,7 +4507,7 @@
         returnDeadline: returnDeadlineVal,
         rentalReturned: isRentalReturnedNow,
         rentalReturnedAt: existing ? (existing.rentalReturnedAt || '') : '',
-        stockDeductedOnRent: willDeductStockOnRent,
+        stockDeductedOnRent: false,
         item: document.getElementById('f-item').value.trim(),
         note: existing ? (existing.note || '') : '',
         costFlower: totals.flowerCost,
@@ -4420,7 +4520,7 @@
         createdAt: existing ? existing.createdAt : todayIso()
       };
 
-      // Sesuaikan pengurangan stok saat pesanan Beli Putus maupun Sewa dibuat atau diedit
+      // Sesuaikan stok fisik hanya untuk Beli Putus (dan kembalikan jika pesanan lama sempat memotong fisik saat sewa)
       var updatedStocks = getStocks();
       var stockChanged = false;
       if (existing && Array.isArray(existing.pickedStocks)) {
@@ -4437,30 +4537,17 @@
           });
         }
       }
-      if (orderPickedStocks.length) {
-        if (orderType === 'Beli') {
-          orderPickedStocks.forEach(function(p) {
-            var stObj = updatedStocks.find(function(x) { return x.id === p.stockId; });
-            if (stObj && !stObj.rentable) {
-              if (typeof stObj.initialQty === 'undefined' || Number(stObj.initialQty) < Number(stObj.qty)) {
-                stObj.initialQty = Number(stObj.qty) || 0;
-              }
-              stObj.qty = Math.max(0, (Number(stObj.qty) || 0) - (Number(p.qty) || 0));
-              stockChanged = true;
+      if (orderPickedStocks.length && orderType === 'Beli') {
+        orderPickedStocks.forEach(function(p) {
+          var stObj = updatedStocks.find(function(x) { return x.id === p.stockId; });
+          if (stObj && !stObj.rentable) {
+            if (typeof stObj.initialQty === 'undefined' || Number(stObj.initialQty) < Number(stObj.qty)) {
+              stObj.initialQty = Number(stObj.qty) || 0;
             }
-          });
-        } else if (willDeductStockOnRent) {
-          orderPickedStocks.forEach(function(p) {
-            var stObj = updatedStocks.find(function(x) { return x.id === p.stockId; });
-            if (stObj) {
-              if (typeof stObj.initialQty === 'undefined' || Number(stObj.initialQty) < Number(stObj.qty)) {
-                stObj.initialQty = Number(stObj.qty) || 0;
-              }
-              stObj.qty = Math.max(0, (Number(stObj.qty) || 0) - (Number(p.qty) || 0));
-              stockChanged = true;
-            }
-          });
-        }
+            stObj.qty = Math.max(0, (Number(stObj.qty) || 0) - (Number(p.qty) || 0));
+            stockChanged = true;
+          }
+        });
       }
       if (stockChanged) {
         saveStocks(updatedStocks);
