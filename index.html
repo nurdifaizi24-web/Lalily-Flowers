@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Lalily Flowers — Admin & POS</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Lalily Admin" />
+  <meta name="theme-color" content="#FFF8FA" />
+  <link id="apple-touch-icon" rel="apple-touch-icon" sizes="180x180" href="" />
+  <link id="favicon" rel="icon" type="image/png" href="" />
+  <style>
+    :root {
+      --bg: #FFF8FA;
+      --surface: #FFFFFF;
+      --surface-soft: #FFF1F5;
+      --border: #F7D6E0;
+      --pink-primary: #E16A93;
+      --pink-dark: #B8426D;
+      --pink-light: #FCE4EC;
+      --text: #3D2430;
+      --text-muted: #8C6877;
+      --green: #2E8B63;
+      --green-bg: #EAF7F1;
+      --amber: #C47A1E;
+      --amber-bg: #FFF6E5;
+      --red: #D6455D;
+      --red-bg: #FDECEF;
+      --radius: 16px;
+      --shadow: 0 6px 20px rgba(225, 106, 147, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+      min-height: 100vh;
+    }
+
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: linear-gradient(160deg, #FFF5F8 0%, #FFE4EE 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      padding-top: calc(20px + env(safe-area-inset-top));
+      padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+
+    .login-screen.hidden {
+      display: none;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.97);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px 22px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 18px 42px rgba(216, 88, 132, 0.14);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-logo {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: #FFF5F8;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin: 0 auto 14px;
+      box-shadow: 0 8px 18px rgba(225, 106, 147, 0.22);
+    }
+
+    .login-card h2 {
+      margin: 0;
+      text-align: center;
+      font-size: 20px;
+      color: var(--pink-dark);
+    }
+
+    .login-card p.sub {
+      margin: 4px 0 20px;
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .pass-wrap {
+      position: relative;
+    }
+
+    .pass-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .login-error {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid #F7C6CE;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 12.5px;
+      margin-bottom: 12px;
+      display: none;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .default-hint {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      background: linear-gradient(160deg, #FFF7FA 0%, #FFE6F0 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .loading-screen.show {
+      display: flex;
+    }
+
+    .bloom-spinner {
+      width: 88px;
+      height: 88px;
+      border-radius: 24px;
+      background: #FFF5F8;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(225, 106, 147, 0.28);
+      animation: pulseBloom 1.6s infinite ease-in-out;
+      margin-bottom: 18px;
+    }
+
+    @keyframes pulseBloom {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+
+    .loading-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--pink-dark);
+      margin: 0 0 6px;
+    }
+
+    .loading-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin: 0 0 18px;
+    }
+
+    .progress-track {
+      width: 220px;
+      height: 7px;
+      background: rgba(225, 106, 147, 0.18);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #E87A9F, #C94A78);
+      border-radius: 99px;
+      transition: width 0.1s linear;
+    }
+
+    .loading-timer {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--pink-dark);
+    }
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255, 248, 250, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: #FFF5F8;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(225, 106, 147, 0.2);
+      flex-shrink: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--pink-dark);
+    }
+
+    .brand p {
+      margin: 1px 0 0;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-bell {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--pink-dark);
+      width: 36px;
+      height: 36px;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .bell-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--red);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 99px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      border: 2px solid var(--bg);
+    }
+
+    .btn-lock {
+      background: var(--pink-light);
+      border: 1px solid #F4B8CC;
+      color: var(--pink-dark);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 99px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 15px;
+    }
+
+    .reminder-banner {
+      background: linear-gradient(135deg, #FFF5E6, #FFEAD1);
+      border: 1px solid #F5CE93;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .reminder-banner.show {
+      display: flex;
+    }
+
+    .reminder-banner strong {
+      display: block;
+      font-size: 13px;
+      color: #8C4E08;
+    }
+
+    .reminder-banner span {
+      font-size: 11.5px;
+      color: #A66316;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .chip {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 99px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chip.active {
+      background: var(--pink-primary);
+      color: #fff;
+      border-color: var(--pink-primary);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-card.highlight {
+      background: linear-gradient(135deg, #FFF0F5, #FFE3EC);
+      border-color: #F4B8CC;
+    }
+
+    .stat-label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .stat-card.highlight .stat-value {
+      color: var(--pink-dark);
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .search-box {
+      margin-bottom: 12px;
+    }
+
+    .sec-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 4px 0 12px;
+      gap: 8px;
+    }
+
+    .sec-head h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .order-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .order-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .order-item {
+      font-size: 13px;
+      color: var(--pink-dark);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 99px;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .badge-pending { background: var(--amber-bg); color: var(--amber); }
+    .badge-proses { background: var(--pink-light); color: var(--pink-dark); }
+    .badge-selesai { background: var(--green-bg); color: var(--green); }
+    .badge-urgent { background: var(--red-bg); color: var(--red); margin-left: 4px; }
+    .badge-week { background: #FFF2D9; color: #B46308; margin-left: 4px; }
+
+    .order-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .order-finance {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      background: var(--surface-soft);
+      padding: 9px 10px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      font-size: 12px;
+    }
+
+    .fin-col span {
+      display: block;
+      font-size: 10.5px;
+      color: var(--text-muted);
+    }
+
+    .fin-col strong {
+      font-size: 12.5px;
+      color: var(--text);
+    }
+
+    .order-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .btn-sm {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-sm.pink {
+      background: var(--pink-light);
+      color: var(--pink-dark);
+      border-color: #F4B8CC;
+    }
+
+    .btn-sm.green {
+      background: var(--green-bg);
+      color: var(--green);
+      border-color: #BDE5D3;
+    }
+
+    .btn-sm.danger {
+      color: var(--red);
+      border-color: #F7C6CE;
+    }
+
+    .stock-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 11px;
+    }
+
+    .stock-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stock-img {
+      width: 100%;
+      height: 125px;
+      object-fit: cover;
+      background: var(--surface-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pink-primary);
+    }
+
+    .stock-body {
+      padding: 11px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stock-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .stock-price {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .stock-qty-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-soft);
+      padding: 5px 8px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    }
+
+    .qty-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--pink-dark);
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .photo-upload-box {
+      border: 1.5px dashed #E896B3;
+      background: var(--surface-soft);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .photo-preview {
+      max-height: 140px;
+      border-radius: 10px;
+      margin-top: 8px;
+      display: none;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      background: #FFFDFD;
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--pink-primary);
+      box-shadow: 0 0 0 3px rgba(225, 106, 147, 0.12);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .hpp-box {
+      background: linear-gradient(135deg, #FFF2F6, #FFE6EE);
+      border: 1px solid #F4B8CC;
+      border-radius: 14px;
+      padding: 13px;
+      margin: 14px 0;
+    }
+
+    .hpp-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .hpp-row.total {
+      border-top: 1px dashed #E598B3;
+      padding-top: 7px;
+      margin-top: 7px;
+      font-weight: 800;
+      font-size: 14.5px;
+      color: var(--pink-dark);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #E87A9F, #D85884);
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 14px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(216, 88, 132, 0.28);
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      padding: 7px 2px calc(7px + env(safe-area-inset-bottom));
+      z-index: 30;
+    }
+
+    .nav-item {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 2px;
+    }
+
+    .nav-item.active {
+      color: var(--pink-dark);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(61, 36, 48, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 50;
+    }
+
+    .modal-backdrop.show { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 20px;
+      max-width: 420px;
+      width: 100%;
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+      max-height: 86vh;
+      overflow-y: auto;
+    }
+
+    .modal h3 {
+      margin: 0 0 10px;
+      color: var(--pink-dark);
+      font-size: 17px;
+    }
+
+    .nota-box {
+      background: #FFF9FB;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 12.5px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 36px 16px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+    }
+
+    .success-banner {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid #BDE5D3;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .notif-item {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px;
+      margin-bottom: 8px;
+      font-size: 12.5px;
+    }
+
+    .design-link-wrap {
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    .btn-design-small {
+      background: none;
+      border: none;
+      padding: 2px 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      cursor: pointer;
+    }
+
+    .btn-design-small:hover {
+      color: var(--pink-dark);
+    }
+
+    body.align-center .card,
+    body.align-center .stat-card,
+    body.align-center .order-top,
+    body.align-center .order-meta,
+    body.align-center .order-finance {
+      text-align: center;
+    }
+
+    body.align-right .card,
+    body.align-right .stat-card,
+    body.align-right .order-top,
+    body.align-right .order-meta,
+    body.align-right .order-finance {
+      text-align: right;
+    }
+
+    body.nav-top .header {
+      position: relative;
+      top: auto;
+    }
+
+    body.nav-top .bottom-nav {
+      position: sticky;
+      top: 0;
+      bottom: auto;
+      border-top: none;
+      border-bottom: 1px solid var(--border);
+      padding: 7px 2px;
+    }
+
+    body.nav-top {
+      padding-bottom: calc(28px + env(safe-area-inset-bottom));
+    }
+
+    body.header-bottom .header {
+      position: fixed;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: none;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
+      z-index: 25;
+    }
+
+    body.header-bottom .bottom-nav {
+      bottom: calc(64px + env(safe-area-inset-bottom));
+    }
+
+    body.header-bottom {
+      padding-bottom: calc(146px + env(safe-area-inset-bottom));
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- LAYAR LOGIN -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">
+        <img id="login-logo-img" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%23FFF2F6'/%3E%3Ccircle cx='82' cy='46' r='22' fill='%23F5A3C0' stroke='%23C94A78' stroke-width='2'/%3E%3Ccircle cx='82' cy='46' r='7' fill='%23FFFDFD'/%3E%3Ctext x='14' y='66' font-family='Georgia,serif' font-style='italic' font-weight='bold' font-size='26' fill='%23C94A78'%3ELalily%3C/text%3E%3Ctext x='32' y='88' font-family='Georgia,serif' font-style='italic' font-size='18' fill='%23D95384'%3EFlowers%3C/text%3E%3C/svg%3E" alt="Logo Lalily Flowers" style="width:100%; height:100%; object-fit:cover; display:block;" />
+      </div>
+
+      <h2>Lalily Flowers</h2>
+      <p class="sub">Masuk untuk mengakses panel Admin &amp; Kasir</p>
+
+      <div id="login-error" class="login-error">ID Admin atau Password salah!</div>
+
+      <form id="login-form" onsubmit="return handleLogin(event);">
+        <div class="form-group">
+          <label>ID Admin</label>
+          <input type="text" id="login-id" placeholder="Masukkan ID Admin" autocomplete="username" required />
+        </div>
+
+        <div class="form-group">
+          <label>Password</label>
+          <div class="pass-wrap">
+            <input type="password" id="login-pass" placeholder="Masukkan Password" autocomplete="current-password" required style="padding-right: 64px;" />
+            <button type="button" class="pass-toggle" onclick="toggleLoginPass(event); return false;">Lihat</button>
+          </div>
+        </div>
+
+        <button type="submit" id="btn-login-submit" class="btn-primary" style="margin-top: 6px;" onclick="return handleLogin(event);">Masuk ke Admin</button>
+      </form>
+
+      <div class="default-hint" id="login-hint">
+        Login awal: ID <strong>lalily</strong> &bull; Password <strong>lalily123</strong><br/>
+        (Dapat diubah di menu <strong>Akun</strong> setelah masuk)
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING SCREEN 5 DETIK SETELAH LOGIN -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="bloom-spinner">
+      <img id="loading-logo-img" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%23FFF2F6'/%3E%3Ccircle cx='82' cy='46' r='22' fill='%23F5A3C0' stroke='%23C94A78' stroke-width='2'/%3E%3Ccircle cx='82' cy='46' r='7' fill='%23FFFDFD'/%3E%3Ctext x='14' y='66' font-family='Georgia,serif' font-style='italic' font-weight='bold' font-size='26' fill='%23C94A78'%3ELalily%3C/text%3E%3Ctext x='32' y='88' font-family='Georgia,serif' font-style='italic' font-size='18' fill='%23D95384'%3EFlowers%3C/text%3E%3C/svg%3E" alt="Logo Lalily Flowers" style="width:100%; height:100%; object-fit:cover; display:block;" />
+    </div>
+    <h3 class="loading-title">Menyiapkan Lalily Flowers...</h3>
+    <p class="loading-sub">Memuat daftar pesanan, stok bunga &amp; pengingat</p>
+    <div class="progress-track">
+      <div id="loading-bar" class="progress-fill"></div>
+    </div>
+    <div id="loading-countdown" class="loading-timer">5 detik...</div>
+  </div>
+
+  <!-- HEADER UTAMA -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-logo">
+        <img id="brand-logo-img" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%23FFF2F6'/%3E%3Ccircle cx='82' cy='46' r='22' fill='%23F5A3C0' stroke='%23C94A78' stroke-width='2'/%3E%3Ccircle cx='82' cy='46' r='7' fill='%23FFFDFD'/%3E%3Ctext x='14' y='66' font-family='Georgia,serif' font-style='italic' font-weight='bold' font-size='26' fill='%23C94A78'%3ELalily%3C/text%3E%3Ctext x='32' y='88' font-family='Georgia,serif' font-style='italic' font-size='18' fill='%23D95384'%3EFlowers%3C/text%3E%3C/svg%3E" alt="Logo Lalily Flowers" style="width:100%; height:100%; object-fit:cover; display:block;" />
+      </div>
+      <div>
+        <h1>Lalily Flowers</h1>
+        <p>Admin &amp; Kasir Florist</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="btn-bell" onclick="openReminderModal()" title="Pengingat Jadwal Kirim">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+        </svg>
+        <span id="bell-count" class="bell-badge">0</span>
+      </button>
+
+      <button type="button" class="btn-lock" onclick="logoutApp()" title="Kunci Aplikasi">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
+        </svg>
+        Kunci
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- TAB 1: PESANAN -->
+    <section id="tab-orders" class="tab-panel active">
+      <div id="reminder-banner" class="reminder-banner" onclick="openReminderModal()">
+        <div>
+          <strong id="reminder-title">Ada Pesanan Mendekati Jadwal Kirim!</strong>
+          <span id="reminder-desc">Ketuk untuk melihat daftar pengingat H-7 &amp; mengirim ke kalender/HP.</span>
+        </div>
+        <span style="font-weight:800; font-size:16px; color:#8C4E08;">&rsaquo;</span>
+      </div>
+
+      <div class="filter-row">
+        <button type="button" class="chip active" onclick="setPeriod('all', this)">Semua Waktu</button>
+        <button type="button" class="chip" onclick="setPeriod('month', this)">Bulan Ini</button>
+        <button type="button" class="chip" onclick="setPeriod('today', this)">Hari Ini</button>
+        <button type="button" class="chip" onclick="setPeriod('upcoming7', this)">H-7 Kirim</button>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Omzet</div>
+          <div class="stat-value" id="stat-omzet">Rp0</div>
+          <div class="stat-sub" id="stat-count">0 pesanan</div>
+        </div>
+        <div class="stat-card highlight">
+          <div class="stat-label">Laba Bersih</div>
+          <div class="stat-value" id="stat-profit">Rp0</div>
+          <div class="stat-sub" id="stat-margin">Margin 0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Modal (HPP)</div>
+          <div class="stat-value" id="stat-hpp">Rp0</div>
+          <div class="stat-sub">Bunga, wrap &amp; box</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sisa Tagihan (DP)</div>
+          <div class="stat-value" id="stat-unpaid">Rp0</div>
+          <div class="stat-sub">Belum dilunasi</div>
+        </div>
+      </div>
+
+      <div class="search-box">
+        <input type="search" id="search-order" placeholder="Cari nama pemesan atau jenis buket..." oninput="renderOrders()" />
+      </div>
+
+      <div class="sec-head">
+        <h2>Daftar Pesanan</h2>
+        <select id="status-filter" onchange="renderOrders()" style="width:auto; padding:6px 10px; font-size:12px;">
+          <option value="all">Semua Status</option>
+          <option value="Antrean">Antrean</option>
+          <option value="Dirangkai">Dirangkai</option>
+          <option value="Selesai">Selesai</option>
+        </select>
+      </div>
+
+      <div id="orders-list"></div>
+    </section>
+
+    <!-- TAB 2: INPUT PESANAN BARU -->
+    <section id="tab-add" class="tab-panel">
+      <div class="card">
+        <h2 style="margin:0 0 14px; font-size:16px; color:var(--pink-dark);" id="form-title">Catat Pesanan Baru</h2>
+        <form id="order-form" onsubmit="saveOrder(event)">
+          <input type="hidden" id="edit-id" />
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Nama Pemesan *</label>
+              <input type="text" id="f-customer" placeholder="Contoh: Kak Nabila" required />
+            </div>
+            <div class="form-group">
+              <label>No. WhatsApp</label>
+              <input type="tel" id="f-phone" placeholder="0812xxxx" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Kategori Produk</label>
+              <select id="f-category">
+                <option value="Buket Bunga Segar">Buket Bunga Segar</option>
+                <option value="Buket Uang / Snack">Buket Uang / Snack</option>
+                <option value="Kotak Seserahan">Kotak Seserahan</option>
+                <option value="Keranjang / Parcel">Keranjang / Parcel</option>
+                <option value="Bunga Papan / Standing">Bunga Papan / Standing</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tenggat Ambil / Kirim *</label>
+              <input type="date" id="f-deadline" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Detail Rangkaian &amp; Ucapan *</label>
+            <input type="text" id="f-item" placeholder="Contoh: Buket Lily Pink + Rose 15 tangkai" required />
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Modal Bunga / Isian (Rp)</label>
+              <input type="number" id="f-cost-flower" value="0" min="0" oninput="calcFormHpp()" />
+            </div>
+            <div class="form-group">
+              <label>Modal Wrap / Kotak / Pita (Rp)</label>
+              <input type="number" id="f-cost-wrap" value="0" min="0" oninput="calcFormHpp()" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Biaya Lain / Kurir (Rp)</label>
+              <input type="number" id="f-cost-other" value="0" min="0" oninput="calcFormHpp()" />
+            </div>
+            <div class="form-group">
+              <label>Harga Jual ke Pembeli (Rp) *</label>
+              <input type="number" id="f-price" value="0" min="0" required oninput="calcFormHpp()" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Sudah Dibayar / DP (Rp)</label>
+              <input type="number" id="f-paid" value="0" min="0" />
+            </div>
+            <div class="form-group">
+              <label>Status Pengerjaan</label>
+              <select id="f-status">
+                <option value="Antrean">Antrean</option>
+                <option value="Dirangkai">Dirangkai</option>
+                <option value="Selesai">Selesai</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="hpp-box">
+            <div class="hpp-row"><span>Total Modal (HPP):</span><strong id="prev-hpp">Rp0</strong></div>
+            <div class="hpp-row total"><span>Estimasi Laba Bersih:</span><span id="prev-profit">Rp0 (0%)</span></div>
+          </div>
+
+          <button type="submit" class="btn-primary">Simpan Pesanan</button>
+          <button type="button" id="btn-cancel-edit" onclick="resetForm()" style="display:none; width:100%; margin-top:8px; padding:11px; border-radius:12px; border:1px solid var(--border); background:#fff; color:var(--text-muted); font-weight:600;">Batal Edit</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- TAB 3: STOK BUNGA -->
+    <section id="tab-stock" class="tab-panel">
+      <div class="card">
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Tambah Stok Bunga &amp; Foto</h2>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Catat sisa tangkai bunga segar / artificial beserta foto aslinya.</p>
+
+        <form onsubmit="addFlowerStock(event)">
+          <div class="photo-upload-box" onclick="document.getElementById('s-photo-input').click()">
+            <div style="font-size:13px; font-weight:700; color:var(--pink-dark);">Ketuk untuk Upload Foto Bunga</div>
+            <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;">Ambil foto dari kamera atau pilih dari galeri HP</div>
+            <input type="file" id="s-photo-input" accept="image/*" style="display:none;" onchange="handleStockPhoto(event)" />
+            <img id="s-photo-preview" class="photo-preview" alt="Preview Bunga" />
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Nama Bunga / Bahan *</label>
+              <input type="text" id="s-name" placeholder="Contoh: Lily Pink Casablanka" required />
+            </div>
+            <div class="form-group">
+              <label>Jumlah Stok *</label>
+              <input type="number" id="s-qty" value="10" min="0" required />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Satuan</label>
+              <select id="s-unit">
+                <option value="Tangkai">Tangkai</option>
+                <option value="Ikat / Bunch">Ikat / Bunch</option>
+                <option value="Lembar / Roll">Lembar / Roll</option>
+                <option value="Box / Pcs">Box / Pcs</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Modal per Satuan (Rp)</label>
+              <input type="number" id="s-cost" value="15000" min="0" />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary">Simpan ke Stok Bunga</button>
+        </form>
+      </div>
+
+      <div class="sec-head">
+        <h2>Katalog Stok Bunga Saat Ini</h2>
+        <span style="font-size:12px; color:var(--text-muted);" id="stock-total-label">0 item</span>
+      </div>
+
+      <div id="stock-list" class="stock-grid"></div>
+    </section>
+
+    <!-- TAB 4: MENU HPP -->
+    <section id="tab-hpp" class="tab-panel">
+      <div class="card">
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Kalkulator HPP &amp; Harga Jual</h2>
+        <p style="margin:0 0 14px; font-size:12.5px; color:var(--text-muted);">Hitung estimasi modal &amp; harga jual yang pas sebelum memberi penawaran ke pembeli.</p>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Biaya Bunga / Bahan (Rp)</label>
+            <input type="number" id="c-flower" value="65000" oninput="runQuickCalc()" />
+          </div>
+          <div class="form-group">
+            <label>Kertas Wrap / Box / Pita (Rp)</label>
+            <input type="number" id="c-wrap" value="25000" oninput="runQuickCalc()" />
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Jasa Rangkai &amp; Operasional (Rp)</label>
+            <input type="number" id="c-labor" value="35000" oninput="runQuickCalc()" />
+          </div>
+          <div class="form-group">
+            <label>Target Margin Laba (%)</label>
+            <input type="number" id="c-margin" value="40" oninput="runQuickCalc()" />
+          </div>
+        </div>
+
+        <div class="hpp-box">
+          <div class="hpp-row"><span>Total Modal Dasar:</span><strong id="c-res-hpp">Rp125.000</strong></div>
+          <div class="hpp-row"><span>Keuntungan Bersih:</span><strong id="c-res-profit">Rp50.000</strong></div>
+          <div class="hpp-row total"><span>Rekomendasi Harga Jual:</span><span id="c-res-price">Rp175.000</span></div>
+        </div>
+
+        <button type="button" class="btn-sm pink" style="width:100%; padding:11px;" onclick="applyHppToOrder()">Gunakan Angka Ini ke Pesanan Baru &rarr;</button>
+      </div>
+    </section>
+
+    <!-- TAB 5: MENU AKUN -->
+    <section id="tab-account" class="tab-panel">
+      <div class="card" style="display:flex; align-items:center; gap:12px;">
+        <img id="account-logo-preview" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%23FFF2F6'/%3E%3Ccircle cx='82' cy='46' r='22' fill='%23F5A3C0' stroke='%23C94A78' stroke-width='2'/%3E%3Ccircle cx='82' cy='46' r='7' fill='%23FFFDFD'/%3E%3Ctext x='14' y='66' font-family='Georgia,serif' font-style='italic' font-weight='bold' font-size='26' fill='%23C94A78'%3ELalily%3C/text%3E%3Ctext x='32' y='88' font-family='Georgia,serif' font-style='italic' font-size='18' fill='%23D95384'%3EFlowers%3C/text%3E%3C/svg%3E" alt="Logo Aplikasi Lalily Flowers" style="width:68px; height:68px; border-radius:16px; border:1px solid var(--border); object-fit:cover; flex-shrink:0;" />
+        <div>
+          <div style="font-size:14px; font-weight:700; color:var(--pink-dark);">Logo Aplikasi Lalily Flowers</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Aktif otomatis untuk ikon Home Screen iPhone &amp; favicon browser.</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Pengaturan Akun Admin</h2>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Setiap kali aplikasi ditutup dan dibuka kembali, sistem akan meminta ID dan Password ini.</p>
+        <div id="cred-saved-msg" class="success-banner">ID Admin &amp; Password baru berhasil disimpan!</div>
+        <form onsubmit="updateCredentials(event)">
+          <div class="form-group">
+            <label>ID Admin</label>
+            <input type="text" id="set-admin-id" required />
+          </div>
+          <div class="form-group">
+            <label>Password Admin</label>
+            <input type="text" id="set-admin-pass" required />
+          </div>
+          <button type="submit" class="btn-primary">Simpan Perubahan Akun</button>
+        </form>
+        <div class="design-link-wrap">
+          <button type="button" class="btn-design-small" onclick="openDesignAuthModal()">rubah design aplikasi</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 6px; font-size:15px; color:var(--pink-dark);">Notifikasi Pengingat HP (H-7)</h3>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Izinkan notifikasi browser/HP agar muncul pemberitahuan otomatis untuk pesanan yang jatuh tempo dalam 7 hari ke depan.</p>
+        <button type="button" class="btn-sm pink" style="width:100%; padding:11px;" onclick="requestHpNotification()">Aktifkan Notifikasi di HP</button>
+        <div id="notif-status-text" style="font-size:11.5px; color:var(--text-muted); margin-top:8px; text-align:center;"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 6px; font-size:15px;">Cadangan &amp; Laporan Keuangan</h3>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Unduh rekap pesanan &amp; stok secara berkala agar data tetap aman.</p>
+        <div class="grid-2">
+          <button type="button" class="btn-sm pink" style="padding:11px;" onclick="exportCSV()">Download Excel (.csv)</button>
+          <button type="button" class="btn-sm" style="padding:11px;" onclick="exportJSON()">Backup Data (.json)</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button type="button" class="nav-item active" id="nav-orders" onclick="switchTab('orders', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/>
+      </svg>
+      Pesanan
+    </button>
+    <button type="button" class="nav-item" id="nav-add" onclick="switchTab('add', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>
+      </svg>
+      Tambah
+    </button>
+    <button type="button" class="nav-item" id="nav-stock" onclick="switchTab('stock', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22V12M12 12C12 7 7 5 4 7c0 4 3 6 8 5zM12 12c0-5 5-7 8-5 0 4-3 6-8 5z"/>
+      </svg>
+      Stok Bunga
+    </button>
+    <button type="button" class="nav-item" id="nav-hpp" onclick="switchTab('hpp', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/>
+      </svg>
+      HPP
+    </button>
+    <button type="button" class="nav-item" id="nav-account" onclick="switchTab('account', this)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+      </svg>
+      Akun
+    </button>
+  </nav>
+
+  <div id="reminder-modal" class="modal-backdrop" onclick="if(event.target===this) closeReminderModal()">
+    <div class="modal">
+      <h3>Pengingat Pesanan (H-7)</h3>
+      <p style="font-size:12.5px; color:var(--text-muted); margin:0 0 12px;">
+        Pesanan berikut memiliki jadwal kirim dalam <strong>7 hari ke depan</strong> (atau hari ini). Kamu juga bisa menyimpannya ke <strong>Kalender iPhone</strong> agar berbunyi otomatis di HP.
+      </p>
+      <div id="reminder-list-modal"></div>
+      <button type="button" class="btn-primary" style="margin-top:8px;" onclick="closeReminderModal()">Tutup</button>
+    </div>
+  </div>
+
+  <div id="nota-modal" class="modal-backdrop" onclick="if(event.target===this) closeNotaModal()">
+    <div class="modal">
+      <h3>Nota Pesanan Pelanggan</h3>
+      <div class="nota-box" id="nota-text"></div>
+      <div class="grid-2">
+        <button type="button" class="btn-sm pink" style="padding:11px;" onclick="copyNota()">Salin Teks Nota</button>
+        <button type="button" class="btn-primary" style="padding:11px;" id="btn-wa-send">Kirim WhatsApp</button>
+      </div>
+      <button type="button" class="btn-sm" style="width:100%; margin-top:8px; padding:10px;" onclick="closeNotaModal()">Tutup</button>
+    </div>
+  </div>
+
+
+  <!-- MODAL PASSWORD KHUSUS DESAIN -->
+  <div id="design-auth-modal" class="modal-backdrop" onclick="if(event.target===this) closeDesignAuthModal()">
+    <div class="modal">
+      <h3>Akses rubah design aplikasi</h3>
+      <p style="font-size:12.5px; color:var(--text-muted); margin:0 0 12px;">
+        Masukkan password khusus desainer untuk mengatur logo login, font, letak atas/bawah, kiri/kanan, dan warna tampilan.
+      </p>
+      <div id="design-auth-error" class="login-error">Password khusus desain salah!</div>
+      <form onsubmit="verifyDesignPassword(event)">
+        <div class="form-group">
+          <label>Password Khusus Desain</label>
+          <input type="password" id="design-pass-input" placeholder="Masukkan password khusus desain" required />
+        </div>
+        <button type="submit" class="btn-primary">Buka Pengaturan Desain</button>
+      </form>
+      <div style="margin-top:10px; font-size:11.5px; color:var(--text-muted); text-align:center;">
+        Password awal desain: <strong>design123</strong>
+      </div>
+      <button type="button" class="btn-sm" style="width:100%; margin-top:8px; padding:10px;" onclick="closeDesignAuthModal()">Batal</button>
+    </div>
+  </div>
+
+  <!-- MODAL KUSTOMISASI DESAIN LENGKAP -->
+  <div id="design-studio-modal" class="modal-backdrop" onclick="if(event.target===this) closeDesignStudioModal()">
+    <div class="modal">
+      <h3>Tata Desain Aplikasi</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">
+        Semua perubahan langsung diterapkan ke tampilan aplikasi dan tersimpan otomatis.
+      </p>
+
+      <div id="design-saved-msg" class="success-banner">Pengaturan desain berhasil disimpan!</div>
+
+      <div class="form-group">
+        <label>Foto Logo Khusus (Login &amp; Aplikasi)</label>
+        <div class="photo-upload-box" style="margin-bottom:8px;" onclick="document.getElementById('d-logo-input').click()">
+          <div style="font-size:12.5px; font-weight:700; color:var(--pink-dark);">Ketuk untuk Ganti Foto Logo</div>
+          <div style="font-size:11px; color:var(--text-muted);">Dipakai di layar login, loading, header &amp; Home Screen</div>
+          <input type="file" id="d-logo-input" accept="image/*" style="display:none;" onchange="handleCustomLogoUpload(event)" />
+        </div>
+        <button type="button" class="btn-sm" style="width:100%;" onclick="resetCustomLogo()">Pakai Logo Bawaan Lalily</button>
+      </div>
+
+      <div class="form-group">
+        <label>Jenis Font Aplikasi</label>
+        <select id="d-font" onchange="applyDesignSettingsFromForm()">
+          <option value="sans">Sans Bersih (Bawaan Modern)</option>
+          <option value="serif">Elegan Serif (Georgia / Klasik)</option>
+          <option value="rounded">Rounded Lembut (Comic / Rounded)</option>
+          <option value="mono">Monospace / Angka Rapi</option>
+        </select>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Letak Atas / Bawah Menu</label>
+          <select id="d-nav-pos" onchange="applyDesignSettingsFromForm()">
+            <option value="bottom">Menu di Bawah</option>
+            <option value="top">Menu di Atas</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Letak Header</label>
+          <select id="d-header-pos" onchange="applyDesignSettingsFromForm()">
+            <option value="top">Header di Atas</option>
+            <option value="bottom">Header di Bawah</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Letak Kiri / Tengah / Kanan</label>
+          <select id="d-align" onchange="applyDesignSettingsFromForm()">
+            <option value="left">Rata Kiri</option>
+            <option value="center">Rata Tengah</option>
+            <option value="right">Rata Kanan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Warna Tema Utama</label>
+          <select id="d-theme" onchange="applyDesignSettingsFromForm()">
+            <option value="rose">Pink Lalily (Bawaan)</option>
+            <option value="berry">Berry Rose Gelap</option>
+            <option value="sage">Sage Hijau Daun</option>
+            <option value="lavender">Lavender Ungu Lembut</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group" style="padding-top:8px; border-top:1px dashed var(--border);">
+        <label>Ubah Password Khusus Desain</label>
+        <input type="text" id="d-new-pass" placeholder="Password khusus desain baru" />
+      </div>
+
+      <div class="grid-2">
+        <button type="button" class="btn-sm" style="padding:11px;" onclick="resetAllDesignDefaults()">Reset Default</button>
+        <button type="button" class="btn-primary" style="padding:11px;" onclick="saveDesignSettings()">Simpan Desain</button>
+      </div>
+      <button type="button" class="btn-sm" style="width:100%; margin-top:8px; padding:10px;" onclick="closeDesignStudioModal()">Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    var STORAGE_KEY = 'lalily_flowers_orders_v2';
+    var STOCK_KEY = 'lalily_flowers_stock_v1';
+    var AUTH_CREDS_KEY = 'lalily_admin_creds_v1';
+
+    var currentPeriod = 'all';
+    var uploadedStockPhoto = '';
+    var loadingTimerId = null;
+
+    function getCredentials() {
+      var raw = null;
+      try { raw = localStorage.getItem(AUTH_CREDS_KEY); } catch (e) {}
+      if (!raw) {
+        var def = { id: 'lalily', pass: 'lalily123', customized: false };
+        try { localStorage.setItem(AUTH_CREDS_KEY, JSON.stringify(def)); } catch (e) {}
+        return def;
+      }
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        return { id: 'lalily', pass: 'lalily123', customized: false };
+      }
+    }
+
+    function initLoginState() {
+      var creds = getCredentials();
+      var setId = document.getElementById('set-admin-id');
+      var setPass = document.getElementById('set-admin-pass');
+      if (setId) setId.value = creds.id;
+      if (setPass) setPass.value = creds.pass;
+      if (creds.customized) {
+        var hint = document.getElementById('login-hint');
+        if (hint) hint.style.display = 'none';
+      }
+      var loginScreen = document.getElementById('login-screen');
+      if (loginScreen) loginScreen.classList.remove('hidden');
+    }
+
+    function handleLogin(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var idEl = document.getElementById('login-id');
+      var passEl = document.getElementById('login-pass');
+      var errEl = document.getElementById('login-error');
+      var loginScreen = document.getElementById('login-screen');
+
+      var inputId = (idEl ? idEl.value : '').trim();
+      var inputPass = passEl ? passEl.value : '';
+      var creds = getCredentials();
+
+      if (inputId.toLowerCase() === String(creds.id).toLowerCase() && inputPass === String(creds.pass)) {
+        if (errEl) errEl.style.display = 'none';
+        if (idEl) idEl.value = '';
+        if (passEl) passEl.value = '';
+        if (loginScreen) loginScreen.classList.add('hidden');
+        startFiveSecondLoading();
+      } else {
+        if (errEl) errEl.style.display = 'block';
+      }
+    }
+
+    function startFiveSecondLoading() {
+      var loader = document.getElementById('loading-screen');
+      var bar = document.getElementById('loading-bar');
+      var timerTxt = document.getElementById('loading-countdown');
+
+      switchTab('orders', document.getElementById('nav-orders'));
+
+      if (loadingTimerId) {
+        clearInterval(loadingTimerId);
+        loadingTimerId = null;
+      }
+
+      if (loader) loader.classList.add('show');
+      if (bar) bar.style.width = '0%';
+      if (timerTxt) timerTxt.textContent = '5 detik...';
+
+      var duration = 5000;
+      var startTime = Date.now();
+
+      loadingTimerId = setInterval(function() {
+        var elapsed = Date.now() - startTime;
+        var pct = Math.min(100, (elapsed / duration) * 100);
+        var remSec = Math.max(0, Math.ceil((duration - elapsed) / 1000));
+
+        if (bar) bar.style.width = pct + '%';
+        if (timerTxt) timerTxt.textContent = remSec > 0 ? (remSec + ' detik...') : 'Siap!';
+
+        if (elapsed >= duration) {
+          clearInterval(loadingTimerId);
+          loadingTimerId = null;
+          if (loader) loader.classList.remove('show');
+          checkAndTriggerReminders(true);
+        }
+      }, 100);
+    }
+
+    function toggleLoginPass(ev) {
+      if (ev && ev.preventDefault) ev.preventDefault();
+      var inp = document.getElementById('login-pass');
+      var btn = document.querySelector('.pass-toggle');
+      if (!inp) return false;
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        if (btn) btn.textContent = 'Tutup';
+      } else {
+        inp.type = 'password';
+        if (btn) btn.textContent = 'Lihat';
+      }
+      return false;
+    }
+
+    function updateCredentials(e) {
+      e.preventDefault();
+      var newId = document.getElementById('set-admin-id').value.trim();
+      var newPass = document.getElementById('set-admin-pass').value;
+      if (!newId || !newPass) return;
+
+      try {
+        localStorage.setItem(AUTH_CREDS_KEY, JSON.stringify({
+          id: newId,
+          pass: newPass,
+          customized: true
+        }));
+      } catch (err) {}
+
+      document.getElementById('login-hint').style.display = 'none';
+      var msg = document.getElementById('cred-saved-msg');
+      msg.style.display = 'block';
+      setTimeout(function() { msg.style.display = 'none'; }, 3500);
+    }
+
+    function logoutApp() {
+      if (loadingTimerId) {
+        clearInterval(loadingTimerId);
+        loadingTimerId = null;
+      }
+      document.getElementById('loading-screen').classList.remove('show');
+      document.getElementById('login-id').value = '';
+      document.getElementById('login-pass').value = '';
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('login-screen').classList.remove('hidden');
+    }
+
+    function todayIso() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function addDaysIso(days) {
+      return new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
+    }
+
+    var defaultOrders = [
+      {
+        id: 'LF-101',
+        customer: 'Kak Clarissa',
+        phone: '081234567890',
+        category: 'Buket Bunga Segar',
+        item: 'Buket Lily Pink & Baby Breath + Kartu Ucapan',
+        deadline: addDaysIso(2),
+        costFlower: 95000,
+        costWrap: 30000,
+        costOther: 15000,
+        price: 250000,
+        paid: 250000,
+        status: 'Dirangkai',
+        createdAt: todayIso()
+      },
+      {
+        id: 'LF-102',
+        customer: 'Mas Dimas',
+        phone: '085712345678',
+        category: 'Kotak Seserahan',
+        item: 'Hias 3 Box Seserahan Akrilik Tema Blush Pink',
+        deadline: addDaysIso(6),
+        costFlower: 120000,
+        costWrap: 85000,
+        costOther: 20000,
+        price: 450000,
+        paid: 200000,
+        status: 'Antrean',
+        createdAt: todayIso()
+      }
+    ];
+
+    function getOrders() {
+      var raw = null;
+      try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+      if (!raw) {
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultOrders)); } catch (e) {}
+        return defaultOrders.slice();
+      }
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveOrdersList(list) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+
+    function getDaysUntil(dateStr) {
+      if (!dateStr) return 999;
+      var now = new Date();
+      now.setHours(0, 0, 0, 0);
+      var target = new Date(dateStr + 'T00:00:00');
+      return Math.round((target - now) / 86400000);
+    }
+
+    function getUpcomingReminders() {
+      return getOrders().filter(function(o) {
+        if (o.status === 'Selesai') return false;
+        var diff = getDaysUntil(o.deadline);
+        return diff >= 0 && diff <= 7;
+      });
+    }
+
+    function checkAndTriggerReminders(sendBrowserNotif) {
+      var dueList = getUpcomingReminders();
+      var badge = document.getElementById('bell-count');
+      var banner = document.getElementById('reminder-banner');
+
+      if (dueList.length > 0) {
+        badge.style.display = 'flex';
+        badge.textContent = String(dueList.length);
+        banner.classList.add('show');
+        document.getElementById('reminder-title').textContent = dueList.length + ' Pesanan Harus Dikirim <= 7 Hari Lagi!';
+        var first = dueList[0];
+        var d = getDaysUntil(first.deadline);
+        var dayText = d === 0 ? 'HARI INI' : (d + ' hari lagi');
+        document.getElementById('reminder-desc').textContent = 'Terdekat: ' + first.customer + ' (' + dayText + ') - Ketuk untuk detail';
+
+        if (sendBrowserNotif && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          try {
+            new Notification('Pengingat Lalily Flowers', {
+              body: 'Ada ' + dueList.length + ' pesanan jatuh tempo dalam 1 minggu ke depan! Terdekat: ' + first.customer + ' (' + dayText + ').'
+            });
+          } catch (e) {}
+        }
+      } else {
+        badge.style.display = 'none';
+        banner.classList.remove('show');
+      }
+    }
+
+    function requestHpNotification() {
+      var statusEl = document.getElementById('notif-status-text');
+      if (typeof Notification === 'undefined') {
+        statusEl.textContent = 'Browser ini tidak mendukung push notifikasi langsung. Gunakan tombol Simpan ke Kalender iPhone di menu Pengingat.';
+        return;
+      }
+      Notification.requestPermission().then(function(perm) {
+        if (perm === 'granted') {
+          statusEl.textContent = 'Notifikasi HP aktif! Pengingat H-7 akan muncul otomatis.';
+          checkAndTriggerReminders(true);
+        } else {
+          statusEl.textContent = 'Izin notifikasi belum aktif di pengaturan Safari/HP.';
+        }
+      });
+    }
+
+    function openReminderModal() {
+      var dueList = getUpcomingReminders();
+      var wrap = document.getElementById('reminder-list-modal');
+      if (!dueList.length) {
+        wrap.innerHTML = '<div class="empty-state" style="padding:20px;">Tidak ada pesanan yang jatuh tempo dalam 7 hari ke depan.</div>';
+      } else {
+        wrap.innerHTML = dueList.map(function(o) {
+          var d = getDaysUntil(o.deadline);
+          var label = d === 0 ? 'HARI INI' : (d === 1 ? 'BESOK (H-1)' : (d + ' hari lagi (H-' + d + ')'));
+          return (
+            '<div class="notif-item">' +
+              '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
+                '<strong>' + o.customer + '</strong>' +
+                '<span class="badge ' + (d <= 1 ? 'badge-urgent' : 'badge-week') + '">' + label + '</span>' +
+              '</div>' +
+              '<div style="color:var(--pink-dark); font-weight:600;">' + o.item + '</div>' +
+              '<div style="color:var(--text-muted); font-size:11.5px; margin:4px 0 8px;">Jadwal Kirim: ' + o.deadline + ' &bull; Status: ' + o.status + '</div>' +
+              '<button type="button" class="btn-sm pink" style="width:100%;" onclick="downloadCalendarEvent(&#39;' + o.id + '&#39;)">Pasang Alarm Kalender iPhone (H-7 &amp; Hari-H)</button>' +
+            '</div>'
+          );
+        }).join('');
+      }
+      document.getElementById('reminder-modal').classList.add('show');
+    }
+
+    function closeReminderModal() {
+      document.getElementById('reminder-modal').classList.remove('show');
+    }
+
+    function downloadCalendarEvent(id) {
+      var o = getOrders().find(function(x) { return x.id === id; });
+      if (!o || !o.deadline) return;
+      var dt = o.deadline.replace(/-/g, '');
+      var lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Lalily Flowers//Admin//ID',
+        'BEGIN:VEVENT',
+        'UID:' + o.id + '@lalilyflowers',
+        'DTSTAMP:' + dt + 'T080000',
+        'DTSTART;VALUE=DATE:' + dt,
+        'SUMMARY:Kirim Pesanan Lalily: ' + o.customer + ' (' + o.item + ')',
+        'DESCRIPTION:Kategori: ' + o.category + ' | Total: ' + formatRp(o.price),
+        'BEGIN:VALARM',
+        'TRIGGER:-P7D',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Pengingat H-7 Pesanan Lalily Flowers',
+        'END:VALARM',
+        'BEGIN:VALARM',
+        'TRIGGER:-PT2H',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Hari ini jadwal kirim pesanan Lalily Flowers',
+        'END:VALARM',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ];
+      var blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Pengingat_' + o.customer.replace(/\s+/g, '_') + '.ics';
+      a.click();
+    }
+
+    function formatRp(num) {
+      return 'Rp' + (Number(num) || 0).toLocaleString('id-ID');
+    }
+
+    var defaultStocks = [
+      { id: 'STK-1', name: 'Lily Pink Casablanka', qty: 14, unit: 'Tangkai', cost: 22000, photo: '' },
+      { id: 'STK-2', name: 'Mawar Semi Holland Pink', qty: 25, unit: 'Tangkai', cost: 8000, photo: '' },
+      { id: 'STK-3', name: 'Baby Breath Import', qty: 4, unit: 'Ikat / Bunch', cost: 45000, photo: '' },
+      { id: 'STK-4', name: 'Kertas Cellophane Blush', qty: 18, unit: 'Lembar / Roll', cost: 4500, photo: '' }
+    ];
+
+    function getStocks() {
+      var raw = null;
+      try { raw = localStorage.getItem(STOCK_KEY); } catch (e) {}
+      if (!raw) {
+        try { localStorage.setItem(STOCK_KEY, JSON.stringify(defaultStocks)); } catch (e) {}
+        return defaultStocks.slice();
+      }
+      try {
+        return JSON.parse(raw);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveStocks(list) {
+      try { localStorage.setItem(STOCK_KEY, JSON.stringify(list)); } catch (e) {}
+    }
+
+    function handleStockPhoto(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var maxW = 480;
+          var scale = Math.min(1, maxW / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          uploadedStockPhoto = canvas.toDataURL('image/jpeg', 0.72);
+          var prev = document.getElementById('s-photo-preview');
+          prev.src = uploadedStockPhoto;
+          prev.style.display = 'block';
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addFlowerStock(e) {
+      e.preventDefault();
+      var stocks = getStocks();
+      var item = {
+        id: 'STK-' + Math.floor(100 + Math.random() * 900),
+        name: document.getElementById('s-name').value.trim(),
+        qty: Number(document.getElementById('s-qty').value) || 0,
+        unit: document.getElementById('s-unit').value,
+        cost: Number(document.getElementById('s-cost').value) || 0,
+        photo: uploadedStockPhoto
+      };
+      stocks.unshift(item);
+      saveStocks(stocks);
+      e.target.reset();
+      uploadedStockPhoto = '';
+      document.getElementById('s-photo-preview').style.display = 'none';
+      renderStocks();
+    }
+
+    function adjustStock(id, delta) {
+      var stocks = getStocks();
+      var item = stocks.find(function(x) { return x.id === id; });
+      if (!item) return;
+      item.qty = Math.max(0, (Number(item.qty) || 0) + delta);
+      saveStocks(stocks);
+      renderStocks();
+    }
+
+    function deleteStock(id) {
+      if (!confirm('Hapus item bunga ini dari stok?')) return;
+      saveStocks(getStocks().filter(function(x) { return x.id !== id; }));
+      renderStocks();
+    }
+
+    function renderStocks() {
+      var stocks = getStocks();
+      document.getElementById('stock-total-label').textContent = stocks.length + ' jenis';
+      var grid = document.getElementById('stock-list');
+      if (!stocks.length) {
+        grid.innerHTML = '<div class="empty-state" style="grid-column:span 2;">Belum ada catatan stok bunga.</div>';
+        return;
+      }
+      grid.innerHTML = stocks.map(function(s) {
+        var low = s.qty <= 3;
+        var imgHtml = s.photo
+          ? ('<img src="' + s.photo + '" class="stock-img" alt="' + s.name + '" />')
+          : '<div class="stock-img"><span style="font-size:12px; font-weight:700;">Lalily Floral</span></div>';
+        return (
+          '<div class="stock-card">' +
+            imgHtml +
+            '<div class="stock-body">' +
+              '<div>' +
+                '<div class="stock-title">' + s.name + '</div>' +
+                '<div class="stock-price">Modal: ' + formatRp(s.cost) + ' / ' + s.unit + '</div>' +
+              '</div>' +
+              '<div>' +
+                '<div class="stock-qty-row">' +
+                  '<button type="button" class="qty-btn" onclick="adjustStock(&#39;' + s.id + '&#39;, -1)">-</button>' +
+                  '<span style="font-size:12px; font-weight:800; color:' + (low ? 'var(--red)' : 'var(--text)') + ';">' + s.qty + ' ' + s.unit.split(' ')[0] + '</span>' +
+                  '<button type="button" class="qty-btn" onclick="adjustStock(&#39;' + s.id + '&#39;, 1)">+</button>' +
+                '</div>' +
+                '<button type="button" class="btn-sm danger" style="width:100%; padding:5px;" onclick="deleteStock(&#39;' + s.id + '&#39;)">Hapus</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function generateHDAppIcon() {
+      var canvas = document.createElement('canvas');
+      canvas.width = 1024;
+      canvas.height = 1024;
+      var ctx = canvas.getContext('2d');
+
+      var bgGrad = ctx.createLinearGradient(0, 0, 1024, 1024);
+      bgGrad.addColorStop(0, '#FFF5F8');
+      bgGrad.addColorStop(1, '#FAD4E2');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      ctx.strokeStyle = 'rgba(225, 106, 147, 0.25)';
+      ctx.lineWidth = 8;
+      ctx.strokeRect(44, 44, 936, 936);
+
+      ctx.save();
+      ctx.translate(655, 425);
+      ctx.rotate(-0.18);
+
+      var petals = [
+        { angle: -2.5, len: 235, wid: 78 },
+        { angle: -1.35, len: 250, wid: 85 },
+        { angle: -0.2, len: 265, wid: 88 },
+        { angle: 0.95, len: 245, wid: 82 },
+        { angle: 2.1, len: 230, wid: 76 },
+        { angle: 2.95, len: 195, wid: 68 }
+      ];
+
+      petals.forEach(function(p) {
+        ctx.save();
+        ctx.rotate(p.angle);
+        var pGrad = ctx.createLinearGradient(0, 0, p.len, 0);
+        pGrad.addColorStop(0, '#C94A78');
+        pGrad.addColorStop(0.35, '#F5A3C0');
+        pGrad.addColorStop(1, '#FCE7EF');
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(p.len * 0.35, -p.wid, p.len * 0.8, -p.wid * 0.65, p.len, 0);
+        ctx.bezierCurveTo(p.len * 0.8, p.wid * 0.65, p.len * 0.35, p.wid, 0, 0);
+        ctx.fillStyle = pGrad;
+        ctx.fill();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#D46A92';
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      var innerGrad = ctx.createRadialGradient(0, 0, 10, 0, 0, 95);
+      innerGrad.addColorStop(0, '#FFFDFD');
+      innerGrad.addColorStop(0.6, '#F7B2CA');
+      innerGrad.addColorStop(1, '#E2749B');
+      ctx.beginPath();
+      ctx.arc(0, 0, 82, 0, Math.PI * 2);
+      ctx.fillStyle = innerGrad;
+      ctx.fill();
+
+      for (var i = 0; i < 8; i++) {
+        var a = (i * Math.PI) / 4;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(a) * 18, Math.sin(a) * 18);
+        ctx.lineTo(Math.cos(a) * 58, Math.sin(a) * 58);
+        ctx.strokeStyle = '#C94A78';
+        ctx.lineWidth = 3.5;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(Math.cos(a) * 63, Math.sin(a) * 63, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#F59E0B';
+        ctx.fill();
+      }
+      ctx.restore();
+
+      ctx.save();
+      ctx.fillStyle = '#D95384';
+      ctx.font = 'italic 700 185px "Snell Roundhand", "Brush Script MT", Georgia, serif';
+      ctx.fillText('Lalily', 92, 515);
+      ctx.font = 'italic 600 128px "Snell Roundhand", "Brush Script MT", Georgia, serif';
+      ctx.fillText('Flowers', 225, 675);
+      ctx.restore();
+
+      var dataUrl = canvas.toDataURL('image/png');
+      var appleIcon = document.getElementById('apple-touch-icon');
+      var favIcon = document.getElementById('favicon');
+      if (appleIcon) appleIcon.href = dataUrl;
+      if (favIcon) favIcon.href = dataUrl;
+
+      ['brand-logo-img', 'login-logo-img', 'loading-logo-img', 'account-logo-preview'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.src = dataUrl;
+      });
+    }
+
+    function switchTab(name, el) {
+      document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      var targetPanel = document.getElementById('tab-' + name);
+      if (targetPanel) targetPanel.classList.add('active');
+      if (el) el.classList.add('active');
+      if (name === 'orders') renderOrders();
+      if (name === 'stock') renderStocks();
+    }
+
+    function setPeriod(period, el) {
+      currentPeriod = period;
+      document.querySelectorAll('.filter-row .chip').forEach(function(c) { c.classList.remove('active'); });
+      el.classList.add('active');
+      renderOrders();
+    }
+
+    function renderOrders() {
+      var orders = getOrders();
+      var statusFilter = document.getElementById('status-filter').value;
+      var q = (document.getElementById('search-order').value || '').toLowerCase().trim();
+      var todayStr = todayIso();
+      var monthPrefix = todayStr.slice(0, 7);
+
+      var periodFiltered = orders.filter(function(o) {
+        if (currentPeriod === 'today') return o.deadline === todayStr || o.createdAt === todayStr;
+        if (currentPeriod === 'month') return (o.deadline || '').indexOf(monthPrefix) === 0;
+        if (currentPeriod === 'upcoming7') {
+          var d = getDaysUntil(o.deadline);
+          return o.status !== 'Selesai' && d >= 0 && d <= 7;
+        }
+        return true;
+      });
+
+      var omzet = 0, hpp = 0, unpaid = 0;
+      periodFiltered.forEach(function(o) {
+        var totalModal = (Number(o.costFlower) || 0) + (Number(o.costWrap) || 0) + (Number(o.costOther) || 0);
+        var harga = Number(o.price) || 0;
+        var bayar = Number(o.paid) || 0;
+        omzet += harga;
+        hpp += totalModal;
+        if (harga > bayar) unpaid += (harga - bayar);
+      });
+
+      var profit = omzet - hpp;
+      var margin = omzet > 0 ? Math.round((profit / omzet) * 100) : 0;
+
+      document.getElementById('stat-omzet').textContent = formatRp(omzet);
+      document.getElementById('stat-count').textContent = periodFiltered.length + ' pesanan';
+      document.getElementById('stat-profit').textContent = formatRp(profit);
+      document.getElementById('stat-margin').textContent = 'Margin ' + margin + '%';
+      document.getElementById('stat-hpp').textContent = formatRp(hpp);
+      document.getElementById('stat-unpaid').textContent = formatRp(unpaid);
+
+      var displayList = periodFiltered.filter(function(o) {
+        var matchStatus = statusFilter === 'all' || o.status === statusFilter;
+        var matchQuery = !q || (o.customer || '').toLowerCase().indexOf(q) !== -1 || (o.item || '').toLowerCase().indexOf(q) !== -1;
+        return matchStatus && matchQuery;
+      });
+
+      var container = document.getElementById('orders-list');
+      if (!displayList.length) {
+        container.innerHTML = '<div class="empty-state">Tidak ada pesanan yang cocok.<br/>Ketuk tab <strong>Tambah</strong> di bawah untuk mencatat pesanan baru.</div>';
+        return;
+      }
+
+      container.innerHTML = displayList.map(function(o) {
+        var modal = (Number(o.costFlower) || 0) + (Number(o.costWrap) || 0) + (Number(o.costOther) || 0);
+        var laba = (Number(o.price) || 0) - modal;
+        var sisa = Math.max(0, (Number(o.price) || 0) - (Number(o.paid) || 0));
+        var badgeCls = o.status === 'Selesai' ? 'badge-selesai' : (o.status === 'Dirangkai' ? 'badge-proses' : 'badge-pending');
+        var diffDays = getDaysUntil(o.deadline);
+
+        var dueBadge = '';
+        if (o.status !== 'Selesai') {
+          if (diffDays === 0) dueBadge = '<span class="badge badge-urgent">HARI INI</span>';
+          else if (diffDays > 0 && diffDays <= 7) dueBadge = '<span class="badge badge-week">H-' + diffDays + '</span>';
+        }
+
+        return (
+          '<div class="card">' +
+            '<div class="order-top">' +
+              '<div>' +
+                '<div class="order-name">' + o.customer + ' <span style="font-weight:400; font-size:12px; color:var(--text-muted);">(' + o.category + ')</span></div>' +
+                '<div class="order-item">' + o.item + '</div>' +
+              '</div>' +
+              '<div>' +
+                '<span class="badge ' + badgeCls + '">' + o.status + '</span>' +
+                dueBadge +
+              '</div>' +
+            '</div>' +
+            '<div class="order-meta">' +
+              '<span>Kirim: <strong>' + (o.deadline || '-') + '</strong></span>' +
+              '<span>' + (sisa === 0 ? '<strong style="color:var(--green);">Lunas</strong>' : 'Kurang: <strong style="color:var(--red);">' + formatRp(sisa) + '</strong>') + '</span>' +
+            '</div>' +
+            '<div class="order-finance">' +
+              '<div class="fin-col"><span>Harga Jual</span><strong>' + formatRp(o.price) + '</strong></div>' +
+              '<div class="fin-col"><span>Modal (HPP)</span><strong>' + formatRp(modal) + '</strong></div>' +
+              '<div class="fin-col"><span>Laba Bersih</span><strong style="color:var(--green);">' + formatRp(laba) + '</strong></div>' +
+            '</div>' +
+            '<div class="order-actions">' +
+              '<button type="button" class="btn-sm pink" onclick="openNota(&#39;' + o.id + '&#39;)">Nota WA</button>' +
+              '<button type="button" class="btn-sm" onclick="cycleStatus(&#39;' + o.id + '&#39;)">Ubah Status</button>' +
+              (sisa > 0 ? ('<button type="button" class="btn-sm green" onclick="markPaid(&#39;' + o.id + '&#39;)">Lunasi</button>') : '') +
+              '<button type="button" class="btn-sm" onclick="editOrder(&#39;' + o.id + '&#39;)">Edit</button>' +
+              '<button type="button" class="btn-sm danger" onclick="deleteOrder(&#39;' + o.id + '&#39;)">Hapus</button>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function calcFormHpp() {
+      var f = Number(document.getElementById('f-cost-flower').value) || 0;
+      var w = Number(document.getElementById('f-cost-wrap').value) || 0;
+      var o = Number(document.getElementById('f-cost-other').value) || 0;
+      var p = Number(document.getElementById('f-price').value) || 0;
+      var hpp = f + w + o;
+      var profit = p - hpp;
+      var pct = p > 0 ? Math.round((profit / p) * 100) : 0;
+      document.getElementById('prev-hpp').textContent = formatRp(hpp);
+      document.getElementById('prev-profit').textContent = formatRp(profit) + ' (' + pct + '%)';
+    }
+
+    function saveOrder(e) {
+      e.preventDefault();
+      var orders = getOrders();
+      var editId = document.getElementById('edit-id').value;
+
+      var payload = {
+        id: editId || ('LF-' + Math.floor(100 + Math.random() * 900)),
+        customer: document.getElementById('f-customer').value.trim(),
+        phone: document.getElementById('f-phone').value.trim(),
+        category: document.getElementById('f-category').value,
+        deadline: document.getElementById('f-deadline').value,
+        item: document.getElementById('f-item').value.trim(),
+        costFlower: Number(document.getElementById('f-cost-flower').value) || 0,
+        costWrap: Number(document.getElementById('f-cost-wrap').value) || 0,
+        costOther: Number(document.getElementById('f-cost-other').value) || 0,
+        price: Number(document.getElementById('f-price').value) || 0,
+        paid: Number(document.getElementById('f-paid').value) || 0,
+        status: document.getElementById('f-status').value,
+        createdAt: todayIso()
+      };
+
+      if (editId) {
+        var idx = orders.findIndex(function(x) { return x.id === editId; });
+        if (idx > -1) orders[idx] = payload;
+      } else {
+        orders.unshift(payload);
+      }
+
+      saveOrdersList(orders);
+      resetForm();
+      checkAndTriggerReminders(true);
+      switchTab('orders', document.getElementById('nav-orders'));
+    }
+
+    function editOrder(id) {
+      var o = getOrders().find(function(x) { return x.id === id; });
+      if (!o) return;
+      document.getElementById('edit-id').value = o.id;
+      document.getElementById('form-title').textContent = 'Edit Pesanan (' + o.id + ')';
+      document.getElementById('f-customer').value = o.customer;
+      document.getElementById('f-phone').value = o.phone || '';
+      document.getElementById('f-category').value = o.category;
+      document.getElementById('f-deadline').value = o.deadline;
+      document.getElementById('f-item').value = o.item;
+      document.getElementById('f-cost-flower').value = o.costFlower;
+      document.getElementById('f-cost-wrap').value = o.costWrap;
+      document.getElementById('f-cost-other').value = o.costOther;
+      document.getElementById('f-price').value = o.price;
+      document.getElementById('f-paid').value = o.paid;
+      document.getElementById('f-status').value = o.status;
+      document.getElementById('btn-cancel-edit').style.display = 'block';
+      calcFormHpp();
+      switchTab('add', document.getElementById('nav-add'));
+    }
+
+    function resetForm() {
+      document.getElementById('order-form').reset();
+      document.getElementById('edit-id').value = '';
+      document.getElementById('form-title').textContent = 'Catat Pesanan Baru';
+      document.getElementById('f-deadline').value = todayIso();
+      document.getElementById('btn-cancel-edit').style.display = 'none';
+      calcFormHpp();
+    }
+
+    function cycleStatus(id) {
+      var orders = getOrders();
+      var o = orders.find(function(x) { return x.id === id; });
+      if (!o) return;
+      var flow = ['Antrean', 'Dirangkai', 'Selesai'];
+      o.status = flow[(flow.indexOf(o.status) + 1) % flow.length];
+      saveOrdersList(orders);
+      checkAndTriggerReminders(false);
+      renderOrders();
+    }
+
+    function markPaid(id) {
+      var orders = getOrders();
+      var o = orders.find(function(x) { return x.id === id; });
+      if (!o) return;
+      o.paid = o.price;
+      saveOrdersList(orders);
+      renderOrders();
+    }
+
+    function deleteOrder(id) {
+      if (!confirm('Hapus pesanan ini?')) return;
+      var orders = getOrders().filter(function(x) { return x.id !== id; });
+      saveOrdersList(orders);
+      checkAndTriggerReminders(false);
+      renderOrders();
+    }
+
+    function openNota(id) {
+      var o = getOrders().find(function(x) { return x.id === id; });
+      if (!o) return;
+      var sisa = Math.max(0, (Number(o.price) || 0) - (Number(o.paid) || 0));
+      var text =
+        '*NOTA PESANAN - LALILY FLOWERS*\n' +
+        'No. Order: ' + o.id + '\n' +
+        'Pemesan: ' + o.customer + '\n' +
+        'Kategori: ' + o.category + '\n' +
+        'Detail: ' + o.item + '\n' +
+        'Tanggal Ambil/Kirim: ' + o.deadline + '\n' +
+        '--------------------------------\n' +
+        'Total Harga: ' + formatRp(o.price) + '\n' +
+        'Sudah Dibayar: ' + formatRp(o.paid) + '\n' +
+        'Sisa Tagihan: ' + (sisa === 0 ? 'LUNAS' : formatRp(sisa)) + '\n' +
+        '--------------------------------\n' +
+        'Terima kasih telah mempercayakan momen spesialmu bersama Lalily Flowers!';
+
+      document.getElementById('nota-text').textContent = text;
+      var cleanPhone = (o.phone || '').replace(/[^0-9]/g, '').replace(/^0/, '62');
+      document.getElementById('btn-wa-send').onclick = function() {
+        var url = cleanPhone
+          ? ('https://wa.me/' + cleanPhone + '?text=' + encodeURIComponent(text))
+          : ('https://wa.me/?text=' + encodeURIComponent(text));
+        window.open(url, '_blank');
+      };
+      document.getElementById('nota-modal').classList.add('show');
+    }
+
+    function closeNotaModal() {
+      document.getElementById('nota-modal').classList.remove('show');
+    }
+
+    function copyNota() {
+      var txt = document.getElementById('nota-text').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function() { alert('Teks nota berhasil disalin!'); });
+      }
+    }
+
+    function runQuickCalc() {
+      var f = Number(document.getElementById('c-flower').value) || 0;
+      var w = Number(document.getElementById('c-wrap').value) || 0;
+      var l = Number(document.getElementById('c-labor').value) || 0;
+      var m = Number(document.getElementById('c-margin').value) || 0;
+      var hpp = f + w + l;
+      var profit = Math.round(hpp * (m / 100));
+      var price = hpp + profit;
+      document.getElementById('c-res-hpp').textContent = formatRp(hpp);
+      document.getElementById('c-res-profit').textContent = formatRp(profit);
+      document.getElementById('c-res-price').textContent = formatRp(price);
+    }
+
+    function applyHppToOrder() {
+      var f = Number(document.getElementById('c-flower').value) || 0;
+      var w = Number(document.getElementById('c-wrap').value) || 0;
+      var l = Number(document.getElementById('c-labor').value) || 0;
+      var m = Number(document.getElementById('c-margin').value) || 0;
+      var hpp = f + w + l;
+      var price = hpp + Math.round(hpp * (m / 100));
+
+      resetForm();
+      document.getElementById('f-cost-flower').value = f;
+      document.getElementById('f-cost-wrap').value = w;
+      document.getElementById('f-cost-other').value = l;
+      document.getElementById('f-price').value = price;
+      calcFormHpp();
+      switchTab('add', document.getElementById('nav-add'));
+    }
+
+    function exportCSV() {
+      var orders = getOrders();
+      var headers = ['ID', 'Pemesan', 'WhatsApp', 'Kategori', 'Detail', 'Deadline', 'Modal_Total', 'Harga_Jual', 'Laba_Bersih', 'Dibayar', 'Status'];
+      var rows = orders.map(function(o) {
+        var modal = (Number(o.costFlower) || 0) + (Number(o.costWrap) || 0) + (Number(o.costOther) || 0);
+        var laba = (Number(o.price) || 0) - modal;
+        return [o.id, o.customer, o.phone, o.category, o.item, o.deadline, modal, o.price, laba, o.paid, o.status]
+          .map(function(v) { return '"' + String(v || '').replace(/"/g, '""') + '"'; }).join(',');
+      });
+      var csv = [headers.join(',')].concat(rows).join('\n');
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Lalily_Flowers_Laporan.csv';
+      a.click();
+    }
+
+    function exportJSON() {
+      var data = { orders: getOrders(), stocks: getStocks() };
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Lalily_Flowers_Backup.json';
+      a.click();
+    }
+
+
+    var DESIGN_SETTINGS_KEY = 'lalily_design_settings_v1';
+
+    var defaultDesignSettings = {
+      designPass: 'design123',
+      customLogo: '',
+      font: 'sans',
+      navPos: 'bottom',
+      headerPos: 'top',
+      align: 'left',
+      theme: 'rose'
+    };
+
+    function getDesignSettings() {
+      var raw = null;
+      try { raw = localStorage.getItem(DESIGN_SETTINGS_KEY); } catch (e) {}
+      if (!raw) return JSON.parse(JSON.stringify(defaultDesignSettings));
+      try {
+        var parsed = JSON.parse(raw);
+        return Object.assign({}, defaultDesignSettings, parsed);
+      } catch (e) {
+        return JSON.parse(JSON.stringify(defaultDesignSettings));
+      }
+    }
+
+    function saveDesignObj(obj) {
+      try { localStorage.setItem(DESIGN_SETTINGS_KEY, JSON.stringify(obj)); } catch (e) {}
+    }
+
+    function openDesignAuthModal() {
+      var err = document.getElementById('design-auth-error');
+      var inp = document.getElementById('design-pass-input');
+      if (err) err.style.display = 'none';
+      if (inp) inp.value = '';
+      var m = document.getElementById('design-auth-modal');
+      if (m) m.classList.add('show');
+    }
+
+    function closeDesignAuthModal() {
+      var m = document.getElementById('design-auth-modal');
+      if (m) m.classList.remove('show');
+    }
+
+    function verifyDesignPassword(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var inp = document.getElementById('design-pass-input');
+      var err = document.getElementById('design-auth-error');
+      var cfg = getDesignSettings();
+      if (inp && inp.value === String(cfg.designPass)) {
+        if (err) err.style.display = 'none';
+        closeDesignAuthModal();
+        openDesignStudioModal();
+      } else if (err) {
+        err.style.display = 'block';
+      }
+    }
+
+    function openDesignStudioModal() {
+      var cfg = getDesignSettings();
+      var fEl = document.getElementById('d-font');
+      var nEl = document.getElementById('d-nav-pos');
+      var hEl = document.getElementById('d-header-pos');
+      var aEl = document.getElementById('d-align');
+      var tEl = document.getElementById('d-theme');
+      var pEl = document.getElementById('d-new-pass');
+      if (fEl) fEl.value = cfg.font;
+      if (nEl) nEl.value = cfg.navPos;
+      if (hEl) hEl.value = cfg.headerPos;
+      if (aEl) aEl.value = cfg.align;
+      if (tEl) tEl.value = cfg.theme;
+      if (pEl) pEl.value = cfg.designPass;
+      var m = document.getElementById('design-studio-modal');
+      if (m) m.classList.add('show');
+    }
+
+    function closeDesignStudioModal() {
+      var m = document.getElementById('design-studio-modal');
+      if (m) m.classList.remove('show');
+    }
+
+    function applyThemeColors(themeName) {
+      var root = document.documentElement;
+      var themes = {
+        rose: {
+          '--bg': '#FFF8FA',
+          '--surface': '#FFFFFF',
+          '--surface-soft': '#FFF1F5',
+          '--border': '#F7D6E0',
+          '--pink-primary': '#E16A93',
+          '--pink-dark': '#B8426D',
+          '--pink-light': '#FCE4EC'
+        },
+        berry: {
+          '--bg': '#FFF5F8',
+          '--surface': '#FFFFFF',
+          '--surface-soft': '#FDE8F0',
+          '--border': '#F2BFD3',
+          '--pink-primary': '#C23B6D',
+          '--pink-dark': '#8C234B',
+          '--pink-light': '#FAD2E1'
+        },
+        sage: {
+          '--bg': '#F6FAF7',
+          '--surface': '#FFFFFF',
+          '--surface-soft': '#EBF5EE',
+          '--border': '#C8E2D0',
+          '--pink-primary': '#4E8C6A',
+          '--pink-dark': '#2F6648',
+          '--pink-light': '#DCF0E3'
+        },
+        lavender: {
+          '--bg': '#F9F7FF',
+          '--surface': '#FFFFFF',
+          '--surface-soft': '#EFEBFD',
+          '--border': '#D8CFF5',
+          '--pink-primary': '#8667D6',
+          '--pink-dark': '#5D40AD',
+          '--pink-light': '#E6DEFC'
+        }
+      };
+      var chosen = themes[themeName] || themes.rose;
+      Object.keys(chosen).forEach(function(k) {
+        root.style.setProperty(k, chosen[k]);
+      });
+    }
+
+    function applyFontFamily(fontKey) {
+      var map = {
+        sans: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif',
+        serif: 'Georgia, "Times New Roman", serif',
+        rounded: '"Comic Sans MS", "Trebuchet MS", "Segoe UI", sans-serif',
+        mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+      };
+      document.body.style.fontFamily = map[fontKey] || map.sans;
+    }
+
+    function applyDesignSettings(cfg) {
+      applyThemeColors(cfg.theme);
+      applyFontFamily(cfg.font);
+
+      document.body.classList.remove('align-center', 'align-right', 'nav-top', 'header-bottom');
+      if (cfg.align === 'center') document.body.classList.add('align-center');
+      if (cfg.align === 'right') document.body.classList.add('align-right');
+      if (cfg.navPos === 'top') document.body.classList.add('nav-top');
+      if (cfg.headerPos === 'bottom') document.body.classList.add('header-bottom');
+
+      if (cfg.customLogo) {
+        var appleIcon = document.getElementById('apple-touch-icon');
+        var favIcon = document.getElementById('favicon');
+        if (appleIcon) appleIcon.href = cfg.customLogo;
+        if (favIcon) favIcon.href = cfg.customLogo;
+        ['brand-logo-img', 'login-logo-img', 'loading-logo-img', 'account-logo-preview'].forEach(function(id) {
+          var el = document.getElementById(id);
+          if (el) el.src = cfg.customLogo;
+        });
+      } else {
+        generateHDAppIcon();
+      }
+    }
+
+    function applyDesignSettingsFromForm() {
+      var cur = getDesignSettings();
+      cur.font = document.getElementById('d-font').value;
+      cur.navPos = document.getElementById('d-nav-pos').value;
+      cur.headerPos = document.getElementById('d-header-pos').value;
+      cur.align = document.getElementById('d-align').value;
+      cur.theme = document.getElementById('d-theme').value;
+      applyDesignSettings(cur);
+    }
+
+    function handleCustomLogoUpload(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var size = 512;
+          canvas.width = size;
+          canvas.height = size;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, size, size);
+          var dataUrl = canvas.toDataURL('image/png', 0.9);
+          var cur = getDesignSettings();
+          cur.customLogo = dataUrl;
+          saveDesignObj(cur);
+          applyDesignSettings(cur);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetCustomLogo() {
+      var cur = getDesignSettings();
+      cur.customLogo = '';
+      saveDesignObj(cur);
+      applyDesignSettings(cur);
+    }
+
+    function saveDesignSettings() {
+      var cur = getDesignSettings();
+      cur.font = document.getElementById('d-font').value;
+      cur.navPos = document.getElementById('d-nav-pos').value;
+      cur.headerPos = document.getElementById('d-header-pos').value;
+      cur.align = document.getElementById('d-align').value;
+      cur.theme = document.getElementById('d-theme').value;
+      var newPass = (document.getElementById('d-new-pass').value || '').trim();
+      if (newPass) cur.designPass = newPass;
+      saveDesignObj(cur);
+      applyDesignSettings(cur);
+
+      var msg = document.getElementById('design-saved-msg');
+      if (msg) {
+        msg.style.display = 'block';
+        setTimeout(function() { msg.style.display = 'none'; }, 2500);
+      }
+    }
+
+    function resetAllDesignDefaults() {
+      var cur = getDesignSettings();
+      var fresh = Object.assign({}, defaultDesignSettings, { designPass: cur.designPass });
+      saveDesignObj(fresh);
+      applyDesignSettings(fresh);
+      openDesignStudioModal();
+    }
+
+    try { applyDesignSettings(getDesignSettings()); } catch (e) {}
+    try { generateHDAppIcon(); } catch (e) {}
+    try { initLoginState(); } catch (e) {}
+    try { document.getElementById('f-deadline').value = todayIso(); } catch (e) {}
+    try { checkAndTriggerReminders(false); } catch (e) {}
+    try { renderOrders(); } catch (e) {}
+    try { renderStocks(); } catch (e) {}
+    try { runQuickCalc(); } catch (e) {}
+
+    try {
+      var lf = document.getElementById('login-form');
+      if (lf) lf.addEventListener('submit', handleLogin);
+      var lb = document.getElementById('btn-login-submit');
+      if (lb) lb.addEventListener('click', handleLogin);
+    } catch (e) {}
+
+  </script>
+</body>
+</html>
