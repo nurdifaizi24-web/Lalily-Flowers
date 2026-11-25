@@ -1337,7 +1337,7 @@
             </div>
 
             <div class="form-group" style="margin-top:8px; margin-bottom:6px;">
-              <label style="font-size:11.5px; color:var(--text);">Pilih Item Stok Box yang Dikurangi Otomatis *</label>
+              <label style="font-size:11.5px; color:var(--text);">Pilih Item Stok Box yang Dipakai *</label>
               <select id="f-box-stock-select" onchange="onBoxStockTargetChange()">
                 <option value="">-- Pilih Stok Box --</option>
               </select>
@@ -1348,7 +1348,7 @@
           </div>
 
           <div id="sewa-info-banner" style="display:none; background:var(--blue-bg); border:1px solid #BEE3F8; color:var(--blue); border-radius:12px; padding:9px 11px; font-size:11.5px; margin-bottom:12px;">
-            <strong>Mode Sewa Aktif:</strong> Stok barang sewaan yang dipilih akan terkunci selama masa sewa hingga paling lama <strong>H+3</strong> setelah tanggal acara, dan otomatis kembali tersedia setelah diklik <em>Kembalikan Sewa</em>.
+            <strong>Mode Sewa Aktif:</strong> Ketersediaan stok box dihitung per jadwal sewa (<strong>Tanggal Acara s/d H+3</strong>). Tanggal acara lain yang tidak bentrok tetap bisa memakai stok box penuh.
           </div>
 
           <!-- DETAIL RANGKAIAN & UCAPAN + PILIH STOK BARANG -->
@@ -1410,12 +1410,12 @@
       </div>
     </section>
 
-    <!-- TAB 3: STOK BARANG (TERMASUK STOK SEWA & KETERSEDIAAN REAL-TIME) -->
+    <!-- TAB 3: STOK BARANG (TERMASUK STOK SEWA & KETERSEDIAAN PER TANGGAL ACARA) -->
     <section id="tab-stock" class="tab-panel">
       <div class="card">
         <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Tambah Stok Barang, Bunga &amp; Sewa</h2>
         <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">
-          Catat stok bunga, kertas, boneka, maupun barang sewa seperti <strong>Box Seserahan</strong>. Stok sewa otomatis terhitung sisa unitnya saat sedang disewa hingga H+3.
+          Catat stok bunga, kertas, boneka, maupun barang sewa seperti <strong>Box Seserahan</strong>. Ketersediaan barang sewa dihitung <strong>berdasarkan tanggal acara (s/d H+3)</strong>, bukan dipotong permanen.
         </p>
 
         <form onsubmit="addFlowerStock(event)">
@@ -1451,9 +1451,11 @@
               <label>Satuan</label>
               <select id="s-unit">
                 <option value="Tangkai">Tangkai</option>
-                <option value="Ikat / Bunch">Ikat / Bunch</option>
-                <option value="Lembar / Roll">Lembar / Roll</option>
-                <option value="Box / Pcs">Box / Pcs</option>
+                <option value="Ikat">Ikat</option>
+                <option value="Lembar">Lembar</option>
+                <option value="Roll">Roll</option>
+                <option value="Box">Box</option>
+                <option value="Pcs">Pcs</option>
               </select>
             </div>
           </div>
@@ -1474,6 +1476,20 @@
 
           <button type="submit" class="btn-primary">Simpan ke Stok Barang</button>
         </form>
+      </div>
+
+      <!-- CEK KETERSEDIAAN STOK SEWA BERDASARKAN TANGGAL ACARA -->
+      <div class="card" style="background:linear-gradient(135deg, #F0F7FF, #FFF8FA); border-color:#BEE3F8; padding:12px 14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div>
+            <strong style="font-size:13px; color:var(--blue); display:block;">Cek Ketersediaan Stok Sewa per Tanggal Acara</strong>
+            <span style="font-size:11px; color:var(--text-muted);">Pilih tanggal acara untuk melihat sisa unit box yang kosong pada tanggal tersebut:</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px;">
+            <input type="date" id="stock-check-date" onchange="renderStocks()" style="width:auto; min-width:138px; padding:7px 9px; font-size:12.5px; min-height:36px;" />
+            <button type="button" class="btn-sm blue" style="padding:7px 10px;" onclick="document.getElementById('stock-check-date').value=todayIso(); renderStocks();">Hari Ini</button>
+          </div>
+        </div>
       </div>
 
       <div class="filter-row" id="stock-category-filters">
@@ -1810,9 +1826,11 @@
             <label>Satuan</label>
             <select id="es-unit">
               <option value="Tangkai">Tangkai</option>
-              <option value="Ikat / Bunch">Ikat / Bunch</option>
-              <option value="Lembar / Roll">Lembar / Roll</option>
-              <option value="Box / Pcs">Box / Pcs</option>
+              <option value="Ikat">Ikat</option>
+              <option value="Lembar">Lembar</option>
+              <option value="Roll">Roll</option>
+              <option value="Box">Box</option>
+              <option value="Pcs">Pcs</option>
             </select>
           </div>
           <div class="form-group">
@@ -1870,7 +1888,7 @@
     <div class="modal">
       <h3>Pilih dari Stok Barang</h3>
       <p style="font-size:12px; color:var(--text-muted); margin:0 0 10px;">
-        Pilih barang dan jumlahnya. Jika barang sedang tersewa (belum kembali hingga H+3), sistem otomatis membatasi jumlah maksimal yang tersedia.
+        Pilih barang dan jumlahnya. Ketersediaan barang sewa dihitung khusus untuk <strong>tanggal acara terpilih (s/d H+3)</strong>.
       </p>
       <div id="stock-picker-list"></div>
       <button type="button" class="btn-primary" style="margin-top:8px;" onclick="closeStockPicker()">Selesai Memilih</button>
@@ -2353,7 +2371,7 @@
       sel.innerHTML = listToUse.map(function(s) {
         var avail = getAvailableStockQty(s, editId, targetDate);
         var total = getTotalStockCapacity(s);
-        return '<option value="' + s.id + '">' + s.name + ' (Tersedia tgl ini: ' + avail + '/' + total + ')</option>';
+        return '<option value="' + s.id + '">' + s.name + ' (Tersedia tgl ' + targetDate + ': ' + avail + '/' + total + ')</option>';
       }).join('');
 
       if (prevVal && listToUse.some(function(x) { return x.id === prevVal; })) {
@@ -2633,7 +2651,7 @@
       renderCategoryLauncher();
     }
 
-    /* ================= LOGIKA SEWA & KETERSEDIAAN STOK H+3 ================= */
+    /* ================= LOGIKA SEWA & KETERSEDIAAN STOK H+3 (BERBASIS TANGGAL ACARA) ================= */
     function setOrderType(typeVal) {
       var isSewa = typeVal === 'Sewa';
       document.getElementById('f-order-type').value = isSewa ? 'Sewa' : 'Beli';
@@ -3620,7 +3638,7 @@
       return 'Rp' + (Number(num) || 0).toLocaleString('id-ID');
     }
 
-    /* ================= STOK BARANG (TERMASUK EDIT STOK & RASIO SISA/TOTAL SEPERTI 49/50) ================= */
+    /* ================= STOK BARANG (TERMASUK EDIT STOK & CEK PER TANGGAL ACARA) ================= */
     var defaultStocks = [
       { id: 'STK-1', category: 'Bunga', name: 'Lily Pink Casablanka', qty: 50, initialQty: 50, unit: 'Tangkai', cost: 22000, rentable: false, photo: '' },
       { id: 'STK-2', category: 'Bunga', name: 'Mawar Semi Holland Pink', qty: 50, initialQty: 50, unit: 'Tangkai', cost: 8000, rentable: false, photo: '' },
@@ -3723,7 +3741,11 @@
       document.getElementById('es-name').value = item.name || '';
       document.getElementById('es-qty').value = Number(item.qty) || 0;
       document.getElementById('es-initial-qty').value = Math.max(Number(item.initialQty) || 0, Number(item.qty) || 0);
-      document.getElementById('es-unit').value = item.unit || 'Tangkai';
+      var unitSel = document.getElementById('es-unit');
+      var legacyUnitMap = { 'Ikat / Bunch': 'Ikat', 'Lembar / Roll': 'Lembar', 'Box / Pcs': 'Box' };
+      var normalizedUnit = legacyUnitMap[item.unit] || item.unit || 'Tangkai';
+      unitSel.value = normalizedUnit;
+      if (!unitSel.value) unitSel.value = 'Tangkai';
       document.getElementById('es-cost').value = Number(item.cost) || 0;
       document.getElementById('es-rentable').value = item.rentable ? 'true' : 'false';
 
@@ -3828,7 +3850,13 @@
         ? stocks
         : stocks.filter(function(s) { return (s.category || 'Bunga') === currentStockFilter; });
 
-      document.getElementById('stock-total-label').textContent = filtered.length + ' item';
+      var checkDateEl = document.getElementById('stock-check-date');
+      var checkDate = (checkDateEl && checkDateEl.value) ? checkDateEl.value : todayIso();
+      if (checkDateEl && !checkDateEl.value) {
+        checkDateEl.value = checkDate;
+      }
+
+      document.getElementById('stock-total-label').textContent = filtered.length + ' item (tgl ' + checkDate + ')';
       var grid = document.getElementById('stock-list');
       if (!filtered.length) {
         grid.innerHTML = '<div class="empty-state" style="grid-column:span 2;">Belum ada catatan stok barang di kategori ini.</div>';
@@ -3836,9 +3864,9 @@
       }
       grid.innerHTML = filtered.map(function(s) {
         var baseCapacity = getTotalStockCapacity(s);
-        var rentedTodayQty = getRentedQtyOnRange(s.id, todayIso(), todayIso(), null);
+        var rentedOnCheckDate = getRentedQtyOnRange(s.id, checkDate, checkDate, null);
         var activeBookingsQty = getActiveRentedDisplayQty(s.id);
-        var availQty = Math.max(0, baseCapacity - rentedTodayQty);
+        var availQty = Math.max(0, baseCapacity - rentedOnCheckDate);
         var usedCount = Math.max(0, baseCapacity - availQty);
         var low = availQty <= 3;
         var catLabel = s.category || 'Bunga';
@@ -3848,22 +3876,21 @@
           : '<div class="stock-img"><span style="font-size:12px; font-weight:700;">' + catLabel + '</span></div>';
 
         var usageInfoHtml = '';
-        if (activeBookingsQty > 0) {
+        if (s.rentable || activeBookingsQty > 0) {
           var rentals = getEarliestRentalReturnInfo(s.id);
-          var nextRet = rentals.length ? rentals[0].returnDate : '-';
+          var scheduleLines = rentals.slice(0, 2).map(function(r) {
+            return '&bull; ' + r.customer + ': ' + r.qty + ' ' + unitShort + ' (' + r.startDate + ' s/d ' + r.returnDate + ')';
+          }).join('<br/>');
           usageInfoHtml =
             '<div style="background:var(--blue-bg); color:var(--blue); border-radius:8px; padding:5px 7px; font-size:10.5px; margin-bottom:7px; line-height:1.35;">' +
-              'Jadwal sewa aktif: <strong>' + activeBookingsQty + ' ' + unitShort + '</strong> (kapasitas ' + baseCapacity + ')<br/>' +
-              'Siap pakai hari ini: <strong>' + availQty + '/' + baseCapacity + ' ' + unitShort + '</strong><br/>' +
-              'Kembali maks H+3: <strong>' + nextRet + '</strong>' +
+              'Siap pakai tgl <strong>' + checkDate + '</strong>: <strong>' + availQty + '/' + baseCapacity + ' ' + unitShort + '</strong><br/>' +
+              (rentals.length ? ('<span style="color:var(--text);">Jadwal sewa aktif:</span><br/>' + scheduleLines) : 'Tidak ada jadwal sewa aktif') +
             '</div>';
         } else if (usedCount > 0) {
           usageInfoHtml =
             '<div style="background:var(--surface-soft); color:var(--pink-dark); border:1px solid var(--border); border-radius:8px; padding:4px 7px; font-size:10.5px; margin-bottom:7px;">' +
               'Terpakai order: <strong>' + usedCount + ' ' + unitShort + '</strong> &bull; Sisa: <strong>' + availQty + '/' + baseCapacity + '</strong>' +
             '</div>';
-        } else if (s.rentable) {
-          usageInfoHtml = '<div style="font-size:10.5px; color:var(--blue); margin-bottom:6px;">Siap Sewa: ' + availQty + '/' + baseCapacity + ' ' + unitShort + '</div>';
         }
 
         return (
@@ -5087,18 +5114,12 @@
     } catch (e) {}
     try { renderCategoryLauncher(); } catch (e) {}
     try { document.getElementById('f-deadline').value = todayIso(); } catch (e) {}
-    try { checkAndTriggerReminders(false); } catch (e) {}
+    try { document.getElementById('stock-check-date').value = todayIso(); } catch (e) {}
     try { renderOrders(); } catch (e) {}
     try { renderStocks(); } catch (e) {}
     try { renderHppSelectedStocks(); runQuickCalc(); } catch (e) {}
     try { renderFinance(); } catch (e) {}
-
-    try {
-      var lf = document.getElementById('login-form');
-      if (lf) lf.addEventListener('submit', handleLogin);
-      var lb = document.getElementById('btn-login-submit');
-      if (lb) lb.addEventListener('click', handleLogin);
-    } catch (e) {}
+    try { checkAndTriggerReminders(false); } catch (e) {}
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
