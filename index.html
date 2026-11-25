@@ -1239,8 +1239,8 @@
         <h2>Daftar Pesanan &amp; Sewa</h2>
         <select id="status-filter" onchange="renderOrders()" style="width:auto; padding:6px 10px; font-size:12px;">
           <option value="all">Semua Status</option>
-          <option value="Antrean">Antrean</option>
           <option value="Dirangkai">Dirangkai</option>
+          <option value="Antrean">Antrean</option>
           <option value="Selesai">Selesai</option>
         </select>
       </div>
@@ -1606,14 +1606,11 @@
     <!-- TAB 6: MENU AKUN -->
     <section id="tab-account" class="tab-panel">
       <div class="card">
-        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Akun, Produk &amp; Keamanan</h2>
-        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Kelola ID &amp; Password Admin (tersinkronisasi otomatis antar-HP), kategori produk toko bunga, maupun desain tampilan.</p>
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Akun &amp; Keamanan</h2>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Kelola ID &amp; Password Admin (tersinkronisasi otomatis antar-HP), password menu Keuangan, maupun desain tampilan.</p>
         <div id="cred-saved-msg" class="success-banner">Perubahan akun &amp; keamanan berhasil disimpan!</div>
 
-        <div class="grid-2">
-          <button type="button" class="btn-primary" style="padding:12px;" onclick="openCredModal()">ID &amp; Password</button>
-          <button type="button" class="btn-sm pink" style="padding:12px; font-weight:700;" onclick="openManageCategoriesModal()">Kelola Kategori Produk</button>
-        </div>
+        <button type="button" class="btn-primary" style="padding:12px; width:100%;" onclick="openCredAuthModal()">ID &amp; Password</button>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
           <button type="button" class="btn-design-small" onclick="openCloudAccessModal()">hak akses cloud</button>
@@ -1855,12 +1852,57 @@
     </div>
   </div>
 
+  <!-- MODAL VERIFIKASI PASSWORD SEBELUM BUKA ID & PASSWORD -->
+  <div id="cred-auth-modal" class="modal-backdrop" onclick="if(event.target===this) closeCredAuthModal()">
+    <div class="modal">
+      <h3>Verifikasi Keamanan Akun</h3>
+      <p style="font-size:12.5px; color:var(--text-muted); margin:0 0 12px;">
+        Masukkan <strong>Password Admin</strong> saat ini untuk membuka pengaturan ID &amp; Password.
+      </p>
+      <div id="cred-auth-error" class="login-error">Password Admin salah!</div>
+      <form onsubmit="verifyCredPassword(event)">
+        <div class="form-group">
+          <label>Password Admin *</label>
+          <input type="password" id="cred-auth-pass-input" placeholder="Masukkan Password Admin" required />
+        </div>
+        <div class="grid-2">
+          <button type="button" class="btn-sm" style="padding:11px;" onclick="closeCredAuthModal()">Batal</button>
+          <button type="submit" class="btn-primary" style="padding:11px;">Buka Pengaturan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL VERIFIKASI PASSWORD MENU KEUANGAN -->
+  <div id="finance-auth-modal" class="modal-backdrop" onclick="if(event.target===this) closeFinanceAuthModal()">
+    <div class="modal">
+      <h3>Akses Menu Keuangan</h3>
+      <p style="font-size:12.5px; color:var(--text-muted); margin:0 0 12px;">
+        Masukkan password khusus untuk melihat laporan omzet, modal, dan laba bersih.
+      </p>
+      <div id="finance-auth-error" class="login-error">Password menu Keuangan salah!</div>
+      <form onsubmit="verifyFinancePassword(event)">
+        <div class="form-group">
+          <label>Password Keuangan *</label>
+          <input type="password" id="finance-auth-pass-input" placeholder="Masukkan Password Keuangan" required />
+        </div>
+        <div class="grid-2">
+          <button type="button" class="btn-sm" style="padding:11px;" onclick="closeFinanceAuthModal()">Batal</button>
+          <button type="submit" class="btn-primary" style="padding:11px;">Masuk Keuangan</button>
+        </div>
+      </form>
+      <div id="finance-default-hint" style="margin-top:10px; font-size:11.5px; color:var(--text-muted); text-align:center;">
+        Password awal Keuangan: <strong>keuangan123</strong> (dapat diubah di menu <strong>Akun &rarr; ID &amp; Password</strong>)
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL KELOLA ID & PASSWORD -->
   <div id="cred-modal" class="modal-backdrop" onclick="if(event.target===this) closeCredModal()">
     <div class="modal">
       <h3>Kelola ID &amp; Password</h3>
       <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">
-        Perbarui kredensial masuk Admin (tersinkronisasi otomatis ke HP ke-2) maupun Password khusus Rubah Design Aplikasi.
+        Perbarui kredensial masuk Admin (tersinkronisasi otomatis ke HP ke-2), Password Menu Keuangan, maupun Password khusus Rubah Design Aplikasi.
       </p>
       <form onsubmit="updateCredentialsFromModal(event)">
         <div class="form-group">
@@ -1872,7 +1914,11 @@
           <input type="text" id="modal-admin-pass" required />
         </div>
         <div class="form-group" style="padding-top:8px; border-top:1px dashed var(--border);">
-          <label>Password Login Design (rubah design aplikasi)</label>
+          <label>Password Menu Keuangan *</label>
+          <input type="text" id="modal-finance-pass" placeholder="Default: keuangan123" required />
+        </div>
+        <div class="form-group" style="padding-top:8px; border-top:1px dashed var(--border);">
+          <label>Password Login Design (rubah design aplikasi) *</label>
           <input type="text" id="modal-design-pass" placeholder="Default: design123" required />
         </div>
         <div class="grid-2">
@@ -3249,18 +3295,22 @@
     var stockPickerTarget = 'hpp';
     var activeNotaOrderId = null;
 
+    var financeUnlockedSession = false;
+
     function getCredentials() {
       var raw = null;
       try { raw = localStorage.getItem(AUTH_CREDS_KEY); } catch (e) {}
       if (!raw) {
-        var def = { id: 'lalily', pass: 'lalily123', customized: false, updatedAt: 0 };
+        var def = { id: 'lalily', pass: 'lalily123', financePass: 'keuangan123', financeCustomized: false, customized: false, updatedAt: 0 };
         try { localStorage.setItem(AUTH_CREDS_KEY, JSON.stringify(def)); } catch (e) {}
         return def;
       }
       try {
-        return JSON.parse(raw);
+        var parsed = JSON.parse(raw);
+        if (!parsed.financePass) parsed.financePass = 'keuangan123';
+        return parsed;
       } catch (e) {
-        return { id: 'lalily', pass: 'lalily123', customized: false, updatedAt: 0 };
+        return { id: 'lalily', pass: 'lalily123', financePass: 'keuangan123', financeCustomized: false, customized: false, updatedAt: 0 };
       }
     }
 
@@ -3357,11 +3407,77 @@
       return false;
     }
 
+    function openCredAuthModal() {
+      var err = document.getElementById('cred-auth-error');
+      var inp = document.getElementById('cred-auth-pass-input');
+      if (err) err.style.display = 'none';
+      if (inp) inp.value = '';
+      var m = document.getElementById('cred-auth-modal');
+      if (m) m.classList.add('show');
+      setTimeout(function() { if (inp) inp.focus(); }, 60);
+    }
+
+    function closeCredAuthModal() {
+      var m = document.getElementById('cred-auth-modal');
+      if (m) m.classList.remove('show');
+    }
+
+    function verifyCredPassword(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var inp = document.getElementById('cred-auth-pass-input');
+      var err = document.getElementById('cred-auth-error');
+      var creds = getCredentials();
+      if (inp && inp.value === String(creds.pass)) {
+        if (err) err.style.display = 'none';
+        inp.value = '';
+        closeCredAuthModal();
+        openCredModal();
+      } else if (err) {
+        err.style.display = 'block';
+      }
+    }
+
+    function openFinanceAuthModal() {
+      var err = document.getElementById('finance-auth-error');
+      var inp = document.getElementById('finance-auth-pass-input');
+      var hint = document.getElementById('finance-default-hint');
+      var creds = getCredentials();
+      if (err) err.style.display = 'none';
+      if (inp) inp.value = '';
+      if (hint) hint.style.display = creds.financeCustomized ? 'none' : 'block';
+      var m = document.getElementById('finance-auth-modal');
+      if (m) m.classList.add('show');
+      setTimeout(function() { if (inp) inp.focus(); }, 60);
+    }
+
+    function closeFinanceAuthModal() {
+      var m = document.getElementById('finance-auth-modal');
+      if (m) m.classList.remove('show');
+    }
+
+    function verifyFinancePassword(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      var inp = document.getElementById('finance-auth-pass-input');
+      var err = document.getElementById('finance-auth-error');
+      var creds = getCredentials();
+      var expected = String(creds.financePass || 'keuangan123');
+      if (inp && inp.value === expected) {
+        if (err) err.style.display = 'none';
+        inp.value = '';
+        financeUnlockedSession = true;
+        closeFinanceAuthModal();
+        activateTabPanel('finance', document.getElementById('nav-finance'));
+      } else if (err) {
+        err.style.display = 'block';
+      }
+    }
+
     function openCredModal() {
       var creds = getCredentials();
       var dCfg = getDesignSettings();
       document.getElementById('modal-admin-id').value = creds.id;
       document.getElementById('modal-admin-pass').value = creds.pass;
+      document.getElementById('modal-finance-pass').value = creds.financePass || 'keuangan123';
       document.getElementById('modal-design-pass').value = dCfg.designPass || 'design123';
       document.getElementById('cred-modal').classList.add('show');
     }
@@ -3374,12 +3490,18 @@
       e.preventDefault();
       var newId = document.getElementById('modal-admin-id').value.trim();
       var newPass = document.getElementById('modal-admin-pass').value;
+      var newFinancePass = document.getElementById('modal-finance-pass').value.trim();
       var newDesignPass = document.getElementById('modal-design-pass').value.trim();
-      if (!newId || !newPass || !newDesignPass) return;
+      if (!newId || !newPass || !newFinancePass || !newDesignPass) return;
+
+      var prevCreds = getCredentials();
+      var finChanged = Boolean(prevCreds.financeCustomized) || (newFinancePass !== 'keuangan123');
 
       saveCredentialsObj({
         id: newId,
         pass: newPass,
+        financePass: newFinancePass,
+        financeCustomized: finChanged,
         customized: true,
         updatedAt: Date.now()
       });
@@ -3400,6 +3522,7 @@
         clearInterval(loadingTimerId);
         loadingTimerId = null;
       }
+      financeUnlockedSession = false;
       document.getElementById('loading-screen').classList.remove('show');
       document.getElementById('login-id').value = '';
       document.getElementById('login-pass').value = '';
@@ -4302,6 +4425,14 @@
     }
 
     function switchTab(name, el) {
+      if (name === 'finance' && !financeUnlockedSession) {
+        openFinanceAuthModal();
+        return;
+      }
+      activateTabPanel(name, el);
+    }
+
+    function activateTabPanel(name, el) {
       document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
       document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
       var targetPanel = document.getElementById('tab-' + name);
@@ -4418,6 +4549,17 @@
           (o.item || '').toLowerCase().indexOf(q) !== -1 ||
           (o.category || '').toLowerCase().indexOf(q) !== -1;
         return matchStatus && matchQuery;
+      });
+
+      var statusRank = { 'Dirangkai': 1, 'Antrean': 2, 'Selesai': 3 };
+      displayList.sort(function(a, b) {
+        var rankA = statusRank[a.status] || 2;
+        var rankB = statusRank[b.status] || 2;
+        if (rankA !== rankB) return rankA - rankB;
+        var dateA = a.deadline || '9999-12-31';
+        var dateB = b.deadline || '9999-12-31';
+        if (dateA !== dateB) return dateA.localeCompare(dateB);
+        return String(a.id || '').localeCompare(String(b.id || ''));
       });
 
       var container = document.getElementById('orders-list');
