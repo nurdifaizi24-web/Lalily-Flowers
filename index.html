@@ -1045,6 +1045,7 @@
     </div>
 
     <div class="header-actions">
+      <span id="cloud-sync-pill" style="font-size:10.5px; font-weight:700; padding:4px 8px; border-radius:99px; background:var(--surface-soft); color:var(--text-muted); border:1px solid var(--border); white-space:nowrap;">Lokal</span>
       <button type="button" class="btn-bell" onclick="openReminderModal()" title="Pengingat Jadwal Kirim">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
@@ -1346,6 +1347,29 @@
 
     <!-- TAB 6: MENU AKUN -->
     <section id="tab-account" class="tab-panel">
+      <div class="card">
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Sinkronisasi Real-Time Antar-HP (Firebase)</h2>
+        <p style="margin:0 0 10px; font-size:12px; color:var(--text-muted);">
+          Tempelkan <strong>firebaseConfig</strong> dari proyek Firebase Realtime Database agar perubahan stok dan pesanan di HP 1 otomatis muncul di HP 2.
+        </p>
+        <div id="firebase-saved-msg" class="success-banner">Konfigurasi Firebase disimpan &amp; sinkronisasi real-time aktif!</div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label>Tempel Objek firebaseConfig (atau JSON)</label>
+          <textarea id="fb-config-input" rows="5" placeholder='Contoh:
+{
+  apiKey: "...",
+  authDomain: "...",
+  databaseURL: "https://....firebasedatabase.app",
+  projectId: "..."
+}' style="font-size:12px; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;"></textarea>
+        </div>
+        <div class="grid-2">
+          <button type="button" class="btn-primary" style="padding:11px;" onclick="saveFirebaseConfigFromUI()">Aktifkan &amp; Sinkron</button>
+          <button type="button" class="btn-sm danger" style="padding:11px;" onclick="clearFirebaseConfig()">Putus Cloud (Lokal)</button>
+        </div>
+        <div id="fb-status-detail" style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Status: Belum terhubung ke Firebase (mode penyimpanan lokal HP).</div>
+      </div>
+
       <div class="card">
         <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Akun &amp; Keamanan</h2>
         <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">ID Admin dan Password disembunyikan untuk menjaga privasi. Ketuk tombol di bawah untuk mengubah kredensial login atau password desain.</p>
@@ -1661,6 +1685,185 @@
     var STOCK_KEY = 'lalily_flowers_stock_v1';
     var AUTH_CREDS_KEY = 'lalily_admin_creds_v1';
     var DESIGN_SETTINGS_KEY = 'lalily_design_settings_v1';
+    var FIREBASE_CONFIG_KEY = 'lalily_firebase_config_v1';
+
+    var fbDb = null;
+    var fbListenerAttached = false;
+    var suppressCloudPush = false;
+
+    function getFirebaseConfig() {
+      var raw = null;
+      try { raw = localStorage.getItem(FIREBASE_CONFIG_KEY); } catch (e) {}
+      if (!raw) return null;
+      try {
+        var parsed = JSON.parse(raw);
+        if (parsed && parsed.databaseURL) return parsed;
+        return null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function parseFirebaseConfigText(rawText) {
+      var txt = (rawText || '').trim();
+      if (!txt) return null;
+      // Support pasting full JS snippet like "const firebaseConfig = { ... };" or "{ apiKey: '...' }"
+      var startBrace = txt.indexOf('{');
+      var endBrace = txt.lastIndexOf('}');
+      if (startBrace === -1 || endBrace === -1) return null;
+      var objStr = txt.slice(startBrace, endBrace + 1);
+      try {
+        return JSON.parse(objStr);
+      } catch (e1) {
+        // Convert unquoted keys and single quotes safely
+        var normalized = objStr
+          .replace(/([a-zA-Z0-9_]+)\s*:/g, '"$1":')
+          .replace(/'/g, '"')
+          .replace(/,\s*}/g, '}');
+        return JSON.parse(normalized);
+      }
+    }
+
+    function updateSyncPill(mode, text) {
+      var pill = document.getElementById('cloud-sync-pill');
+      var detail = document.getElementById('fb-status-detail');
+      if (pill) {
+        if (mode === 'live') {
+          pill.textContent = 'Cloud Live';
+          pill.style.background = 'var(--green-bg)';
+          pill.style.color = 'var(--green)';
+          pill.style.borderColor = '#BDE5D3';
+        } else if (mode === 'error') {
+          pill.textContent = 'Sync Error';
+          pill.style.background = 'var(--red-bg)';
+          pill.style.color = 'var(--red)';
+          pill.style.borderColor = '#F7C6CE';
+        } else {
+          pill.textContent = 'Lokal';
+          pill.style.background = 'var(--surface-soft)';
+          pill.style.color = 'var(--text-muted)';
+          pill.style.borderColor = 'var(--border)';
+        }
+      }
+      if (detail && text) {
+        detail.textContent = text;
+      }
+    }
+
+    function initFirebaseRealtime() {
+      var cfg = getFirebaseConfig();
+      var inp = document.getElementById('fb-config-input');
+      if (inp && cfg && !inp.value.trim()) {
+        inp.value = JSON.stringify(cfg, null, 2);
+      }
+      if (!cfg) {
+        updateSyncPill('local', 'Status: Mode lokal HP (belum memakai Firebase Realtime Database).');
+        return;
+      }
+      if (typeof firebase === 'undefined' || !firebase.apps) {
+        updateSyncPill('error', 'Status: SDK Firebase belum termuat. Periksa koneksi internet.');
+        return;
+      }
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(cfg);
+        } else {
+          firebase.app();
+        }
+        fbDb = firebase.database();
+        updateSyncPill('live', 'Status: Terhubung ke Firebase (' + cfg.databaseURL + '). Sinkronisasi real-time aktif.');
+
+        if (!fbListenerAttached) {
+          fbListenerAttached = true;
+
+          // Seed cloud if empty and local has data
+          fbDb.ref('lalily/orders').once('value', function(snap) {
+            if (!snap.exists()) {
+              var localOrders = getOrders();
+              if (localOrders.length) {
+                fbDb.ref('lalily/orders').set(localOrders);
+              }
+            }
+          });
+
+          fbDb.ref('lalily/stocks').once('value', function(snap) {
+            if (!snap.exists()) {
+              var localStocks = getStocks();
+              if (localStocks.length) {
+                fbDb.ref('lalily/stocks').set(localStocks);
+              }
+            }
+          });
+
+          fbDb.ref('lalily/orders').on('value', function(snap) {
+            if (!snap.exists()) return;
+            var val = snap.val();
+            var list = Array.isArray(val) ? val : Object.keys(val).map(function(k) { return val[k]; });
+            suppressCloudPush = true;
+            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+            suppressCloudPush = false;
+            checkAndTriggerReminders(false);
+            renderOrders();
+            renderFinance();
+          }, function(err) {
+            updateSyncPill('error', 'Status: Gagal membaca pesanan (' + (err.message || 'cek Rules') + ').');
+          });
+
+          fbDb.ref('lalily/stocks').on('value', function(snap) {
+            if (!snap.exists()) return;
+            var val = snap.val();
+            var list = Array.isArray(val) ? val : Object.keys(val).map(function(k) { return val[k]; });
+            suppressCloudPush = true;
+            try { localStorage.setItem(STOCK_KEY, JSON.stringify(list)); } catch (e) {}
+            suppressCloudPush = false;
+            renderStocks();
+            if (stockPickerTarget) {
+              renderStockPickerList();
+            }
+            renderHppSelectedStocks();
+            runQuickCalc();
+          }, function(err) {
+            updateSyncPill('error', 'Status: Gagal membaca stok (' + (err.message || 'cek Rules') + ').');
+          });
+        }
+      } catch (e) {
+        updateSyncPill('error', 'Status: Konfigurasi Firebase tidak valid (' + e.message + ').');
+      }
+    }
+
+    function saveFirebaseConfigFromUI() {
+      var rawText = document.getElementById('fb-config-input').value;
+      var parsed = null;
+      try {
+        parsed = parseFirebaseConfigText(rawText);
+      } catch (e) {
+        parsed = null;
+      }
+      if (!parsed || !parsed.databaseURL) {
+        alert('Format firebaseConfig belum benar. Pastikan mengandung databaseURL (https://....firebasedatabase.app).');
+        return;
+      }
+      try {
+        localStorage.setItem(FIREBASE_CONFIG_KEY, JSON.stringify(parsed));
+      } catch (e) {}
+      fbListenerAttached = false;
+      initFirebaseRealtime();
+      var msg = document.getElementById('firebase-saved-msg');
+      if (msg) {
+        msg.style.display = 'block';
+        setTimeout(function() { msg.style.display = 'none'; }, 3000);
+      }
+    }
+
+    function clearFirebaseConfig() {
+      if (!confirm('Putuskan sinkronisasi Firebase dan kembali ke penyimpanan lokal HP saja?')) return;
+      try { localStorage.removeItem(FIREBASE_CONFIG_KEY); } catch (e) {}
+      fbDb = null;
+      fbListenerAttached = false;
+      var inp = document.getElementById('fb-config-input');
+      if (inp) inp.value = '';
+      updateSyncPill('local', 'Status: Mode lokal HP (sinkronisasi cloud dimatikan).');
+    }
 
     var currentPeriod = 'all';
     var financePeriod = 'all';
@@ -1751,6 +1954,7 @@
           clearInterval(loadingTimerId);
           loadingTimerId = null;
           if (loader) loader.classList.remove('show');
+          initFirebaseRealtime();
           checkAndTriggerReminders(true);
         }
       }, 100);
@@ -1881,6 +2085,11 @@
 
     function saveOrdersList(list) {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+      if (!suppressCloudPush && fbDb) {
+        fbDb.ref('lalily/orders').set(list).catch(function(err) {
+          updateSyncPill('error', 'Status: Gagal simpan pesanan ke cloud (' + (err.message || '') + ').');
+        });
+      }
     }
 
     function getDaysUntil(dateStr) {
@@ -2039,6 +2248,11 @@
 
     function saveStocks(list) {
       try { localStorage.setItem(STOCK_KEY, JSON.stringify(list)); } catch (e) {}
+      if (!suppressCloudPush && fbDb) {
+        fbDb.ref('lalily/stocks').set(list).catch(function(err) {
+          updateSyncPill('error', 'Status: Gagal simpan stok ke cloud (' + (err.message || '') + ').');
+        });
+      }
     }
 
     function handleStockPhoto(e) {
@@ -3136,5 +3350,7 @@
       if (lb) lb.addEventListener('click', handleLogin);
     } catch (e) {}
   </script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </body>
 </html>
