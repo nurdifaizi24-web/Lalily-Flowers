@@ -1368,6 +1368,24 @@
           <button type="button" class="btn-sm danger" style="padding:11px;" onclick="clearFirebaseConfig()">Putus Cloud (Lokal)</button>
         </div>
         <div id="fb-status-detail" style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Status: Belum terhubung ke Firebase (mode penyimpanan lokal HP).</div>
+
+        <div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border);">
+          <div style="font-size:12.5px; font-weight:700; color:var(--pink-dark); margin-bottom:4px;">Hak Akses Cloud (Owner vs HP Admin)</div>
+          <p style="margin:0 0 8px; font-size:11.5px; color:var(--text-muted);">
+            HP Admin otomatis tersambung ke <em>orders</em> &amp; <em>stocks</em> tanpa perlu login. Khusus <strong>HP Owner</strong>, login dengan Email &amp; Password Firebase Auth untuk akses penuh.
+          </p>
+          <div id="fb-auth-status-box" style="font-size:11.5px; background:var(--surface-soft); border:1px solid var(--border); border-radius:10px; padding:8px 10px; margin-bottom:8px; color:var(--text-muted);">
+            Sesi Cloud Auth: Menyiapkan sesi otomatis...
+          </div>
+          <div class="grid-2" style="margin-bottom:8px;">
+            <input type="email" id="fb-auth-email" placeholder="Email Owner (opsional)" autocomplete="email" style="font-size:12.5px;" />
+            <input type="password" id="fb-auth-pass" placeholder="Password Owner" autocomplete="current-password" style="font-size:12.5px;" />
+          </div>
+          <div class="grid-2">
+            <button type="button" class="btn-sm pink" style="padding:10px;" onclick="signInFirebaseAuthFromUI()">Login Owner</button>
+            <button type="button" class="btn-sm" style="padding:10px;" onclick="signOutFirebaseAuth()">Mode Admin HP</button>
+          </div>
+        </div>
       </div>
 
       <div class="card">
@@ -1688,8 +1706,11 @@
     var FIREBASE_CONFIG_KEY = 'lalily_firebase_config_v1';
 
     var fbDb = null;
+    var fbAuth = null;
+    var fbAuthWatcherAttached = false;
     var fbListenerAttached = false;
     var suppressCloudPush = false;
+    var FIREBASE_AUTH_EMAIL_KEY = 'lalily_firebase_auth_email_v1';
 
     function getFirebaseConfig() {
       var raw = null;
@@ -1750,6 +1771,103 @@
       }
     }
 
+    function updateFbAuthStatusUI(user) {
+      var box = document.getElementById('fb-auth-status-box');
+      var emailInp = document.getElementById('fb-auth-email');
+      var savedEmail = '';
+      try { savedEmail = localStorage.getItem(FIREBASE_AUTH_EMAIL_KEY) || ''; } catch (e) {}
+      if (emailInp && !emailInp.value && savedEmail) {
+        emailInp.value = savedEmail;
+      }
+      if (!box) return;
+      if (user && !user.isAnonymous) {
+        box.style.background = 'var(--green-bg)';
+        box.style.borderColor = '#BDE5D3';
+        box.style.color = 'var(--green)';
+        box.innerHTML = 'Mode Akses: <strong>Owner Full Akses</strong> (' + (user.email || 'Owner') + ')<br/><span style="font-size:10.5px;">UID: ' + user.uid + '</span>';
+      } else if (user && user.isAnonymous) {
+        box.style.background = 'var(--green-bg)';
+        box.style.borderColor = '#BDE5D3';
+        box.style.color = 'var(--green)';
+        box.innerHTML = 'Mode Akses: <strong>Admin Operasional (Auto-Connect)</strong><br/><span style="font-size:10.5px;">Akses khusus pesanan &amp; stok tanpa perlu login</span>';
+      } else {
+        box.style.background = 'var(--surface-soft)';
+        box.style.borderColor = 'var(--border)';
+        box.style.color = 'var(--text-muted)';
+        box.textContent = 'Mode Akses: Menghubungkan sesi otomatis...';
+      }
+    }
+
+    function detachFirebaseListeners() {
+      if (fbDb) {
+        try { fbDb.ref('lalily/orders').off(); } catch (e) {}
+        try { fbDb.ref('lalily/stocks').off(); } catch (e) {}
+      }
+      fbListenerAttached = false;
+    }
+
+    function attachFirebaseDatabaseListeners(cfg) {
+      if (!fbDb || fbListenerAttached) return;
+      fbListenerAttached = true;
+
+      // Seed cloud if empty and local has data
+      fbDb.ref('lalily/orders').once('value', function(snap) {
+        updateSyncPill('live', 'Status: Terhubung ke Firebase (' + cfg.databaseURL + '). Sinkronisasi real-time aktif.');
+        if (!snap.exists()) {
+          var localOrders = getOrders();
+          if (localOrders.length) {
+            fbDb.ref('lalily/orders').set(localOrders);
+          }
+        }
+      }, function(err) {
+        detachFirebaseListeners();
+        updateSyncPill('error', 'Status: Akses ditolak Rules (' + (err.message || 'Login Cloud Auth diperlukan') + ').');
+      });
+
+      fbDb.ref('lalily/stocks').once('value', function(snap) {
+        if (!snap.exists()) {
+          var localStocks = getStocks();
+          if (localStocks.length) {
+            fbDb.ref('lalily/stocks').set(localStocks);
+          }
+        }
+      }, function() {});
+
+      fbDb.ref('lalily/orders').on('value', function(snap) {
+        updateSyncPill('live', 'Status: Terhubung ke Firebase (' + cfg.databaseURL + '). Sinkronisasi real-time aktif.');
+        if (!snap.exists()) return;
+        var val = snap.val();
+        var list = Array.isArray(val) ? val : Object.keys(val).map(function(k) { return val[k]; });
+        suppressCloudPush = true;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
+        suppressCloudPush = false;
+        checkAndTriggerReminders(false);
+        renderOrders();
+        renderFinance();
+      }, function(err) {
+        detachFirebaseListeners();
+        updateSyncPill('error', 'Status: Gagal membaca pesanan (' + (err.message || 'cek Login Cloud Auth / Rules') + ').');
+      });
+
+      fbDb.ref('lalily/stocks').on('value', function(snap) {
+        if (!snap.exists()) return;
+        var val = snap.val();
+        var list = Array.isArray(val) ? val : Object.keys(val).map(function(k) { return val[k]; });
+        suppressCloudPush = true;
+        try { localStorage.setItem(STOCK_KEY, JSON.stringify(list)); } catch (e) {}
+        suppressCloudPush = false;
+        renderStocks();
+        if (stockPickerTarget) {
+          renderStockPickerList();
+        }
+        renderHppSelectedStocks();
+        runQuickCalc();
+      }, function(err) {
+        detachFirebaseListeners();
+        updateSyncPill('error', 'Status: Gagal membaca stok (' + (err.message || 'cek Login Cloud Auth / Rules') + ').');
+      });
+    }
+
     function initFirebaseRealtime() {
       var cfg = getFirebaseConfig();
       var inp = document.getElementById('fb-config-input');
@@ -1758,6 +1876,7 @@
       }
       if (!cfg) {
         updateSyncPill('local', 'Status: Mode lokal HP (belum memakai Firebase Realtime Database).');
+        updateFbAuthStatusUI(null);
         return;
       }
       if (typeof firebase === 'undefined' || !firebase.apps) {
@@ -1771,64 +1890,78 @@
           firebase.app();
         }
         fbDb = firebase.database();
-        updateSyncPill('live', 'Status: Terhubung ke Firebase (' + cfg.databaseURL + '). Sinkronisasi real-time aktif.');
+        fbAuth = typeof firebase.auth === 'function' ? firebase.auth() : null;
 
-        if (!fbListenerAttached) {
-          fbListenerAttached = true;
-
-          // Seed cloud if empty and local has data
-          fbDb.ref('lalily/orders').once('value', function(snap) {
-            if (!snap.exists()) {
-              var localOrders = getOrders();
-              if (localOrders.length) {
-                fbDb.ref('lalily/orders').set(localOrders);
-              }
+        if (fbAuth && !fbAuthWatcherAttached) {
+          fbAuthWatcherAttached = true;
+          fbAuth.onAuthStateChanged(function(user) {
+            var activeCfg = getFirebaseConfig();
+            if (!user && activeCfg) {
+              updateFbAuthStatusUI(null);
+              fbAuth.signInAnonymously().catch(function(err) {
+                updateSyncPill('error', 'Status: Aktifkan Anonymous Auth di Firebase (' + (err.message || err.code) + ').');
+              });
+              return;
             }
+            updateFbAuthStatusUI(user);
+            if (!activeCfg) return;
+            detachFirebaseListeners();
+            attachFirebaseDatabaseListeners(activeCfg);
           });
-
-          fbDb.ref('lalily/stocks').once('value', function(snap) {
-            if (!snap.exists()) {
-              var localStocks = getStocks();
-              if (localStocks.length) {
-                fbDb.ref('lalily/stocks').set(localStocks);
-              }
-            }
+        } else if (fbAuth && !fbAuth.currentUser) {
+          fbAuth.signInAnonymously().catch(function(err) {
+            updateSyncPill('error', 'Status: Aktifkan Anonymous Auth di Firebase (' + (err.message || err.code) + ').');
           });
-
-          fbDb.ref('lalily/orders').on('value', function(snap) {
-            if (!snap.exists()) return;
-            var val = snap.val();
-            var list = Array.isArray(val) ? val : Object.keys(val).map(function(k) { return val[k]; });
-            suppressCloudPush = true;
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch (e) {}
-            suppressCloudPush = false;
-            checkAndTriggerReminders(false);
-            renderOrders();
-            renderFinance();
-          }, function(err) {
-            updateSyncPill('error', 'Status: Gagal membaca pesanan (' + (err.message || 'cek Rules') + ').');
-          });
-
-          fbDb.ref('lalily/stocks').on('value', function(snap) {
-            if (!snap.exists()) return;
-            var val = snap.val();
-            var list = Array.isArray(val) ? val : Object.keys(val).map(function(k) { return val[k]; });
-            suppressCloudPush = true;
-            try { localStorage.setItem(STOCK_KEY, JSON.stringify(list)); } catch (e) {}
-            suppressCloudPush = false;
-            renderStocks();
-            if (stockPickerTarget) {
-              renderStockPickerList();
-            }
-            renderHppSelectedStocks();
-            runQuickCalc();
-          }, function(err) {
-            updateSyncPill('error', 'Status: Gagal membaca stok (' + (err.message || 'cek Rules') + ').');
-          });
+        } else {
+          updateFbAuthStatusUI(fbAuth ? fbAuth.currentUser : null);
+          attachFirebaseDatabaseListeners(cfg);
         }
       } catch (e) {
         updateSyncPill('error', 'Status: Konfigurasi Firebase tidak valid (' + e.message + ').');
       }
+    }
+
+    function signInFirebaseAuthFromUI() {
+      var cfg = getFirebaseConfig();
+      if (!cfg) {
+        alert('Tempel dan aktifkan firebaseConfig terlebih dahulu di atas.');
+        return;
+      }
+      if (!fbAuth) {
+        initFirebaseRealtime();
+      }
+      if (!fbAuth) {
+        alert('Modul Firebase Authentication belum siap. Periksa koneksi internet lalu muat ulang halaman.');
+        return;
+      }
+      var email = (document.getElementById('fb-auth-email').value || '').trim();
+      var pass = document.getElementById('fb-auth-pass').value || '';
+      if (!email || !pass) {
+        alert('Masukkan Email dan Password Firebase Authentication.');
+        return;
+      }
+      try { localStorage.setItem(FIREBASE_AUTH_EMAIL_KEY, email); } catch (e) {}
+      fbAuth.signInWithEmailAndPassword(email, pass)
+        .then(function(cred) {
+          document.getElementById('fb-auth-pass').value = '';
+          updateFbAuthStatusUI(cred.user);
+          detachFirebaseListeners();
+          attachFirebaseDatabaseListeners(cfg);
+          alert('Login Cloud Auth berhasil! Sesi terhubung dengan UID: ' + cred.user.uid);
+        })
+        .catch(function(err) {
+          alert('Gagal Login Cloud Auth: ' + (err.message || err.code));
+        });
+    }
+
+    function signOutFirebaseAuth() {
+      if (!fbAuth || !fbAuth.currentUser || fbAuth.currentUser.isAnonymous) {
+        alert('Perangkat ini sudah berada di Mode Admin HP (Auto-Connect).');
+        return;
+      }
+      fbAuth.signOut().then(function() {
+        alert('Akun Owner logout. Perangkat beralih otomatis ke Mode Admin HP.');
+      });
     }
 
     function saveFirebaseConfigFromUI() {
@@ -1858,8 +1991,8 @@
     function clearFirebaseConfig() {
       if (!confirm('Putuskan sinkronisasi Firebase dan kembali ke penyimpanan lokal HP saja?')) return;
       try { localStorage.removeItem(FIREBASE_CONFIG_KEY); } catch (e) {}
+      detachFirebaseListeners();
       fbDb = null;
-      fbListenerAttached = false;
       var inp = document.getElementById('fb-config-input');
       if (inp) inp.value = '';
       updateSyncPill('local', 'Status: Mode lokal HP (sinkronisasi cloud dimatikan).');
@@ -3351,6 +3484,7 @@
     } catch (e) {}
   </script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </body>
 </html>
