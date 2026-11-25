@@ -1348,7 +1348,24 @@
     <!-- TAB 6: MENU AKUN -->
     <section id="tab-account" class="tab-panel">
       <div class="card">
-        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Sinkronisasi Real-Time Antar-HP (Firebase)</h2>
+        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Akun &amp; Keamanan</h2>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">ID Admin dan Password disembunyikan untuk menjaga privasi. Ketuk tombol di bawah untuk mengubah kredensial login atau password desain.</p>
+        <div id="cred-saved-msg" class="success-banner">Perubahan akun &amp; keamanan berhasil disimpan!</div>
+
+        <button type="button" class="btn-primary" onclick="openCredModal()">Kelola ID &amp; Password</button>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+          <button type="button" class="btn-design-small" onclick="openCloudAccessModal()">hak akses cloud</button>
+          <button type="button" class="btn-design-small" onclick="openDesignAuthModal()">rubah design aplikasi</button>
+        </div>
+      </div>
+
+      <!-- MENU KHUSUS OWNER: SINKRONISASI REAL-TIME ANTAR-HP (MUNCUL HANYA SAAT LOGIN OWNER) -->
+      <div id="owner-cloud-sync-card" class="card" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+          <h2 style="margin:0; font-size:16px; color:var(--pink-dark);">Sinkronisasi Real-Time Antar-HP (Firebase)</h2>
+          <span class="badge badge-selesai">Mode Owner</span>
+        </div>
         <p style="margin:0 0 10px; font-size:12px; color:var(--text-muted);">
           Tempelkan <strong>firebaseConfig</strong> dari proyek Firebase Realtime Database agar perubahan stok dan pesanan di HP 1 otomatis muncul di HP 2.
         </p>
@@ -1368,35 +1385,8 @@
           <button type="button" class="btn-sm danger" style="padding:11px;" onclick="clearFirebaseConfig()">Putus Cloud (Lokal)</button>
         </div>
         <div id="fb-status-detail" style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Status: Belum terhubung ke Firebase (mode penyimpanan lokal HP).</div>
-
-        <div style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border);">
-          <div style="font-size:12.5px; font-weight:700; color:var(--pink-dark); margin-bottom:4px;">Hak Akses Cloud (Owner vs HP Admin)</div>
-          <p style="margin:0 0 8px; font-size:11.5px; color:var(--text-muted);">
-            HP Admin otomatis tersambung ke <em>orders</em> &amp; <em>stocks</em> tanpa perlu login. Khusus <strong>HP Owner</strong>, login dengan Email &amp; Password Firebase Auth untuk akses penuh.
-          </p>
-          <div id="fb-auth-status-box" style="font-size:11.5px; background:var(--surface-soft); border:1px solid var(--border); border-radius:10px; padding:8px 10px; margin-bottom:8px; color:var(--text-muted);">
-            Sesi Cloud Auth: Menyiapkan sesi otomatis...
-          </div>
-          <div class="grid-2" style="margin-bottom:8px;">
-            <input type="email" id="fb-auth-email" placeholder="Email Owner (opsional)" autocomplete="email" style="font-size:12.5px;" />
-            <input type="password" id="fb-auth-pass" placeholder="Password Owner" autocomplete="current-password" style="font-size:12.5px;" />
-          </div>
-          <div class="grid-2">
-            <button type="button" class="btn-sm pink" style="padding:10px;" onclick="signInFirebaseAuthFromUI()">Login Owner</button>
-            <button type="button" class="btn-sm" style="padding:10px;" onclick="signOutFirebaseAuth()">Mode Admin HP</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Akun &amp; Keamanan</h2>
-        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">ID Admin dan Password disembunyikan untuk menjaga privasi. Ketuk tombol di bawah untuk mengubah kredensial login atau password desain.</p>
-        <div id="cred-saved-msg" class="success-banner">Perubahan akun &amp; keamanan berhasil disimpan!</div>
-
-        <button type="button" class="btn-primary" onclick="openCredModal()">Kelola ID &amp; Password</button>
-
-        <div class="design-link-wrap">
-          <button type="button" class="btn-design-small" onclick="openDesignAuthModal()">rubah design aplikasi</button>
+        <div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);">
+          <button type="button" class="btn-sm" style="width:100%; padding:10px;" onclick="signOutFirebaseAuth()">Keluar Mode Owner (Kembali ke Mode Admin HP)</button>
         </div>
       </div>
 
@@ -1552,6 +1542,36 @@
       </div>
       <button type="button" class="btn-primary" style="padding:11px;" id="btn-wa-send">Kirim WhatsApp</button>
       <button type="button" class="btn-sm" style="width:100%; margin-top:8px; padding:10px;" onclick="closeNotaModal()">Tutup</button>
+    </div>
+  </div>
+
+  <!-- MODAL LOGIN HAK AKSES CLOUD (OWNER) -->
+  <div id="cloud-access-modal" class="modal-backdrop" onclick="if(event.target===this) closeCloudAccessModal()">
+    <div class="modal">
+      <h3>Hak Akses Cloud (Owner)</h3>
+      <p style="font-size:12.5px; color:var(--text-muted); margin:0 0 12px;">
+        HP Admin otomatis tersambung ke operasional tanpa login. Masuk dengan akun Email &amp; Password Firebase Owner untuk membuka menu <strong>Sinkronisasi Real-Time Antar-HP</strong> &amp; kendali penuh database.
+      </p>
+      <div id="fb-auth-status-box" style="font-size:11.5px; background:var(--surface-soft); border:1px solid var(--border); border-radius:10px; padding:8px 10px; margin-bottom:12px; color:var(--text-muted);">
+        Mode Akses: Menyiapkan sesi otomatis...
+      </div>
+      <form onsubmit="handleCloudOwnerModalSubmit(event)">
+        <div class="form-group">
+          <label>Email Owner Firebase</label>
+          <input type="email" id="fb-auth-email" placeholder="Masukkan email Owner" autocomplete="email" required />
+        </div>
+        <div class="form-group">
+          <label>Password Owner Firebase</label>
+          <input type="password" id="fb-auth-pass" placeholder="Masukkan password Owner" autocomplete="current-password" required />
+        </div>
+        <div class="grid-2">
+          <button type="button" class="btn-sm" style="padding:11px;" onclick="closeCloudAccessModal()">Tutup</button>
+          <button type="submit" class="btn-primary" style="padding:11px;">Login Owner</button>
+        </div>
+      </form>
+      <div id="cloud-modal-signout-wrap" style="display:none; margin-top:8px;">
+        <button type="button" class="btn-sm danger" style="width:100%; padding:10px;" onclick="signOutFirebaseAuth()">Logout Owner (Mode Admin HP)</button>
+      </div>
     </div>
   </div>
 
@@ -1712,17 +1732,30 @@
     var suppressCloudPush = false;
     var FIREBASE_AUTH_EMAIL_KEY = 'lalily_firebase_auth_email_v1';
 
+    var EMBEDDED_FIREBASE_CONFIG = {
+      apiKey: "AIzaSyDnv3EsMfl2RBrIBFvcjcL_K45UjnzCRLg",
+      authDomain: "lalily-flowers.firebaseapp.com",
+      databaseURL: "https://lalily-flowers-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lalily-flowers",
+      storageBucket: "lalily-flowers.firebasestorage.app",
+      messagingSenderId: "1003886983478",
+      appId: "1:1003886983478:web:56c10110b9d40f21b21b97",
+      measurementId: "G-YWPEG97LGJ"
+    };
+
     function getFirebaseConfig() {
       var raw = null;
       try { raw = localStorage.getItem(FIREBASE_CONFIG_KEY); } catch (e) {}
-      if (!raw) return null;
-      try {
-        var parsed = JSON.parse(raw);
-        if (parsed && parsed.databaseURL) return parsed;
-        return null;
-      } catch (e) {
-        return null;
+      if (raw) {
+        try {
+          var parsed = JSON.parse(raw);
+          if (parsed && parsed.databaseURL) return parsed;
+        } catch (e) {}
       }
+      if (EMBEDDED_FIREBASE_CONFIG && EMBEDDED_FIREBASE_CONFIG.databaseURL) {
+        return EMBEDDED_FIREBASE_CONFIG;
+      }
+      return null;
     }
 
     function parseFirebaseConfigText(rawText) {
@@ -1771,30 +1804,63 @@
       }
     }
 
+    function openCloudAccessModal() {
+      var savedEmail = '';
+      try { savedEmail = localStorage.getItem(FIREBASE_AUTH_EMAIL_KEY) || ''; } catch (e) {}
+      var emailInp = document.getElementById('fb-auth-email');
+      if (emailInp && !emailInp.value && savedEmail) {
+        emailInp.value = savedEmail;
+      }
+      updateFbAuthStatusUI(fbAuth ? fbAuth.currentUser : null);
+      var m = document.getElementById('cloud-access-modal');
+      if (m) m.classList.add('show');
+    }
+
+    function closeCloudAccessModal() {
+      var m = document.getElementById('cloud-access-modal');
+      if (m) m.classList.remove('show');
+    }
+
+    function handleCloudOwnerModalSubmit(e) {
+      if (e && e.preventDefault) e.preventDefault();
+      signInFirebaseAuthFromUI();
+    }
+
     function updateFbAuthStatusUI(user) {
       var box = document.getElementById('fb-auth-status-box');
+      var ownerCard = document.getElementById('owner-cloud-sync-card');
+      var signoutWrap = document.getElementById('cloud-modal-signout-wrap');
       var emailInp = document.getElementById('fb-auth-email');
       var savedEmail = '';
       try { savedEmail = localStorage.getItem(FIREBASE_AUTH_EMAIL_KEY) || ''; } catch (e) {}
       if (emailInp && !emailInp.value && savedEmail) {
         emailInp.value = savedEmail;
       }
+
+      var isOwner = Boolean(user && !user.isAnonymous);
+      if (ownerCard) {
+        ownerCard.style.display = isOwner ? 'block' : 'none';
+      }
+      if (signoutWrap) {
+        signoutWrap.style.display = isOwner ? 'block' : 'none';
+      }
+
       if (!box) return;
-      if (user && !user.isAnonymous) {
+      if (isOwner) {
         box.style.background = 'var(--green-bg)';
         box.style.borderColor = '#BDE5D3';
         box.style.color = 'var(--green)';
         box.innerHTML = 'Mode Akses: <strong>Owner Full Akses</strong> (' + (user.email || 'Owner') + ')<br/><span style="font-size:10.5px;">UID: ' + user.uid + '</span>';
       } else if (user && user.isAnonymous) {
-        box.style.background = 'var(--green-bg)';
-        box.style.borderColor = '#BDE5D3';
-        box.style.color = 'var(--green)';
-        box.innerHTML = 'Mode Akses: <strong>Admin Operasional (Auto-Connect)</strong><br/><span style="font-size:10.5px;">Akses khusus pesanan &amp; stok tanpa perlu login</span>';
+        box.style.background = 'var(--surface-soft)';
+        box.style.borderColor = 'var(--border)';
+        box.style.color = 'var(--text-muted)';
+        box.innerHTML = 'Mode Saat Ini: <strong>Admin HP (Auto-Connect)</strong><br/><span style="font-size:10.5px;">Login dengan akun Owner di bawah untuk membuka menu Sinkronisasi Firebase.</span>';
       } else {
         box.style.background = 'var(--surface-soft)';
         box.style.borderColor = 'var(--border)';
         box.style.color = 'var(--text-muted)';
-        box.textContent = 'Mode Akses: Menghubungkan sesi otomatis...';
+        box.textContent = 'Mode Saat Ini: Admin HP (Belum login sebagai Owner).';
       }
     }
 
@@ -1802,6 +1868,7 @@
       if (fbDb) {
         try { fbDb.ref('lalily/orders').off(); } catch (e) {}
         try { fbDb.ref('lalily/stocks').off(); } catch (e) {}
+        try { fbDb.ref('lalily/creds').off(); } catch (e) {}
       }
       fbListenerAttached = false;
     }
@@ -1866,6 +1933,29 @@
         detachFirebaseListeners();
         updateSyncPill('error', 'Status: Gagal membaca stok (' + (err.message || 'cek Login Cloud Auth / Rules') + ').');
       });
+
+      fbDb.ref('lalily/creds').once('value', function(snap) {
+        if (!snap.exists()) {
+          var localCreds = getCredentials();
+          if (localCreds && localCreds.customized) {
+            fbDb.ref('lalily/creds').set(localCreds).catch(function() {});
+          }
+        }
+      }, function() {});
+
+      fbDb.ref('lalily/creds').on('value', function(snap) {
+        if (!snap.exists()) return;
+        var cloudCreds = snap.val();
+        if (cloudCreds && cloudCreds.id && cloudCreds.pass) {
+          suppressCloudPush = true;
+          try { localStorage.setItem(AUTH_CREDS_KEY, JSON.stringify(cloudCreds)); } catch (e) {}
+          suppressCloudPush = false;
+          var hint = document.getElementById('login-hint');
+          if (hint && cloudCreds.customized) {
+            hint.style.display = 'none';
+          }
+        }
+      }, function() {});
     }
 
     function initFirebaseRealtime() {
@@ -1924,7 +2014,7 @@
     function signInFirebaseAuthFromUI() {
       var cfg = getFirebaseConfig();
       if (!cfg) {
-        alert('Tempel dan aktifkan firebaseConfig terlebih dahulu di atas.');
+        alert('Konfigurasi Firebase belum terpasang pada file ini. Silakan tanamkan firebaseConfig terlebih dahulu.');
         return;
       }
       if (!fbAuth) {
@@ -1937,7 +2027,7 @@
       var email = (document.getElementById('fb-auth-email').value || '').trim();
       var pass = document.getElementById('fb-auth-pass').value || '';
       if (!email || !pass) {
-        alert('Masukkan Email dan Password Firebase Authentication.');
+        alert('Masukkan Email dan Password Owner Firebase.');
         return;
       }
       try { localStorage.setItem(FIREBASE_AUTH_EMAIL_KEY, email); } catch (e) {}
@@ -1945,12 +2035,13 @@
         .then(function(cred) {
           document.getElementById('fb-auth-pass').value = '';
           updateFbAuthStatusUI(cred.user);
+          closeCloudAccessModal();
           detachFirebaseListeners();
           attachFirebaseDatabaseListeners(cfg);
-          alert('Login Cloud Auth berhasil! Sesi terhubung dengan UID: ' + cred.user.uid);
+          alert('Login Owner berhasil! Menu Sinkronisasi Real-Time Antar-HP telah dibuka.');
         })
         .catch(function(err) {
-          alert('Gagal Login Cloud Auth: ' + (err.message || err.code));
+          alert('Gagal Login Owner: ' + (err.message || err.code));
         });
     }
 
@@ -2013,14 +2104,23 @@
       var raw = null;
       try { raw = localStorage.getItem(AUTH_CREDS_KEY); } catch (e) {}
       if (!raw) {
-        var def = { id: 'lalily', pass: 'lalily123', customized: false };
+        var def = { id: 'lalily', pass: 'lalily123', customized: false, updatedAt: 0 };
         try { localStorage.setItem(AUTH_CREDS_KEY, JSON.stringify(def)); } catch (e) {}
         return def;
       }
       try {
         return JSON.parse(raw);
       } catch (e) {
-        return { id: 'lalily', pass: 'lalily123', customized: false };
+        return { id: 'lalily', pass: 'lalily123', customized: false, updatedAt: 0 };
+      }
+    }
+
+    function saveCredentialsObj(credsObj) {
+      try { localStorage.setItem(AUTH_CREDS_KEY, JSON.stringify(credsObj)); } catch (e) {}
+      if (!suppressCloudPush && fbDb) {
+        fbDb.ref('lalily/creds').set(credsObj).catch(function(err) {
+          updateSyncPill('error', 'Status: Gagal simpan kredensial ke cloud (' + (err.message || '') + ').');
+        });
       }
     }
 
@@ -2128,13 +2228,12 @@
       var newDesignPass = document.getElementById('modal-design-pass').value.trim();
       if (!newId || !newPass || !newDesignPass) return;
 
-      try {
-        localStorage.setItem(AUTH_CREDS_KEY, JSON.stringify({
-          id: newId,
-          pass: newPass,
-          customized: true
-        }));
-      } catch (err) {}
+      saveCredentialsObj({
+        id: newId,
+        pass: newPass,
+        customized: true,
+        updatedAt: Date.now()
+      });
 
       var dCfg = getDesignSettings();
       dCfg.designPass = newDesignPass;
@@ -3469,6 +3568,7 @@
     try { applyDesignSettings(getDesignSettings()); } catch (e) {}
     try { generateHDAppIcon(); } catch (e) {}
     try { initLoginState(); } catch (e) {}
+    try { initFirebaseRealtime(); } catch (e) {}
     try { document.getElementById('f-deadline').value = todayIso(); } catch (e) {}
     try { checkAndTriggerReminders(false); } catch (e) {}
     try { renderOrders(); } catch (e) {}
