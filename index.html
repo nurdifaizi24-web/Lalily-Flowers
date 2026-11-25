@@ -912,16 +912,24 @@
     }
 
     .cat-tile-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 10px;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
       background: var(--surface);
       border: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 17px;
+      font-size: 20px;
       color: var(--pink-dark);
+      overflow: hidden;
+    }
+
+    .cat-tile-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
     .cat-tile-title {
@@ -1574,14 +1582,21 @@
     </button>
   </nav>
 
-  <!-- MODAL KELOLA KATEGORI PRODUK -->
+  <!-- MODAL KELOLA KATEGORI PRODUK (+ UPLOAD GAMBAR GRID) -->
   <div id="manage-categories-modal" class="modal-backdrop" onclick="if(event.target===this) closeManageCategoriesModal()">
     <div class="modal">
-      <h3>Kelola Kategori Produk</h3>
+      <h3>Kelola Kategori &amp; Gambar Grid</h3>
       <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">
-        Tambahkan kategori produk baru (contoh: <em>Buket Balon, Hampers Lebaran, Dekorasi Lamaran, Sewa Standing Flower</em>). Kategori langsung muncul di langkah awal menu <strong>Tambah</strong>.
+        Tambah kategori baru atau ganti gambar kartu di menu <strong>Tambah</strong> menggunakan foto dari galeri HP.
       </p>
       <form onsubmit="addCustomProductCategory(event)" style="margin-bottom:14px;">
+        <div class="photo-upload-box" style="padding:10px; margin-bottom:10px;" onclick="document.getElementById('new-cat-photo').click()">
+          <div style="font-size:12px; font-weight:700; color:var(--pink-dark);">Ketuk untuk Upload Gambar Grid (Opsional)</div>
+          <div style="font-size:10.5px; color:var(--text-muted);">Pilih foto produk dari galeri HP</div>
+          <input type="file" id="new-cat-photo" accept="image/*" style="display:none;" onchange="handleNewCatPhoto(event)" />
+          <img id="new-cat-photo-preview" class="photo-preview" style="max-height:80px;" alt="Preview Kategori" />
+        </div>
+
         <div class="grid-2" style="margin-bottom:8px;">
           <div class="form-group" style="margin-bottom:0;">
             <label>Nama Kategori Baru *</label>
@@ -1597,6 +1612,10 @@
         </div>
         <button type="submit" class="btn-primary" style="padding:10px;">+ Tambah Kategori Produk</button>
       </form>
+
+      <!-- Input tersembunyi untuk ganti foto kategori yang sudah ada -->
+      <input type="file" id="edit-cat-photo-input" accept="image/*" style="display:none;" onchange="handleExistingCatPhotoChange(event)" />
+
       <div id="manage-categories-list"></div>
       <button type="button" class="btn-sm" style="width:100%; margin-top:10px; padding:10px;" onclick="closeManageCategoriesModal()">Tutup</button>
     </div>
@@ -1984,16 +2003,77 @@
       }
     }
 
+    var uploadedNewCatPhoto = '';
+    var editingCatPhotoId = null;
+
+    function compressCategoryImage(file, callback) {
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var size = 240;
+          canvas.width = size;
+          canvas.height = size;
+          var ctx = canvas.getContext('2d');
+          var minSide = Math.min(img.width, img.height);
+          var sx = (img.width - minSide) / 2;
+          var sy = (img.height - minSide) / 2;
+          ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+          callback(canvas.toDataURL('image/jpeg', 0.78));
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleNewCatPhoto(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      compressCategoryImage(file, function(dataUrl) {
+        uploadedNewCatPhoto = dataUrl;
+        var prev = document.getElementById('new-cat-photo-preview');
+        prev.src = dataUrl;
+        prev.style.display = 'block';
+      });
+    }
+
+    function triggerChangeCatPhoto(catId) {
+      editingCatPhotoId = catId;
+      var inp = document.getElementById('edit-cat-photo-input');
+      inp.value = '';
+      inp.click();
+    }
+
+    function handleExistingCatPhotoChange(e) {
+      var file = e.target.files[0];
+      if (!file || !editingCatPhotoId) return;
+      compressCategoryImage(file, function(dataUrl) {
+        var cats = getProductCategories();
+        var item = cats.find(function(c) { return c.id === editingCatPhotoId; });
+        if (item) {
+          item.photo = dataUrl;
+          saveProductCategories(cats);
+          renderManageCategoriesList();
+          renderCategoryLauncher();
+        }
+        editingCatPhotoId = null;
+      });
+    }
+
     function renderCategoryLauncher() {
       var grid = document.getElementById('category-launcher-grid');
       if (!grid) return;
       var cats = getProductCategories();
       grid.innerHTML = cats.map(function(c) {
         var isSewa = c.defaultType === 'Sewa';
+        var iconContent = c.photo
+          ? ('<img src="' + c.photo + '" alt="' + c.name + '" />')
+          : (c.icon || '🌺');
         return (
           '<button type="button" class="cat-tile" onclick="selectCategoryForNewOrder(&#39;' + String(c.name).replace(/'/g, "\\'") + '&#39;, &#39;' + (c.defaultType || 'Beli') + '&#39;)">' +
             '<div style="display:flex; justify-content:space-between; align-items:center;">' +
-              '<div class="cat-tile-icon">' + (c.icon || '🌺') + '</div>' +
+              '<div class="cat-tile-icon">' + iconContent + '</div>' +
               '<span class="badge ' + (isSewa ? 'badge-sewa' : 'badge-beli') + '" style="font-size:10px;">' + (isSewa ? 'Bisa Sewa' : 'Beli') + '</span>' +
             '</div>' +
             '<div class="cat-tile-title">' + c.name + '</div>' +
@@ -2039,13 +2119,22 @@
       if (!wrap) return;
       var cats = getProductCategories();
       wrap.innerHTML = cats.map(function(c) {
+        var thumb = c.photo
+          ? ('<img src="' + c.photo + '" style="width:28px; height:28px; border-radius:7px; object-fit:cover; vertical-align:middle; margin-right:6px;" />')
+          : '<span style="margin-right:6px;">' + (c.icon || '🌺') + '</span>';
         return (
           '<div class="picked-item-row">' +
-            '<div>' +
-              '<strong>' + (c.icon || '🌺') + ' ' + c.name + '</strong> ' +
-              '<span class="badge ' + (c.defaultType === 'Sewa' ? 'badge-sewa' : 'badge-beli') + '" style="font-size:10px;">' + (c.defaultType || 'Beli') + '</span>' +
+            '<div style="display:flex; align-items:center;">' +
+              thumb +
+              '<div>' +
+                '<strong>' + c.name + '</strong> ' +
+                '<span class="badge ' + (c.defaultType === 'Sewa' ? 'badge-sewa' : 'badge-beli') + '" style="font-size:10px;">' + (c.defaultType || 'Beli') + '</span>' +
+              '</div>' +
             '</div>' +
-            '<button type="button" class="btn-sm danger" style="padding:3px 8px;" onclick="deleteCustomProductCategory(&#39;' + c.id + '&#39;)">Hapus</button>' +
+            '<div style="display:flex; gap:4px;">' +
+              '<button type="button" class="btn-sm pink" style="padding:3px 8px;" onclick="triggerChangeCatPhoto(&#39;' + c.id + '&#39;)">Ganti Foto</button>' +
+              '<button type="button" class="btn-sm danger" style="padding:3px 8px;" onclick="deleteCustomProductCategory(&#39;' + c.id + '&#39;)">Hapus</button>' +
+            '</div>' +
           '</div>'
         );
       }).join('');
@@ -2062,10 +2151,14 @@
         name: name,
         defaultType: defType,
         icon: defType === 'Sewa' ? '🎁' : '🌺',
+        photo: uploadedNewCatPhoto || '',
         desc: defType === 'Sewa' ? 'Produk sewa (kembali H+3)' : 'Produk rangkaian toko'
       });
       saveProductCategories(cats);
       document.getElementById('new-cat-name').value = '';
+      uploadedNewCatPhoto = '';
+      var prev = document.getElementById('new-cat-photo-preview');
+      if (prev) prev.style.display = 'none';
       renderManageCategoriesList();
       renderCategoryLauncher();
     }
