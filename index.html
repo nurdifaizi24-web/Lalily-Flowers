@@ -690,8 +690,88 @@
 
     .grid-2 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       gap: 10px;
+      align-items: end;
+    }
+
+    .grid-2 > .form-group {
+      min-width: 0;
+    }
+
+    input[type="date"] {
+      max-width: 100%;
+      min-width: 0;
+      width: 100%;
+      padding: 10px 8px;
+      font-size: calc(13px * var(--font-scale));
+      -webkit-appearance: none;
+      appearance: none;
+      min-height: 41px;
+    }
+
+    select {
+      min-height: 41px;
+    }
+
+    @media (max-width: 390px) {
+      .date-status-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+
+    /* Box Promo Cards */
+    .box-promo-panel {
+      background: linear-gradient(135deg, #F0F7FF, #FFF1F5);
+      border: 1.5px solid #BEE3F8;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .promo-chips-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .promo-pill-btn {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .promo-pill-btn.active {
+      background: var(--pink-primary);
+      border-color: var(--pink-dark);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(225, 106, 147, 0.25);
+    }
+
+    .promo-pill-btn.active .promo-pill-sub {
+      color: rgba(255, 255, 255, 0.92);
+    }
+
+    .promo-pill-title {
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+
+    .promo-pill-sub {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--pink-dark);
     }
 
     .hpp-box {
@@ -1218,13 +1298,13 @@
             </div>
           </div>
 
-          <div class="grid-2">
+          <div class="grid-2 date-status-grid">
             <div class="form-group">
               <label>Tenggat Ambil / Acara *</label>
               <input type="date" id="f-deadline" required onchange="updateRentalReturnPreview()" />
             </div>
             <div class="form-group" id="f-return-date-wrap" style="display:none;">
-              <label>Batas Kembali Sewa (Maks H+3)</label>
+              <label>Batas Kembali (H+3)</label>
               <input type="date" id="f-return-date" />
             </div>
             <div class="form-group" id="f-status-top-wrap">
@@ -1235,6 +1315,36 @@
                 <option value="Selesai">Selesai</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-group" id="f-status-sewa-wrap" style="display:none;">
+            <label>Status Pengerjaan</label>
+            <select id="f-status-sewa" onchange="document.getElementById('f-status').value = this.value;">
+              <option value="Antrean">Antrean</option>
+              <option value="Dirangkai">Dirangkai</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+          </div>
+
+          <!-- PANEL KHUSUS PAKET PROMO BOX SESERAHAN -->
+          <div id="box-promo-panel" class="box-promo-panel" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+              <div>
+                <strong style="font-size:13px; color:var(--pink-dark); display:block;">Paket Promo Box Seserahan</strong>
+                <span style="font-size:11px; color:var(--text-muted);">Pilih jumlah box promo &amp; stok box yang dipakai:</span>
+              </div>
+              <button type="button" class="btn-sm pink" style="font-size:11px; padding:5px 9px;" onclick="openBoxPromoModal()">+ Tambah / Atur Promo</button>
+            </div>
+
+            <div class="form-group" style="margin-top:8px; margin-bottom:6px;">
+              <label style="font-size:11.5px; color:var(--text);">Pilih Item Stok Box yang Dikurangi Otomatis *</label>
+              <select id="f-box-stock-select" onchange="onBoxStockTargetChange()">
+                <option value="">-- Pilih Stok Box --</option>
+              </select>
+              <div id="box-stock-avail-hint" style="font-size:11px; color:var(--blue); margin-top:3px;"></div>
+            </div>
+
+            <div id="box-promo-options-grid" class="promo-chips-grid"></div>
           </div>
 
           <div id="sewa-info-banner" style="display:none; background:var(--blue-bg); border:1px solid #BEE3F8; color:var(--blue); border-radius:12px; padding:9px 11px; font-size:11.5px; margin-bottom:12px;">
@@ -1621,6 +1731,36 @@
     </div>
   </div>
 
+  <!-- MODAL KELOLA PAKET PROMO BOX SESERAHAN -->
+  <div id="box-promo-modal" class="modal-backdrop" onclick="if(event.target===this) closeBoxPromoModal()">
+    <div class="modal">
+      <h3>Kelola Paket Promo Box Seserahan</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">
+        Tambahkan paket promo jumlah box (misal 3 Box, 5 Box, 7 Box, 9 Box, 12 Box, dst.) beserta harga promonya.
+      </p>
+      <form onsubmit="addBoxPromoPackage(event)" style="margin-bottom:14px;">
+        <div class="grid-2" style="margin-bottom:8px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Jumlah Box *</label>
+            <input type="number" id="new-promo-qty" min="1" placeholder="Contoh: 9" required />
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>Harga Promo (Rp) *</label>
+            <input type="number" id="new-promo-price" min="0" placeholder="Contoh: 500000" required />
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:8px;">
+          <label>Keterangan Paket (Opsional)</label>
+          <input type="text" id="new-promo-label" placeholder="Contoh: Paket 9 Box + Hias Pita & Bunga" />
+        </div>
+        <button type="submit" class="btn-primary" style="padding:10px;">+ Simpan Paket Promo Box</button>
+      </form>
+
+      <div id="box-promo-manage-list"></div>
+      <button type="button" class="btn-sm" style="width:100%; margin-top:10px; padding:10px;" onclick="closeBoxPromoModal()">Tutup</button>
+    </div>
+  </div>
+
   <!-- MODAL EDIT STOK BARANG -->
   <div id="edit-stock-modal" class="modal-backdrop" onclick="if(event.target===this) closeEditStockModal()">
     <div class="modal">
@@ -1984,6 +2124,7 @@
     var FIREBASE_CONFIG_KEY = 'lalily_firebase_config_v1';
     var HPP_SETTINGS_KEY = 'lalily_hpp_settings_v1';
     var PRODUCT_CATEGORIES_KEY = 'lalily_product_categories_v1';
+    var BOX_PROMO_KEY = 'lalily_box_promo_packages_v1';
 
     var fbDb = null;
     var fbAuth = null;
@@ -2159,8 +2300,229 @@
       }).join('');
     }
 
+    /* ================= PAKET PROMO BOX SESERAHAN ================= */
+    var defaultBoxPromoPackages = [
+      { id: 'BP-3', qty: 3, price: 200000, label: 'Promo 3 Box Seserahan' },
+      { id: 'BP-5', qty: 5, price: 325000, label: 'Promo 5 Box Seserahan' },
+      { id: 'BP-7', qty: 7, price: 450000, label: 'Promo 7 Box Seserahan' }
+    ];
+    var selectedBoxPromoId = null;
+
+    function getBoxPromoPackages() {
+      var raw = null;
+      try { raw = localStorage.getItem(BOX_PROMO_KEY); } catch (e) {}
+      if (!raw) {
+        try { localStorage.setItem(BOX_PROMO_KEY, JSON.stringify(defaultBoxPromoPackages)); } catch (e) {}
+        return defaultBoxPromoPackages.slice();
+      }
+      try {
+        var list = JSON.parse(raw);
+        return Array.isArray(list) && list.length ? list : defaultBoxPromoPackages.slice();
+      } catch (e) {
+        return defaultBoxPromoPackages.slice();
+      }
+    }
+
+    function saveBoxPromoPackages(list) {
+      list.sort(function(a, b) { return (Number(a.qty) || 0) - (Number(b.qty) || 0); });
+      try { localStorage.setItem(BOX_PROMO_KEY, JSON.stringify(list)); } catch (e) {}
+      if (!suppressCloudPush && fbDb) {
+        fbDb.ref('lalily/settings/boxPromos').set(list).catch(function() {});
+      }
+    }
+
+    function isBoxSeserahanCategory(catName) {
+      var lower = String(catName || '').toLowerCase();
+      return lower.indexOf('seserahan') !== -1 || lower.indexOf('box') !== -1;
+    }
+
+    function populateBoxStockDropdown(preselectId) {
+      var sel = document.getElementById('f-box-stock-select');
+      if (!sel) return;
+      var stocks = getStocks();
+      var boxStocks = stocks.filter(function(s) {
+        var catLow = String(s.category || '').toLowerCase();
+        var nameLow = String(s.name || '').toLowerCase();
+        return s.rentable === true || catLow.indexOf('box') !== -1 || nameLow.indexOf('box') !== -1 || nameLow.indexOf('seserahan') !== -1;
+      });
+      var listToUse = boxStocks.length ? boxStocks : stocks;
+      var editId = document.getElementById('edit-id').value || null;
+
+      sel.innerHTML = listToUse.map(function(s) {
+        var avail = getAvailableStockQty(s, editId);
+        var total = Number(s.qty) || 0;
+        return '<option value="' + s.id + '">' + s.name + ' (Tersedia: ' + avail + '/' + total + ')</option>';
+      }).join('');
+
+      if (preselectId && listToUse.some(function(x) { return x.id === preselectId; })) {
+        sel.value = preselectId;
+      } else if (listToUse.length) {
+        sel.value = listToUse[0].id;
+      }
+      onBoxStockTargetChange();
+    }
+
+    function onBoxStockTargetChange() {
+      var sel = document.getElementById('f-box-stock-select');
+      var hint = document.getElementById('box-stock-avail-hint');
+      if (!sel || !hint) return;
+      var stockId = sel.value;
+      var s = getStocks().find(function(x) { return x.id === stockId; });
+      var editId = document.getElementById('edit-id').value || null;
+      if (s) {
+        var avail = getAvailableStockQty(s, editId);
+        hint.textContent = 'Stok siap pakai: ' + avail + ' ' + s.unit + ' (Modal/box: ' + formatRp(s.cost) + ')';
+        if (selectedBoxPromoId) {
+          applyBoxPromoPackage(selectedBoxPromoId, true);
+        }
+      } else {
+        hint.textContent = '';
+      }
+    }
+
+    function renderBoxPromoOptions() {
+      var grid = document.getElementById('box-promo-options-grid');
+      if (!grid) return;
+      var pkgs = getBoxPromoPackages();
+      grid.innerHTML = pkgs.map(function(p) {
+        var isActive = selectedBoxPromoId === p.id;
+        return (
+          '<button type="button" class="promo-pill-btn' + (isActive ? ' active' : '') + '" onclick="applyBoxPromoPackage(&#39;' + p.id + '&#39;, false)">' +
+            '<span class="promo-pill-title">' + p.qty + ' Box</span>' +
+            '<span class="promo-pill-sub">' + formatRp(p.price) + '</span>' +
+          '</button>'
+        );
+      }).join('');
+    }
+
+    function applyBoxPromoPackage(promoId, silentSwitch) {
+      var pkgs = getBoxPromoPackages();
+      var pkg = pkgs.find(function(x) { return x.id === promoId; });
+      if (!pkg) return;
+
+      var sel = document.getElementById('f-box-stock-select');
+      var stockId = sel ? sel.value : '';
+      var stocks = getStocks();
+      var s = stocks.find(function(x) { return x.id === stockId; });
+      var editId = document.getElementById('edit-id').value || null;
+
+      if (s) {
+        var avail = getAvailableStockQty(s, editId);
+        if (pkg.qty > avail && !silentSwitch) {
+          alert('Stok "' + s.name + '" hanya tersisa ' + avail + ' ' + s.unit + ', tidak cukup untuk paket ' + pkg.qty + ' Box.');
+          return;
+        }
+        orderPickedStocks = [{
+          stockId: s.id,
+          name: s.name,
+          category: s.category || 'Aksesoris / Box',
+          unit: s.unit,
+          cost: Number(s.cost) || 0,
+          qty: Number(pkg.qty) || 1
+        }];
+      }
+
+      selectedBoxPromoId = pkg.id;
+      renderBoxPromoOptions();
+
+      var wrap = document.getElementById('order-picked-stocks-wrap');
+      var listEl = document.getElementById('order-picked-stocks-list');
+      var badgeEl = document.getElementById('order-picked-modal-badge');
+      if (orderPickedStocks.length) {
+        wrap.style.display = 'block';
+        var totals = getOrderPickedModalTotals();
+        listEl.innerHTML = orderPickedStocks.map(function(item) {
+          var lineTotal = item.cost * item.qty;
+          return (
+            '<div class="picked-item-row">' +
+              '<div><strong>' + item.name + '</strong> &times; ' + item.qty + ' <span style="font-size:11px; color:var(--text-muted);">(' + formatRp(lineTotal) + ')</span></div>' +
+              '<button type="button" class="btn-sm danger" style="padding:2px 7px;" onclick="removeOrderPickedStock(&#39;' + item.stockId + '&#39;)">x</button>' +
+            '</div>'
+          );
+        }).join('');
+        if (badgeEl) badgeEl.textContent = 'Modal Stok: ' + formatRp(totals.totalStockModal);
+      }
+
+      var labelStr = pkg.label && pkg.label.trim() ? pkg.label.trim() : ('Paket Promo ' + pkg.qty + ' Box Seserahan');
+      var stockNameSuffix = s ? (' (' + s.name + ' - ' + pkg.qty + ' Box)') : (' (' + pkg.qty + ' Box)');
+      document.getElementById('f-item').value = labelStr + stockNameSuffix;
+
+      orderManualPriceOverridden = true;
+      document.getElementById('f-price').value = Number(pkg.price) || 0;
+      calcFormHpp();
+    }
+
+    function openBoxPromoModal() {
+      renderBoxPromoManageList();
+      document.getElementById('box-promo-modal').classList.add('show');
+    }
+
+    function closeBoxPromoModal() {
+      document.getElementById('box-promo-modal').classList.remove('show');
+    }
+
+    function renderBoxPromoManageList() {
+      var wrap = document.getElementById('box-promo-manage-list');
+      if (!wrap) return;
+      var pkgs = getBoxPromoPackages();
+      wrap.innerHTML = pkgs.map(function(p) {
+        return (
+          '<div class="picked-item-row">' +
+            '<div>' +
+              '<strong>' + p.qty + ' Box</strong> &mdash; <span style="color:var(--pink-dark); font-weight:700;">' + formatRp(p.price) + '</span>' +
+              (p.label ? ('<div style="font-size:11px; color:var(--text-muted);">' + p.label + '</div>') : '') +
+            '</div>' +
+            '<button type="button" class="btn-sm danger" style="padding:3px 8px;" onclick="deleteBoxPromoPackage(&#39;' + p.id + '&#39;)">Hapus</button>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    function addBoxPromoPackage(e) {
+      e.preventDefault();
+      var qty = Math.max(1, Number(document.getElementById('new-promo-qty').value) || 1);
+      var price = Math.max(0, Number(document.getElementById('new-promo-price').value) || 0);
+      var label = (document.getElementById('new-promo-label').value || '').trim();
+      var pkgs = getBoxPromoPackages();
+
+      var existingIdx = pkgs.findIndex(function(x) { return Number(x.qty) === qty; });
+      var newObj = {
+        id: existingIdx > -1 ? pkgs[existingIdx].id : ('BP-' + qty + '-' + Date.now()),
+        qty: qty,
+        price: price,
+        label: label || ('Promo ' + qty + ' Box Seserahan')
+      };
+
+      if (existingIdx > -1) {
+        pkgs[existingIdx] = newObj;
+      } else {
+        pkgs.push(newObj);
+      }
+
+      saveBoxPromoPackages(pkgs);
+      document.getElementById('new-promo-qty').value = '';
+      document.getElementById('new-promo-price').value = '';
+      document.getElementById('new-promo-label').value = '';
+      renderBoxPromoManageList();
+      renderBoxPromoOptions();
+    }
+
+    function deleteBoxPromoPackage(id) {
+      var pkgs = getBoxPromoPackages();
+      if (pkgs.length <= 1) {
+        alert('Minimal harus tersisa 1 paket promo box.');
+        return;
+      }
+      pkgs = pkgs.filter(function(x) { return x.id !== id; });
+      if (selectedBoxPromoId === id) selectedBoxPromoId = null;
+      saveBoxPromoPackages(pkgs);
+      renderBoxPromoManageList();
+      renderBoxPromoOptions();
+    }
+
     function selectCategoryForNewOrder(catName, defaultType) {
       resetFormFieldsOnly();
+      selectedBoxPromoId = null;
       document.getElementById('f-category').value = catName;
       document.getElementById('selected-cat-badge').textContent = catName;
       document.getElementById('form-title').textContent = 'Pesanan ' + catName;
@@ -2170,6 +2532,17 @@
       document.getElementById('f-cost-other').value = hppCfg.defaultLabor || 0;
       syncHppLabelToOrderForm();
       recalcOrderAutoPrice();
+
+      var promoPanel = document.getElementById('box-promo-panel');
+      if (promoPanel) {
+        if (isBoxSeserahanCategory(catName)) {
+          promoPanel.style.display = 'block';
+          populateBoxStockDropdown(null);
+          renderBoxPromoOptions();
+        } else {
+          promoPanel.style.display = 'none';
+        }
+      }
 
       document.getElementById('add-category-step').style.display = 'none';
       document.getElementById('add-form-step').style.display = 'block';
@@ -2259,6 +2632,7 @@
       var btnSewa = document.getElementById('btn-type-sewa');
       var retWrap = document.getElementById('f-return-date-wrap');
       var statusWrap = document.getElementById('f-status-top-wrap');
+      var statusSewaWrap = document.getElementById('f-status-sewa-wrap');
       var banner = document.getElementById('sewa-info-banner');
 
       if (btnBeli) btnBeli.classList.toggle('active', !isSewa);
@@ -2268,6 +2642,12 @@
       }
       if (retWrap) retWrap.style.display = isSewa ? 'block' : 'none';
       if (statusWrap) statusWrap.style.display = isSewa ? 'none' : 'block';
+      if (statusSewaWrap) {
+        statusSewaWrap.style.display = isSewa ? 'block' : 'none';
+        var selSewa = document.getElementById('f-status-sewa');
+        var selMain = document.getElementById('f-status');
+        if (selSewa && selMain) selSewa.value = selMain.value;
+      }
       if (banner) banner.style.display = isSewa ? 'block' : 'none';
 
       if (isSewa) {
@@ -2291,12 +2671,29 @@
       }
     }
 
-    // Hitung jumlah unit suatu stok yang sedang tersewa & belum dikembalikan (dalam masa sewa s/d H+3)
+    // Hitung jumlah unit suatu stok yang sedang tersewa & belum dikembalikan (untuk pesanan sewa yang stok fisiknya belum dipotong)
     function getCurrentlyRentedQty(stockId, excludeOrderId) {
       var orders = getOrders();
       var totalRented = 0;
       orders.forEach(function(o) {
         if (excludeOrderId && o.id === excludeOrderId) return;
+        if (o.orderType !== 'Sewa') return;
+        if (o.rentalReturned === true) return;
+        if (o.stockDeductedOnRent === true) return;
+        if (!Array.isArray(o.pickedStocks)) return;
+        o.pickedStocks.forEach(function(ps) {
+          if (ps.stockId === stockId) {
+            totalRented += (Number(ps.qty) || 0);
+          }
+        });
+      });
+      return totalRented;
+    }
+
+    function getActiveRentedDisplayQty(stockId) {
+      var orders = getOrders();
+      var totalRented = 0;
+      orders.forEach(function(o) {
         if (o.orderType !== 'Sewa') return;
         if (o.rentalReturned === true) return;
         if (!Array.isArray(o.pickedStocks)) return;
@@ -2329,14 +2726,51 @@
     function getAvailableStockQty(stockObj, excludeOrderId) {
       var total = Number(stockObj.qty) || 0;
       var rented = getCurrentlyRentedQty(stockObj.id, excludeOrderId);
-      return Math.max(0, total - rented);
+      var excludedRestored = 0;
+      if (excludeOrderId) {
+        var exOrder = getOrders().find(function(x) { return x.id === excludeOrderId; });
+        if (exOrder && exOrder.orderType === 'Sewa' && exOrder.stockDeductedOnRent === true && !exOrder.rentalReturned && Array.isArray(exOrder.pickedStocks)) {
+          exOrder.pickedStocks.forEach(function(ps) {
+            if (ps.stockId === stockObj.id) excludedRestored += (Number(ps.qty) || 0);
+          });
+        }
+      }
+      return Math.max(0, total + excludedRestored - rented);
     }
 
     function markRentalReturned(orderId) {
       var orders = getOrders();
       var o = orders.find(function(x) { return x.id === orderId; });
-      if (!o) return;
-      if (!confirm('Konfirmasi bahwa barang sewaan pesanan ' + o.customer + ' sudah dikembalikan ke toko? Stok akan otomatis tersedia kembali.')) return;
+      if (!o || o.rentalReturned === true) return;
+
+      var summaryItems = [];
+      if (Array.isArray(o.pickedStocks) && o.pickedStocks.length) {
+        o.pickedStocks.forEach(function(p) {
+          summaryItems.push(p.name + ' (+' + p.qty + ')');
+        });
+      }
+      var itemDesc = summaryItems.length ? ('\nStok kembali: ' + summaryItems.join(', ')) : '';
+
+      if (!confirm('Konfirmasi pesanan sewa ' + o.customer + ' sudah dikembalikan?' + itemDesc)) return;
+
+      if (o.stockDeductedOnRent === true && Array.isArray(o.pickedStocks) && o.pickedStocks.length) {
+        var stocks = getStocks();
+        var stockUpdated = false;
+        o.pickedStocks.forEach(function(p) {
+          var stObj = stocks.find(function(x) { return x.id === p.stockId; });
+          if (stObj) {
+            stObj.qty = (Number(stObj.qty) || 0) + (Number(p.qty) || 0);
+            if (stObj.qty > (Number(stObj.initialQty) || 0)) {
+              stObj.initialQty = stObj.qty;
+            }
+            stockUpdated = true;
+          }
+        });
+        if (stockUpdated) {
+          saveStocks(stocks);
+        }
+      }
+
       o.rentalReturned = true;
       o.rentalReturnedAt = todayIso();
       if (o.status !== 'Selesai') o.status = 'Selesai';
@@ -2564,6 +2998,10 @@
         if (st && Array.isArray(st.categories) && st.categories.length) {
           try { localStorage.setItem(PRODUCT_CATEGORIES_KEY, JSON.stringify(st.categories)); } catch (e) {}
           renderCategoryLauncher();
+        }
+        if (st && Array.isArray(st.boxPromos) && st.boxPromos.length) {
+          try { localStorage.setItem(BOX_PROMO_KEY, JSON.stringify(st.boxPromos)); } catch (e) {}
+          renderBoxPromoOptions();
         }
         suppressCloudPush = false;
       }, function() {});
@@ -3028,7 +3466,7 @@
               '</div>' +
               '<div style="display:flex; gap:6px;">' +
                 '<button type="button" class="btn-sm pink" style="flex:1;" onclick="downloadCalendarEvent(&#39;' + o.id + '&#39;)">Alarm Kalender</button>' +
-                (isSewaPending ? ('<button type="button" class="btn-sm blue" style="flex:1;" onclick="markRentalReturned(&#39;' + o.id + '&#39;); closeReminderModal();">Kembalikan Sewa</button>') : '') +
+                (isSewaPending ? ('<button type="button" class="btn-sm blue" style="flex:1;" onclick="markRentalReturned(&#39;' + o.id + '&#39;); closeReminderModal();">Sudah Dikembalikan</button>') : '') +
               '</div>' +
             '</div>'
           );
@@ -3303,8 +3741,9 @@
       grid.innerHTML = filtered.map(function(s) {
         var currentPhysicalQty = Number(s.qty) || 0;
         var baseCapacity = Math.max(currentPhysicalQty, Number(s.initialQty) || currentPhysicalQty);
-        var rentedQty = getCurrentlyRentedQty(s.id, null);
-        var availQty = Math.max(0, currentPhysicalQty - rentedQty);
+        var unDeductedRentedQty = getCurrentlyRentedQty(s.id, null);
+        var rentedQty = getActiveRentedDisplayQty(s.id);
+        var availQty = Math.max(0, currentPhysicalQty - unDeductedRentedQty);
         var usedCount = Math.max(0, baseCapacity - availQty);
         var low = availQty <= 3;
         var catLabel = s.category || 'Bunga';
@@ -3918,7 +4357,7 @@
             '<div class="order-actions">' +
               '<button type="button" class="btn-sm pink" onclick="openNota(&#39;' + o.id + '&#39;)">Nota WA &amp; PDF</button>' +
               '<button type="button" class="btn-sm" onclick="cycleStatus(&#39;' + o.id + '&#39;)">Ubah Status</button>' +
-              (isSewa && !o.rentalReturned ? ('<button type="button" class="btn-sm blue" onclick="markRentalReturned(&#39;' + o.id + '&#39;)">Kembalikan Sewa</button>') : '') +
+              (isSewa ? (!o.rentalReturned ? ('<button type="button" class="btn-sm blue" onclick="markRentalReturned(&#39;' + o.id + '&#39;)">Sudah Dikembalikan</button>') : ('<span class="badge badge-selesai" style="display:inline-flex; align-items:center;">&#10003; Sudah Dikembalikan</span>')) : '') +
               (sisa > 0 ? ('<button type="button" class="btn-sm green" onclick="markPaid(&#39;' + o.id + '&#39;)">Lunasi</button>') : '') +
               '<button type="button" class="btn-sm" onclick="editOrder(&#39;' + o.id + '&#39;)">Edit</button>' +
               '<button type="button" class="btn-sm danger" onclick="deleteOrder(&#39;' + o.id + '&#39;)">Hapus</button>' +
@@ -3954,6 +4393,9 @@
         }
       }
 
+      var isRentalReturnedNow = existing ? Boolean(existing.rentalReturned) : false;
+      var willDeductStockOnRent = (orderType === 'Sewa' && !isRentalReturnedNow);
+
       var totals = getOrderPickedModalTotals();
       var payload = {
         id: editId || ('LF-' + Math.floor(100 + Math.random() * 900)),
@@ -3963,8 +4405,9 @@
         orderType: orderType,
         deadline: deadlineVal,
         returnDeadline: returnDeadlineVal,
-        rentalReturned: existing ? Boolean(existing.rentalReturned) : false,
+        rentalReturned: isRentalReturnedNow,
         rentalReturnedAt: existing ? (existing.rentalReturnedAt || '') : '',
+        stockDeductedOnRent: willDeductStockOnRent,
         item: document.getElementById('f-item').value.trim(),
         note: existing ? (existing.note || '') : '',
         costFlower: totals.flowerCost,
@@ -3977,30 +4420,47 @@
         createdAt: existing ? existing.createdAt : todayIso()
       };
 
-      // Sesuaikan pengurangan stok saat pesanan Beli Putus dibuat atau diedit
+      // Sesuaikan pengurangan stok saat pesanan Beli Putus maupun Sewa dibuat atau diedit
       var updatedStocks = getStocks();
       var stockChanged = false;
-      if (existing && (existing.orderType || 'Beli') === 'Beli' && Array.isArray(existing.pickedStocks)) {
-        existing.pickedStocks.forEach(function(oldP) {
-          var stObj = updatedStocks.find(function(x) { return x.id === oldP.stockId; });
-          if (stObj && !stObj.rentable) {
-            stObj.qty = (Number(stObj.qty) || 0) + (Number(oldP.qty) || 0);
-            if (stObj.qty > (Number(stObj.initialQty) || 0)) stObj.initialQty = stObj.qty;
-            stockChanged = true;
-          }
-        });
-      }
-      if (orderType === 'Beli' && orderPickedStocks.length) {
-        orderPickedStocks.forEach(function(p) {
-          var stObj = updatedStocks.find(function(x) { return x.id === p.stockId; });
-          if (stObj && !stObj.rentable) {
-            if (typeof stObj.initialQty === 'undefined' || Number(stObj.initialQty) < Number(stObj.qty)) {
-              stObj.initialQty = Number(stObj.qty) || 0;
+      if (existing && Array.isArray(existing.pickedStocks)) {
+        var wasBeli = (existing.orderType || 'Beli') === 'Beli';
+        var wasActiveDeductedSewa = (existing.orderType === 'Sewa' && existing.stockDeductedOnRent === true && !existing.rentalReturned);
+        if (wasBeli || wasActiveDeductedSewa) {
+          existing.pickedStocks.forEach(function(oldP) {
+            var stObj = updatedStocks.find(function(x) { return x.id === oldP.stockId; });
+            if (stObj && (wasActiveDeductedSewa || !stObj.rentable)) {
+              stObj.qty = (Number(stObj.qty) || 0) + (Number(oldP.qty) || 0);
+              if (stObj.qty > (Number(stObj.initialQty) || 0)) stObj.initialQty = stObj.qty;
+              stockChanged = true;
             }
-            stObj.qty = Math.max(0, (Number(stObj.qty) || 0) - (Number(p.qty) || 0));
-            stockChanged = true;
-          }
-        });
+          });
+        }
+      }
+      if (orderPickedStocks.length) {
+        if (orderType === 'Beli') {
+          orderPickedStocks.forEach(function(p) {
+            var stObj = updatedStocks.find(function(x) { return x.id === p.stockId; });
+            if (stObj && !stObj.rentable) {
+              if (typeof stObj.initialQty === 'undefined' || Number(stObj.initialQty) < Number(stObj.qty)) {
+                stObj.initialQty = Number(stObj.qty) || 0;
+              }
+              stObj.qty = Math.max(0, (Number(stObj.qty) || 0) - (Number(p.qty) || 0));
+              stockChanged = true;
+            }
+          });
+        } else if (willDeductStockOnRent) {
+          orderPickedStocks.forEach(function(p) {
+            var stObj = updatedStocks.find(function(x) { return x.id === p.stockId; });
+            if (stObj) {
+              if (typeof stObj.initialQty === 'undefined' || Number(stObj.initialQty) < Number(stObj.qty)) {
+                stObj.initialQty = Number(stObj.qty) || 0;
+              }
+              stObj.qty = Math.max(0, (Number(stObj.qty) || 0) - (Number(p.qty) || 0));
+              stockChanged = true;
+            }
+          });
+        }
       }
       if (stockChanged) {
         saveStocks(updatedStocks);
@@ -4046,7 +4506,19 @@
       document.getElementById('btn-cancel-edit').style.display = 'block';
 
       orderManualPriceOverridden = true;
+      selectedBoxPromoId = null;
       orderPickedStocks = Array.isArray(o.pickedStocks) ? JSON.parse(JSON.stringify(o.pickedStocks)) : [];
+      var promoPanel = document.getElementById('box-promo-panel');
+      if (promoPanel) {
+        if (isBoxSeserahanCategory(o.category)) {
+          promoPanel.style.display = 'block';
+          var preId = orderPickedStocks.length ? orderPickedStocks[0].stockId : null;
+          populateBoxStockDropdown(preId);
+          renderBoxPromoOptions();
+        } else {
+          promoPanel.style.display = 'none';
+        }
+      }
       syncOrderPickedStocksToForm();
       calcFormHpp();
       switchTab('add', document.getElementById('nav-add'));
@@ -4092,18 +4564,22 @@
       if (!confirm('Hapus pesanan ini?')) return;
       var allOrders = getOrders();
       var target = allOrders.find(function(x) { return x.id === id; });
-      if (target && (target.orderType || 'Beli') === 'Beli' && Array.isArray(target.pickedStocks) && target.pickedStocks.length) {
-        var stocks = getStocks();
-        var changed = false;
-        target.pickedStocks.forEach(function(p) {
-          var stObj = stocks.find(function(x) { return x.id === p.stockId; });
-          if (stObj && !stObj.rentable) {
-            stObj.qty = (Number(stObj.qty) || 0) + (Number(p.qty) || 0);
-            if (stObj.qty > (Number(stObj.initialQty) || 0)) stObj.initialQty = stObj.qty;
-            changed = true;
-          }
-        });
-        if (changed) saveStocks(stocks);
+      if (target && Array.isArray(target.pickedStocks) && target.pickedStocks.length) {
+        var isBeliDel = (target.orderType || 'Beli') === 'Beli';
+        var isDeductedSewaDel = (target.orderType === 'Sewa' && target.stockDeductedOnRent === true && !target.rentalReturned);
+        if (isBeliDel || isDeductedSewaDel) {
+          var stocks = getStocks();
+          var changed = false;
+          target.pickedStocks.forEach(function(p) {
+            var stObj = stocks.find(function(x) { return x.id === p.stockId; });
+            if (stObj && (isDeductedSewaDel || !stObj.rentable)) {
+              stObj.qty = (Number(stObj.qty) || 0) + (Number(p.qty) || 0);
+              if (stObj.qty > (Number(stObj.initialQty) || 0)) stObj.initialQty = stObj.qty;
+              changed = true;
+            }
+          });
+          if (changed) saveStocks(stocks);
+        }
       }
       var orders = allOrders.filter(function(x) { return x.id !== id; });
       saveOrdersList(orders);
@@ -4234,7 +4710,7 @@
     }
 
     function exportJSON() {
-      var data = { orders: getOrders(), stocks: getStocks(), categories: getProductCategories(), hppSettings: getHppSettings() };
+      var data = { orders: getOrders(), stocks: getStocks(), categories: getProductCategories(), hppSettings: getHppSettings(), boxPromos: getBoxPromoPackages() };
       var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       var a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
