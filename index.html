@@ -1621,6 +1621,82 @@
     </div>
   </div>
 
+  <!-- MODAL EDIT STOK BARANG -->
+  <div id="edit-stock-modal" class="modal-backdrop" onclick="if(event.target===this) closeEditStockModal()">
+    <div class="modal">
+      <h3>Edit Stok Barang</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">
+        Perbarui nama barang, kategori, total kapasitas stok, harga modal, maupun foto barang.
+      </p>
+      <form onsubmit="saveEditedStock(event)">
+        <input type="hidden" id="es-id" />
+
+        <div class="photo-upload-box" style="padding:10px; margin-bottom:10px;" onclick="document.getElementById('es-photo-input').click()">
+          <div style="font-size:12px; font-weight:700; color:var(--pink-dark);">Ketuk untuk Ganti Foto Barang</div>
+          <div style="font-size:10.5px; color:var(--text-muted);">Kosongkan jika tetap memakai foto saat ini</div>
+          <input type="file" id="es-photo-input" accept="image/*" style="display:none;" onchange="handleEditStockPhoto(event)" />
+          <img id="es-photo-preview" class="photo-preview" style="max-height:90px;" alt="Preview Edit Stok" />
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Kategori Barang *</label>
+            <select id="es-category">
+              <option value="Bunga">Bunga</option>
+              <option value="Kertas">Kertas</option>
+              <option value="Boneka">Boneka</option>
+              <option value="Aksesoris / Box">Aksesoris / Box (Bisa Sewa)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Nama Barang *</label>
+            <input type="text" id="es-name" required />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Sisa Stok Tersedia Saat Ini *</label>
+            <input type="number" id="es-qty" min="0" required />
+          </div>
+          <div class="form-group">
+            <label>Total Kapasitas Awal (Maks) *</label>
+            <input type="number" id="es-initial-qty" min="1" required />
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label>Satuan</label>
+            <select id="es-unit">
+              <option value="Tangkai">Tangkai</option>
+              <option value="Ikat / Bunch">Ikat / Bunch</option>
+              <option value="Lembar / Roll">Lembar / Roll</option>
+              <option value="Box / Pcs">Box / Pcs</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Modal / Harga Dasar (Rp) *</label>
+            <input type="number" id="es-cost" min="0" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tipe Stok</label>
+          <select id="es-rentable">
+            <option value="false">Habis Pakai / Dijual (Terpakai permanen saat order)</option>
+            <option value="true">Barang Sewa (Kembali H+3)</option>
+          </select>
+        </div>
+
+        <div class="grid-2">
+          <button type="button" class="btn-sm" style="padding:11px;" onclick="closeEditStockModal()">Batal</button>
+          <button type="submit" class="btn-primary" style="padding:11px;">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL KELOLA ID & PASSWORD -->
   <div id="cred-modal" class="modal-backdrop" onclick="if(event.target===this) closeCredModal()">
     <div class="modal">
@@ -3007,13 +3083,13 @@
       return 'Rp' + (Number(num) || 0).toLocaleString('id-ID');
     }
 
-    /* ================= STOK BARANG (TERMASUK BOX SEWA & KETERSEDIAAN H+3) ================= */
+    /* ================= STOK BARANG (TERMASUK EDIT STOK & RASIO SISA/TOTAL SEPERTI 49/50) ================= */
     var defaultStocks = [
-      { id: 'STK-1', category: 'Bunga', name: 'Lily Pink Casablanka', qty: 14, unit: 'Tangkai', cost: 22000, rentable: false, photo: '' },
-      { id: 'STK-2', category: 'Bunga', name: 'Mawar Semi Holland Pink', qty: 25, unit: 'Tangkai', cost: 8000, rentable: false, photo: '' },
-      { id: 'STK-3', category: 'Kertas', name: 'Kertas Cellophane Blush', qty: 18, unit: 'Lembar / Roll', cost: 4500, rentable: false, photo: '' },
-      { id: 'STK-4', category: 'Boneka', name: 'Boneka Teddy Bear Wisuda Mini', qty: 8, unit: 'Box / Pcs', cost: 18000, rentable: false, photo: '' },
-      { id: 'STK-5', category: 'Aksesoris / Box', name: 'Box Seserahan Akrilik + Pita Satin', qty: 10, unit: 'Box / Pcs', cost: 20000, rentable: true, photo: '' }
+      { id: 'STK-1', category: 'Bunga', name: 'Lily Pink Casablanka', qty: 50, initialQty: 50, unit: 'Tangkai', cost: 22000, rentable: false, photo: '' },
+      { id: 'STK-2', category: 'Bunga', name: 'Mawar Semi Holland Pink', qty: 50, initialQty: 50, unit: 'Tangkai', cost: 8000, rentable: false, photo: '' },
+      { id: 'STK-3', category: 'Kertas', name: 'Kertas Cellophane Blush', qty: 30, initialQty: 30, unit: 'Lembar / Roll', cost: 4500, rentable: false, photo: '' },
+      { id: 'STK-4', category: 'Boneka', name: 'Boneka Teddy Bear Wisuda Mini', qty: 15, initialQty: 15, unit: 'Box / Pcs', cost: 18000, rentable: false, photo: '' },
+      { id: 'STK-5', category: 'Aksesoris / Box', name: 'Box Seserahan Akrilik + Pita Satin', qty: 10, initialQty: 10, unit: 'Box / Pcs', cost: 20000, rentable: true, photo: '' }
     ];
 
     function getStocks() {
@@ -3027,6 +3103,10 @@
         var list = JSON.parse(raw);
         return list.map(function(s) {
           if (!s.category) s.category = 'Bunga';
+          var q = Number(s.qty) || 0;
+          if (typeof s.initialQty === 'undefined' || Number(s.initialQty) < q) {
+            s.initialQty = q;
+          }
           if (typeof s.rentable === 'undefined') {
             s.rentable = (s.category === 'Aksesoris / Box' || String(s.name).toLowerCase().indexOf('box') !== -1);
           }
@@ -3070,14 +3150,18 @@
       reader.readAsDataURL(file);
     }
 
+    var editedStockPhotoTemp = null;
+
     function addFlowerStock(e) {
       e.preventDefault();
       var stocks = getStocks();
+      var inputQty = Number(document.getElementById('s-qty').value) || 0;
       var item = {
         id: 'STK-' + Math.floor(100 + Math.random() * 900),
         category: document.getElementById('s-category').value,
         name: document.getElementById('s-name').value.trim(),
-        qty: Number(document.getElementById('s-qty').value) || 0,
+        qty: inputQty,
+        initialQty: inputQty,
         unit: document.getElementById('s-unit').value,
         cost: Number(document.getElementById('s-cost').value) || 0,
         rentable: document.getElementById('s-rentable').value === 'true',
@@ -3088,6 +3172,87 @@
       e.target.reset();
       uploadedStockPhoto = '';
       document.getElementById('s-photo-preview').style.display = 'none';
+      renderStocks();
+    }
+
+    function openEditStockModal(id) {
+      var stocks = getStocks();
+      var item = stocks.find(function(x) { return x.id === id; });
+      if (!item) return;
+
+      editedStockPhotoTemp = null;
+      document.getElementById('es-id').value = item.id;
+      document.getElementById('es-category').value = item.category || 'Bunga';
+      document.getElementById('es-name').value = item.name || '';
+      document.getElementById('es-qty').value = Number(item.qty) || 0;
+      document.getElementById('es-initial-qty').value = Math.max(Number(item.initialQty) || 0, Number(item.qty) || 0);
+      document.getElementById('es-unit').value = item.unit || 'Tangkai';
+      document.getElementById('es-cost').value = Number(item.cost) || 0;
+      document.getElementById('es-rentable').value = item.rentable ? 'true' : 'false';
+
+      var prev = document.getElementById('es-photo-preview');
+      if (item.photo) {
+        prev.src = item.photo;
+        prev.style.display = 'block';
+      } else {
+        prev.style.display = 'none';
+      }
+      document.getElementById('es-photo-input').value = '';
+      document.getElementById('edit-stock-modal').classList.add('show');
+    }
+
+    function closeEditStockModal() {
+      document.getElementById('edit-stock-modal').classList.remove('show');
+    }
+
+    function handleEditStockPhoto(e) {
+      var file = e.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          var maxW = 480;
+          var scale = Math.min(1, maxW / img.width);
+          canvas.width = img.width * scale;
+          canvas.height = img.height * scale;
+          var ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          editedStockPhotoTemp = canvas.toDataURL('image/jpeg', 0.72);
+          var prev = document.getElementById('es-photo-preview');
+          prev.src = editedStockPhotoTemp;
+          prev.style.display = 'block';
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveEditedStock(e) {
+      e.preventDefault();
+      var id = document.getElementById('es-id').value;
+      var stocks = getStocks();
+      var item = stocks.find(function(x) { return x.id === id; });
+      if (!item) return;
+
+      var rentedNow = getCurrentlyRentedQty(id, null);
+      var newQty = Math.max(rentedNow, Number(document.getElementById('es-qty').value) || 0);
+      var newInitQty = Math.max(newQty, Number(document.getElementById('es-initial-qty').value) || newQty);
+
+      item.category = document.getElementById('es-category').value;
+      item.name = document.getElementById('es-name').value.trim();
+      item.qty = newQty;
+      item.initialQty = newInitQty;
+      item.unit = document.getElementById('es-unit').value;
+      item.cost = Number(document.getElementById('es-cost').value) || 0;
+      item.rentable = document.getElementById('es-rentable').value === 'true';
+      if (editedStockPhotoTemp !== null) {
+        item.photo = editedStockPhotoTemp;
+      }
+
+      saveStocks(stocks);
+      closeEditStockModal();
       renderStocks();
     }
 
@@ -3103,7 +3268,11 @@
       var item = stocks.find(function(x) { return x.id === id; });
       if (!item) return;
       var rentedNow = getCurrentlyRentedQty(id, null);
-      item.qty = Math.max(rentedNow, (Number(item.qty) || 0) + delta);
+      var nextQty = Math.max(rentedNow, (Number(item.qty) || 0) + delta);
+      item.qty = nextQty;
+      if (nextQty > (Number(item.initialQty) || 0)) {
+        item.initialQty = nextQty;
+      }
       saveStocks(stocks);
       renderStocks();
     }
@@ -3132,9 +3301,11 @@
         return;
       }
       grid.innerHTML = filtered.map(function(s) {
-        var totalQty = Number(s.qty) || 0;
+        var currentPhysicalQty = Number(s.qty) || 0;
+        var baseCapacity = Math.max(currentPhysicalQty, Number(s.initialQty) || currentPhysicalQty);
         var rentedQty = getCurrentlyRentedQty(s.id, null);
-        var availQty = Math.max(0, totalQty - rentedQty);
+        var availQty = Math.max(0, currentPhysicalQty - rentedQty);
+        var usedCount = Math.max(0, baseCapacity - availQty);
         var low = availQty <= 3;
         var catLabel = s.category || 'Bunga';
         var unitShort = s.unit.split(' ')[0];
@@ -3142,18 +3313,23 @@
           ? ('<img src="' + s.photo + '" class="stock-img" alt="' + s.name + '" />')
           : '<div class="stock-img"><span style="font-size:12px; font-weight:700;">' + catLabel + '</span></div>';
 
-        var rentalInfoHtml = '';
+        var usageInfoHtml = '';
         if (rentedQty > 0) {
           var rentals = getEarliestRentalReturnInfo(s.id);
           var nextRet = rentals.length ? rentals[0].returnDate : '-';
-          rentalInfoHtml =
+          usageInfoHtml =
             '<div style="background:var(--blue-bg); color:var(--blue); border-radius:8px; padding:5px 7px; font-size:10.5px; margin-bottom:7px; line-height:1.35;">' +
-              'Tersewa: <strong>' + rentedQty + ' ' + unitShort + '</strong> (dari ' + totalQty + ')<br/>' +
-              'Sisa siap pakai: <strong>' + availQty + ' ' + unitShort + '</strong><br/>' +
+              'Tersewa: <strong>' + rentedQty + ' ' + unitShort + '</strong> (dari ' + baseCapacity + ')<br/>' +
+              'Sisa siap pakai: <strong>' + availQty + '/' + baseCapacity + ' ' + unitShort + '</strong><br/>' +
               'Kembali maks H+3: <strong>' + nextRet + '</strong>' +
             '</div>';
+        } else if (usedCount > 0) {
+          usageInfoHtml =
+            '<div style="background:var(--surface-soft); color:var(--pink-dark); border:1px solid var(--border); border-radius:8px; padding:4px 7px; font-size:10.5px; margin-bottom:7px;">' +
+              'Terpakai order: <strong>' + usedCount + ' ' + unitShort + '</strong> &bull; Sisa: <strong>' + availQty + '/' + baseCapacity + '</strong>' +
+            '</div>';
         } else if (s.rentable) {
-          rentalInfoHtml = '<div style="font-size:10.5px; color:var(--blue); margin-bottom:6px;">Siap Sewa: ' + availQty + ' ' + unitShort + ' tersedia</div>';
+          usageInfoHtml = '<div style="font-size:10.5px; color:var(--blue); margin-bottom:6px;">Siap Sewa: ' + availQty + '/' + baseCapacity + ' ' + unitShort + '</div>';
         }
 
         return (
@@ -3167,15 +3343,18 @@
                 '</div>' +
                 '<div class="stock-title">' + s.name + '</div>' +
                 '<div class="stock-price">Modal: ' + formatRp(s.cost) + ' / ' + s.unit + '</div>' +
-                rentalInfoHtml +
+                usageInfoHtml +
               '</div>' +
               '<div>' +
                 '<div class="stock-qty-row">' +
                   '<button type="button" class="qty-btn" onclick="adjustStock(&#39;' + s.id + '&#39;, -1)">-</button>' +
-                  '<span style="font-size:11.5px; font-weight:800; color:' + (low ? 'var(--red)' : 'var(--text)') + ';">' + availQty + '/' + totalQty + ' ' + unitShort + '</span>' +
+                  '<span style="font-size:11.5px; font-weight:800; color:' + (low ? 'var(--red)' : 'var(--text)') + ';">' + availQty + '/' + baseCapacity + ' ' + unitShort + '</span>' +
                   '<button type="button" class="qty-btn" onclick="adjustStock(&#39;' + s.id + '&#39;, 1)">+</button>' +
                 '</div>' +
-                '<button type="button" class="btn-sm danger" style="width:100%; padding:5px;" onclick="deleteStock(&#39;' + s.id + '&#39;)">Hapus</button>' +
+                '<div style="display:grid; grid-template-columns:1fr 1fr; gap:5px;">' +
+                  '<button type="button" class="btn-sm pink" style="padding:5px;" onclick="openEditStockModal(&#39;' + s.id + '&#39;)">Edit</button>' +
+                  '<button type="button" class="btn-sm danger" style="padding:5px;" onclick="deleteStock(&#39;' + s.id + '&#39;)">Hapus</button>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</div>'
@@ -3798,15 +3977,32 @@
         createdAt: existing ? existing.createdAt : todayIso()
       };
 
-      // Kurangi stok permanen untuk barang Beli Putus (non-sewa) pada pesanan baru
-      if (!editId && orderType === 'Beli' && orderPickedStocks.length) {
-        var updatedStocks = getStocks();
+      // Sesuaikan pengurangan stok saat pesanan Beli Putus dibuat atau diedit
+      var updatedStocks = getStocks();
+      var stockChanged = false;
+      if (existing && (existing.orderType || 'Beli') === 'Beli' && Array.isArray(existing.pickedStocks)) {
+        existing.pickedStocks.forEach(function(oldP) {
+          var stObj = updatedStocks.find(function(x) { return x.id === oldP.stockId; });
+          if (stObj && !stObj.rentable) {
+            stObj.qty = (Number(stObj.qty) || 0) + (Number(oldP.qty) || 0);
+            if (stObj.qty > (Number(stObj.initialQty) || 0)) stObj.initialQty = stObj.qty;
+            stockChanged = true;
+          }
+        });
+      }
+      if (orderType === 'Beli' && orderPickedStocks.length) {
         orderPickedStocks.forEach(function(p) {
           var stObj = updatedStocks.find(function(x) { return x.id === p.stockId; });
           if (stObj && !stObj.rentable) {
+            if (typeof stObj.initialQty === 'undefined' || Number(stObj.initialQty) < Number(stObj.qty)) {
+              stObj.initialQty = Number(stObj.qty) || 0;
+            }
             stObj.qty = Math.max(0, (Number(stObj.qty) || 0) - (Number(p.qty) || 0));
+            stockChanged = true;
           }
         });
+      }
+      if (stockChanged) {
         saveStocks(updatedStocks);
       }
 
@@ -3894,7 +4090,22 @@
 
     function deleteOrder(id) {
       if (!confirm('Hapus pesanan ini?')) return;
-      var orders = getOrders().filter(function(x) { return x.id !== id; });
+      var allOrders = getOrders();
+      var target = allOrders.find(function(x) { return x.id === id; });
+      if (target && (target.orderType || 'Beli') === 'Beli' && Array.isArray(target.pickedStocks) && target.pickedStocks.length) {
+        var stocks = getStocks();
+        var changed = false;
+        target.pickedStocks.forEach(function(p) {
+          var stObj = stocks.find(function(x) { return x.id === p.stockId; });
+          if (stObj && !stObj.rentable) {
+            stObj.qty = (Number(stObj.qty) || 0) + (Number(p.qty) || 0);
+            if (stObj.qty > (Number(stObj.initialQty) || 0)) stObj.initialQty = stObj.qty;
+            changed = true;
+          }
+        });
+        if (changed) saveStocks(stocks);
+      }
+      var orders = allOrders.filter(function(x) { return x.id !== id; });
       saveOrdersList(orders);
       checkAndTriggerReminders(false);
       renderOrders();
