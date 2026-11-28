@@ -47,7 +47,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
       font-size: calc(14px * var(--font-scale));
       padding-top: env(safe-area-inset-top);
-      padding-bottom: calc(88px + env(safe-area-inset-bottom));
+      padding-bottom: calc(106px + env(safe-area-inset-bottom));
       min-height: 100vh;
     }
 
@@ -243,14 +243,46 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
-      padding: 13px 16px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+
+    .brand-title-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .live-status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 99px;
+      background: #9CA3AF;
+      box-shadow: 0 0 0 3px rgba(156, 163, 175, 0.22);
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+    }
+
+    .live-status-dot.live {
+      background: #22C55E;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.24);
+      animation: livePulse 2s infinite;
+    }
+
+    .live-status-dot.error {
+      background: #EF4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.24);
+    }
+
+    @keyframes livePulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.18); opacity: 0.82; }
     }
 
     .brand {
@@ -821,34 +853,141 @@
 
     .bottom-nav {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--border);
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(247, 214, 224, 0.9);
+      border-radius: 26px;
+      box-shadow: 0 14px 36px rgba(61, 36, 48, 0.14), 0 4px 12px rgba(225, 106, 147, 0.12);
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      padding: 7px 2px calc(7px + env(safe-area-inset-bottom));
+      grid-template-columns: 1fr 1fr 64px 1fr 1fr;
+      align-items: center;
+      padding: 6px 8px;
       z-index: 30;
     }
 
     .nav-item {
-      background: none;
+      position: relative;
+      background: transparent;
       border: none;
       color: var(--text-muted);
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 3px;
-      font-size: 10px;
-      font-weight: 600;
+      font-size: 10.5px;
+      font-weight: 700;
       cursor: pointer;
-      padding: 4px 1px;
+      padding: 6px 4px;
+      border-radius: 18px;
+      transition: all 0.22s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .nav-item.active { color: var(--pink-dark); }
+    .nav-item svg {
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .nav-item.active {
+      color: var(--pink-dark);
+      background: var(--pink-light);
+    }
+
+    .nav-item.active svg {
+      transform: translateY(-1px) scale(1.06);
+    }
+
+    .nav-item.active::after {
+      content: "";
+      width: 5px;
+      height: 5px;
+      border-radius: 99px;
+      background: var(--pink-dark);
+      margin-top: 1px;
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: 3px;
+      right: calc(50% - 18px);
+      background: var(--red);
+      color: #fff;
+      font-size: 9.5px;
+      font-weight: 800;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 99px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      border: 1.5px solid #fff;
+      box-shadow: 0 2px 6px rgba(214, 69, 93, 0.35);
+    }
+
+    .nav-fab-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .nav-fab {
+      width: 54px;
+      height: 54px;
+      border-radius: 99px;
+      border: 3px solid #fff;
+      background: linear-gradient(135deg, var(--pink-primary), var(--pink-dark));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      margin-top: -22px;
+      box-shadow: 0 10px 24px rgba(184, 66, 109, 0.38);
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+    }
+
+    .nav-fab:active,
+    .nav-fab.active {
+      transform: scale(0.95) translateY(-1px);
+      box-shadow: 0 12px 28px rgba(184, 66, 109, 0.5);
+    }
+
+    /* Segmented Sub-Tab inside Keuangan (Laporan vs Kalkulator HPP) */
+    .ios-seg-control {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 4px;
+      margin-bottom: 14px;
+      gap: 4px;
+    }
+
+    .ios-seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 9px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .ios-seg-btn.active {
+      background: var(--surface);
+      color: var(--pink-dark);
+      box-shadow: 0 3px 10px rgba(61, 36, 48, 0.08);
+    }
 
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
@@ -856,11 +995,13 @@
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(61, 36, 48, 0.45);
+      background: rgba(45, 22, 33, 0.48);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       display: none;
-      align-items: center;
+      align-items: flex-end;
       justify-content: center;
-      padding: 16px;
+      padding: 0;
       z-index: 50;
     }
 
@@ -868,14 +1009,45 @@
 
     .modal {
       background: var(--surface);
-      border-radius: 20px;
-      max-width: 440px;
+      border-radius: 26px 26px 0 0;
+      max-width: 540px;
       width: 100%;
-      padding: 20px;
-      border: 1px solid var(--border);
-      box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+      padding: 14px 20px calc(22px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.18);
       max-height: 88vh;
       overflow-y: auto;
+      animation: sheetSlideUp 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .modal::before {
+      content: "";
+      display: block;
+      width: 40px;
+      height: 4.5px;
+      border-radius: 99px;
+      background: var(--border);
+      margin: 0 auto 12px;
+    }
+
+    @keyframes sheetSlideUp {
+      from { transform: translateY(36px); opacity: 0.6; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (min-width: 600px) {
+      .modal-backdrop {
+        align-items: center;
+        padding: 16px;
+      }
+      .modal {
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        padding: 20px;
+      }
+      .modal::before {
+        display: none;
+      }
     }
 
     .modal h3 {
@@ -1309,11 +1481,16 @@
     body.nav-top .header { position: relative; top: auto; }
     body.nav-top .bottom-nav {
       position: sticky;
-      top: 0;
+      top: 8px;
       bottom: auto;
-      border-top: none;
-      border-bottom: 1px solid var(--border);
-      padding: 7px 2px;
+      left: auto;
+      transform: none;
+      margin: 8px auto 4px;
+    }
+    body.nav-top .nav-fab {
+      margin-top: 0;
+      width: 44px;
+      height: 44px;
     }
     body.nav-top { padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
 
@@ -1328,8 +1505,8 @@
       padding-bottom: calc(10px + env(safe-area-inset-bottom));
       z-index: 25;
     }
-    body.header-bottom .bottom-nav { bottom: calc(64px + env(safe-area-inset-bottom)); }
-    body.header-bottom { padding-bottom: calc(146px + env(safe-area-inset-bottom)); }
+    body.header-bottom .bottom-nav { bottom: calc(74px + env(safe-area-inset-bottom)); }
+    body.header-bottom { padding-bottom: calc(164px + env(safe-area-inset-bottom)); }
 
     @media print {
       body * { visibility: hidden; }
@@ -1412,38 +1589,34 @@
     <div id="loading-countdown" class="loading-timer">5 detik...</div>
   </div>
 
-  <!-- HEADER UTAMA -->
+  <!-- HEADER UTAMA (CLEAN HEADER + LIVE STATUS DOT) -->
   <header class="header">
     <div class="brand">
       <div class="brand-logo">
         <img id="brand-logo-img" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='28' fill='%23FFF2F6'/%3E%3Ccircle cx='82' cy='46' r='22' fill='%23F5A3C0' stroke='%23C94A78' stroke-width='2'/%3E%3Ccircle cx='82' cy='46' r='7' fill='%23FFFDFD'/%3E%3Ctext x='14' y='66' font-family='Georgia,serif' font-style='italic' font-weight='bold' font-size='26' fill='%23C94A78'%3ELalily%3C/text%3E%3Ctext x='32' y='88' font-family='Georgia,serif' font-style='italic' font-size='18' fill='%23D95384'%3EFlowers%3C/text%3E%3C/svg%3E" alt="Logo Lalily Flowers" style="width:100%; height:100%; object-fit:cover; display:block;" />
       </div>
       <div>
-        <h1 id="header-title-text">Lalily Flowers</h1>
+        <div class="brand-title-row">
+          <h1 id="header-title-text">Lalily Flowers</h1>
+          <span id="cloud-live-dot" class="live-status-dot" title="Status Sinkronisasi: Lokal"></span>
+        </div>
         <p id="header-subtitle-text">Admin &amp; Kasir Florist</p>
       </div>
     </div>
 
-    <div class="header-actions">
-      <span id="cloud-sync-pill" style="font-size:10px; font-weight:700; padding:4px 7px; border-radius:99px; background:var(--surface-soft); color:var(--text-muted); border:1px solid var(--border); white-space:nowrap;">Lokal</span>
-      <!-- FITUR 16: TOMBOL SCAN QR BOX SESERAHAN -->
-      <button type="button" class="btn-bell" onclick="openQrScannerModal()" title="Scan QR Code Box Seserahan">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+    <div class="header-actions" style="gap:8px;">
+      <!-- TOMBOL SCAN QR BOX SESERAHAN -->
+      <button type="button" class="btn-bell" style="width:38px; height:38px;" onclick="openQrScannerModal()" title="Scan QR Code Box Seserahan">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
           <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 20h2"/>
         </svg>
       </button>
-      <button type="button" class="btn-bell" onclick="openReminderModal()" title="Pengingat Jadwal Kirim & Kembali Sewa">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
+      <!-- TOMBOL NOTIFIKASI PENGINGAT -->
+      <button type="button" class="btn-bell" style="width:38px; height:38px;" onclick="openReminderModal()" title="Pengingat Jadwal Kirim & Kembali Sewa">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
         </svg>
         <span id="bell-count" class="bell-badge">0</span>
-      </button>
-
-      <button type="button" class="btn-lock" onclick="logoutApp()" title="Kunci Aplikasi">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
-        </svg>
-        Kunci
       </button>
     </div>
   </header>
@@ -1831,64 +2004,71 @@
       <div id="stock-list" class="stock-grid"></div>
     </section>
 
-    <!-- TAB 4: MENU HPP (SIMPAN SETTINGAN PERSENAN MARGIN OTOMATIS) -->
-    <section id="tab-hpp" class="tab-panel">
-      <div class="card">
-        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Settingan Margin &amp; Kalkulator HPP</h2>
-        <p style="margin:0 0 12px; font-size:12.5px; color:var(--text-muted);">
-          Atur &amp; simpan <strong>Persenan Target Margin (%)</strong> di sini. Setiap kali menambah pesanan baru dan memilih bunga/barang dari stok, <strong>Harga Jual otomatis terhitung</strong> memakai settingan ini.
-        </p>
-
-        <div id="hpp-saved-msg" class="success-banner">Settingan persenan margin berhasil disimpan &amp; otomatis dipakai di menu Tambah!</div>
-
-        <div style="background:var(--surface-soft); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:14px;">
-          <div class="grid-2" style="align-items:end;">
-            <div class="form-group" style="margin-bottom:0;">
-              <label>Persenan Target Margin (%) *</label>
-              <input type="number" id="c-margin" value="40" min="0" oninput="runQuickCalc()" />
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-              <label>Biaya Jasa Default (Rp)</label>
-              <input type="number" id="c-default-labor" value="0" min="0" oninput="runQuickCalc()" />
-            </div>
-          </div>
-          <button type="button" class="btn-primary" style="margin-top:10px; padding:10px;" onclick="saveHppSettings()">Simpan Settingan Margin Otomatis</button>
-        </div>
-
-        <div class="form-group">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <label style="margin:0;">Simulasi Rangkaian dari Stok Barang</label>
-            <button type="button" class="btn-sm pink" onclick="openStockPicker('hpp')">+ Pilih dari Stok</button>
-          </div>
-          <div id="hpp-stock-items-list"></div>
-          <div style="text-align:right; font-size:12px; color:var(--pink-dark); font-weight:700; margin-top:4px;">
-            Subtotal Bahan Stok: <span id="hpp-stock-subtotal">Rp0</span>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="form-group">
-            <label>Biaya Bahan Tambahan (Rp)</label>
-            <input type="number" id="c-extra-mat" value="0" min="0" oninput="runQuickCalc()" />
-          </div>
-          <div class="form-group">
-            <label>Jasa Rangkai Simulasi (Rp)</label>
-            <input type="number" id="c-labor" value="35000" min="0" oninput="runQuickCalc()" />
-          </div>
-        </div>
-
-        <div class="hpp-box">
-          <div class="hpp-row"><span>Total Modal Dasar (HPP):</span><strong id="c-res-hpp">Rp35.000</strong></div>
-          <div class="hpp-row"><span>Keuntungan Bersih (<span id="c-res-margin-lbl">40</span>%):</span><strong id="c-res-profit">Rp14.000</strong></div>
-          <div class="hpp-row total"><span>Rekomendasi Harga Jual:</span><span id="c-res-price">Rp49.000</span></div>
-        </div>
-
-        <button type="button" class="btn-primary" style="padding:12px;" onclick="applyHppToOrder()">Gunakan Simulasi Ini ke Tambah Pesanan &rarr;</button>
-      </div>
-    </section>
-
-    <!-- TAB 5: MENU KEUANGAN (DILENGKAPI GRAFIK TREN, KATEGORI TERLARIS & FILTER METODE BAYAR) -->
+    <!-- TAB 5: MENU KEUANGAN + SUB-TAB KALKULATOR HPP -->
     <section id="tab-finance" class="tab-panel">
+      <div class="ios-seg-control">
+        <button type="button" id="seg-fin-report" class="ios-seg-btn active" onclick="switchFinanceSubTab('report')">Laporan Omzet &amp; Laba</button>
+        <button type="button" id="seg-fin-hpp" class="ios-seg-btn" onclick="switchFinanceSubTab('hpp')">Kalkulator &amp; Margin HPP</button>
+      </div>
+
+      <!-- SUB-VIEW A: KALKULATOR & SETTING MARGIN HPP -->
+      <div id="finance-sub-hpp" style="display:none;">
+        <div class="card">
+          <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Settingan Margin &amp; Kalkulator HPP</h2>
+          <p style="margin:0 0 12px; font-size:12.5px; color:var(--text-muted);">
+            Atur &amp; simpan <strong>Persenan Target Margin (%)</strong> di sini. Setiap kali menambah pesanan baru dan memilih bunga/barang dari stok, <strong>Harga Jual otomatis terhitung</strong> memakai settingan ini.
+          </p>
+
+          <div id="hpp-saved-msg" class="success-banner">Settingan persenan margin berhasil disimpan &amp; otomatis dipakai di menu Tambah!</div>
+
+          <div style="background:var(--surface-soft); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:14px;">
+            <div class="grid-2" style="align-items:end;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Persenan Target Margin (%) *</label>
+                <input type="number" id="c-margin" value="40" min="0" oninput="runQuickCalc()" />
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label>Biaya Jasa Default (Rp)</label>
+                <input type="number" id="c-default-labor" value="0" min="0" oninput="runQuickCalc()" />
+              </div>
+            </div>
+            <button type="button" class="btn-primary" style="margin-top:10px; padding:10px;" onclick="saveHppSettings()">Simpan Settingan Margin Otomatis</button>
+          </div>
+
+          <div class="form-group">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <label style="margin:0;">Simulasi Rangkaian dari Stok Barang</label>
+              <button type="button" class="btn-sm pink" onclick="openStockPicker('hpp')">+ Pilih dari Stok</button>
+            </div>
+            <div id="hpp-stock-items-list"></div>
+            <div style="text-align:right; font-size:12px; color:var(--pink-dark); font-weight:700; margin-top:4px;">
+              Subtotal Bahan Stok: <span id="hpp-stock-subtotal">Rp0</span>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Biaya Bahan Tambahan (Rp)</label>
+              <input type="number" id="c-extra-mat" value="0" min="0" oninput="runQuickCalc()" />
+            </div>
+            <div class="form-group">
+              <label>Jasa Rangkai Simulasi (Rp)</label>
+              <input type="number" id="c-labor" value="35000" min="0" oninput="runQuickCalc()" />
+            </div>
+          </div>
+
+          <div class="hpp-box">
+            <div class="hpp-row"><span>Total Modal Dasar (HPP):</span><strong id="c-res-hpp">Rp35.000</strong></div>
+            <div class="hpp-row"><span>Keuntungan Bersih (<span id="c-res-margin-lbl">40</span>%):</span><strong id="c-res-profit">Rp14.000</strong></div>
+            <div class="hpp-row total"><span>Rekomendasi Harga Jual:</span><span id="c-res-price">Rp49.000</span></div>
+          </div>
+
+          <button type="button" class="btn-primary" style="padding:12px;" onclick="applyHppToOrder()">Gunakan Simulasi Ini ke Tambah Pesanan &rarr;</button>
+        </div>
+      </div>
+
+      <!-- SUB-VIEW B: LAPORAN KEUANGAN LENGKAP -->
+      <div id="finance-sub-report">
       <div class="filter-row" id="finance-period-row">
         <button type="button" class="chip active" onclick="setFinancePeriod('all', this)">Semua Waktu</button>
         <button type="button" class="chip" onclick="setFinancePeriod('month', this)">Bulan Ini</button>
@@ -1962,16 +2142,28 @@
         </div>
         <div id="finance-order-breakdown"></div>
       </div>
+      </div>
     </section>
 
-    <!-- TAB 6: MENU AKUN (QRIS NOTA, CRM DATABASE, AUDIT LOG & CLOUD) -->
+    <!-- TAB 6: MENU AKUN (QRIS NOTA, CRM DATABASE, AUDIT LOG, CLOUD & KUNCI APLIKASI) -->
     <section id="tab-account" class="tab-panel">
       <div class="card">
-        <h2 style="margin:0 0 6px; font-size:16px; color:var(--pink-dark);">Akun &amp; Keamanan</h2>
-        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Kelola ID &amp; Password Admin (tersinkronisasi otomatis antar-HP), password menu Keuangan, maupun desain tampilan.</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px;">
+          <h2 style="margin:0; font-size:16px; color:var(--pink-dark);">Akun &amp; Keamanan</h2>
+          <span id="cloud-sync-pill" style="font-size:11px; font-weight:700; padding:4px 9px; border-radius:99px; background:var(--surface-soft); color:var(--text-muted); border:1px solid var(--border); white-space:nowrap;">Lokal</span>
+        </div>
+        <p style="margin:0 0 12px; font-size:12px; color:var(--text-muted);">Kelola ID &amp; Password Admin (tersinkronisasi otomatis antar-HP), password menu Keuangan, kunci layar, maupun desain tampilan.</p>
         <div id="cred-saved-msg" class="success-banner">Perubahan akun &amp; keamanan berhasil disimpan!</div>
 
-        <button type="button" class="btn-primary" style="padding:12px; width:100%;" onclick="openCredAuthModal()">ID &amp; Password</button>
+        <div class="grid-2">
+          <button type="button" class="btn-primary" style="padding:11px;" onclick="openCredAuthModal()">ID &amp; Password</button>
+          <button type="button" class="btn-sm pink" style="padding:11px; display:flex; align-items:center; justify-content:center; gap:5px;" onclick="logoutApp()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
+            </svg>
+            Kunci Aplikasi
+          </button>
+        </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
           <button type="button" class="btn-design-small" onclick="openCloudAccessModal()">hak akses cloud</button>
@@ -2053,42 +2245,42 @@
     </section>
   </main>
 
-  <nav class="bottom-nav">
+  <nav class="bottom-nav" aria-label="Navigasi Utama">
     <button type="button" class="nav-item active" id="nav-orders" onclick="switchTab('orders', this)">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <span id="nav-orders-badge" class="nav-badge">0</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
         <rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9h10M7 13h6"/>
       </svg>
-      Pesanan
+      <span>Pesanan</span>
     </button>
-    <button type="button" class="nav-item" id="nav-add" onclick="switchTab('add', this)">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>
-      </svg>
-      Tambah
-    </button>
+
     <button type="button" class="nav-item" id="nav-stock" onclick="switchTab('stock', this)">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
         <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/>
       </svg>
-      Stok Barang
+      <span>Stok</span>
     </button>
-    <button type="button" class="nav-item" id="nav-hpp" onclick="switchTab('hpp', this)">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/>
-      </svg>
-      HPP
-    </button>
+
+    <div class="nav-fab-wrap">
+      <button type="button" class="nav-fab" id="nav-add" onclick="switchTab('add', this)" title="Tambah Pesanan / Sewa Baru" aria-label="Tambah Pesanan">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+      </button>
+    </div>
+
     <button type="button" class="nav-item" id="nav-finance" onclick="switchTab('finance', this)">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
         <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
       </svg>
-      Keuangan
+      <span>Keuangan</span>
     </button>
+
     <button type="button" class="nav-item" id="nav-account" onclick="switchTab('account', this)">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1">
         <circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
       </svg>
-      Akun
+      <span>Akun</span>
     </button>
   </nav>
 
@@ -4337,7 +4529,20 @@
 
     function updateSyncPill(mode, text) {
       var pill = document.getElementById('cloud-sync-pill');
+      var dot = document.getElementById('cloud-live-dot');
       var detail = document.getElementById('fb-status-detail');
+      if (dot) {
+        dot.classList.remove('live', 'error');
+        if (mode === 'live') {
+          dot.classList.add('live');
+          dot.title = 'Cloud Live (Tersinkron Real-Time)';
+        } else if (mode === 'error') {
+          dot.classList.add('error');
+          dot.title = 'Sync Error';
+        } else {
+          dot.title = 'Penyimpanan Lokal';
+        }
+      }
       if (pill) {
         if (mode === 'live') {
           pill.textContent = 'Cloud Live';
@@ -5027,11 +5232,16 @@
     function checkAndTriggerReminders(sendBrowserNotif) {
       var dueList = getUpcomingReminders();
       var badge = document.getElementById('bell-count');
+      var navBadge = document.getElementById('nav-orders-badge');
       var banner = document.getElementById('reminder-banner');
 
       if (dueList.length > 0) {
         badge.style.display = 'flex';
         badge.textContent = String(dueList.length);
+        if (navBadge) {
+          navBadge.style.display = 'flex';
+          navBadge.textContent = String(dueList.length);
+        }
         banner.classList.add('show');
         document.getElementById('reminder-title').textContent = dueList.length + ' Pengingat Jadwal Kirim & Kembali Sewa!';
         document.getElementById('reminder-desc').textContent = 'Ketuk untuk melihat detail pesanan H-7 & sewa jatuh tempo H+3.';
@@ -5050,6 +5260,7 @@
         }
       } else {
         badge.style.display = 'none';
+        if (navBadge) navBadge.style.display = 'none';
         banner.classList.remove('show');
       }
       updateNotifStatusText();
@@ -5676,9 +5887,37 @@
       activateTabPanel(tabName, btnEl);
     }
 
+    function switchFinanceSubTab(subName) {
+      var repWrap = document.getElementById('finance-sub-report');
+      var hppWrap = document.getElementById('finance-sub-hpp');
+      var btnRep = document.getElementById('seg-fin-report');
+      var btnHpp = document.getElementById('seg-fin-hpp');
+      if (!repWrap || !hppWrap) return;
+
+      if (subName === 'hpp') {
+        repWrap.style.display = 'none';
+        hppWrap.style.display = 'block';
+        if (btnRep) btnRep.classList.remove('active');
+        if (btnHpp) btnHpp.classList.add('active');
+        renderHppSelectedStocks();
+        runQuickCalc();
+      } else {
+        hppWrap.style.display = 'none';
+        repWrap.style.display = 'block';
+        if (btnHpp) btnHpp.classList.remove('active');
+        if (btnRep) btnRep.classList.add('active');
+        renderFinance();
+      }
+    }
+
     function activateTabPanel(tabName, btnEl) {
+      if (tabName === 'hpp') {
+        activateTabPanel('finance', document.getElementById('nav-finance'));
+        switchFinanceSubTab('hpp');
+        return;
+      }
       document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-      document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+      document.querySelectorAll('.nav-item, .nav-fab').forEach(function(n) { n.classList.remove('active'); });
       document.getElementById('tab-' + tabName).classList.add('active');
       if (btnEl) btnEl.classList.add('active');
 
@@ -5687,10 +5926,8 @@
         renderStocks();
         renderAiForecasting();
       }
-      if (tabName === 'finance') renderFinance();
-      if (tabName === 'hpp') {
-        renderHppSelectedStocks();
-        runQuickCalc();
+      if (tabName === 'finance') {
+        switchFinanceSubTab('report');
       }
       if (tabName === 'add') {
         var isEditing = Boolean(document.getElementById('edit-id').value);
